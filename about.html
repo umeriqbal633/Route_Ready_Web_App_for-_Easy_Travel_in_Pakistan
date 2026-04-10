@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RouteReady – About Us</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #6C3CE1; --purple-light: #8B5CF6; --purple-dark: #4C1D95;
+      --purple-soft: #EDE9FE; --white: #ffffff; --dark: #0f0f1a;
+      --gray: #6B7280; --light-gray: #F9FAFB; --border: #E5E7EB;
+    }
+    body { font-family: 'DM Sans', sans-serif; color: #1a1a2e; background: #fff; overflow-x: hidden; }
+
+    /* NAV */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px; position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--purple); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo-dot { width: 8px; height: 8px; background: var(--purple); border-radius: 50%; }
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--purple); }
+    .nav-cta { background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .2s; text-decoration: none; }
+    .nav-cta:hover { background: var(--purple-dark); }
+
+    /* HERO */
+    .about-hero {
+      margin-top: 64px; position: relative; height: 500px;
+      display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden;
+    }
+    .hero-bg { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1519659528534-7fd733a832a0?w=1400&q=80') center/cover no-repeat; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,15,26,0.85) 0%, rgba(15,15,26,0.75) 100%); }
+    .hero-content { position: relative; z-index: 2; max-width: 680px; padding: 0 24px; }
+    .hero-badge {
+      display: inline-block; background: rgba(108,60,225,0.35); border: 1px solid rgba(139,92,246,0.5);
+      color: #C4B5FD; font-size: 12px; font-weight: 600; padding: 6px 16px; border-radius: 20px;
+      letter-spacing: 1px; text-transform: uppercase; margin-bottom: 24px;
+    }
+    .hero-content h1 { font-family: 'Playfair Display', serif; font-size: 52px; font-weight: 900; color: #fff; line-height: 1.15; margin-bottom: 20px; }
+    .hero-content p { color: rgba(255,255,255,0.75); font-size: 16px; line-height: 1.8; font-weight: 300; }
+
+    /* STATS */
+    .stats-section { background: var(--dark); padding: 56px 48px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; max-width: 900px; margin: 0 auto; }
+    .stat-item { text-align: center; padding: 32px 24px; border-right: 1px solid rgba(255,255,255,0.08); }
+    .stat-item:last-child { border-right: none; }
+    .stat-number { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 900; color: #fff; line-height: 1; margin-bottom: 8px; }
+    .stat-number span { color: var(--purple-light); }
+    .stat-label { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; letter-spacing: .5px; }
+
+    /* MISSION */
+    .mission-section { padding: 96px 48px; background: #fff; }
+    .mission-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .mission-text .tag { display: inline-block; background: var(--purple-soft); color: var(--purple); font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 20px; letter-spacing: .5px; margin-bottom: 20px; }
+    .mission-text h2 { font-family: 'Playfair Display', serif; font-size: 38px; font-weight: 700; line-height: 1.2; margin-bottom: 20px; color: #1a1a2e; }
+    .mission-text p { color: var(--gray); font-size: 15px; line-height: 1.85; margin-bottom: 16px; }
+    .mission-img-wrap { position: relative; }
+    .mission-img { width: 100%; border-radius: 20px; object-fit: cover; height: 360px; }
+    .mission-img-card {
+      position: absolute; bottom: -20px; left: -20px;
+      background: var(--purple); color: #fff; border-radius: 14px;
+      padding: 18px 22px; box-shadow: 0 8px 32px rgba(108,60,225,0.4);
+    }
+    .mission-img-card .card-num { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+    .mission-img-card .card-label { font-size: 12px; opacity: .85; font-weight: 500; }
+
+    /* TEAM */
+    .team-section { padding: 80px 48px; background: var(--light-gray); }
+    .section-title { text-align: center; margin-bottom: 52px; }
+    .section-title h2 { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700; margin-bottom: 10px; }
+    .section-title p { color: var(--gray); font-size: 15px; }
+    .team-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; max-width: 900px; margin: 0 auto; }
+    .team-card { background: #fff; border-radius: 18px; padding: 32px 24px; text-align: center; transition: transform .25s, box-shadow .25s; border: 1px solid var(--border); }
+    .team-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(108,60,225,0.12); }
+    .team-avatar { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: #fff; }
+    .team-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .team-role { font-size: 13px; color: var(--purple); font-weight: 600; margin-bottom: 12px; }
+    .team-bio { font-size: 13.5px; color: var(--gray); line-height: 1.7; }
+
+    /* VALUES */
+    .values-section { padding: 80px 48px; background: #fff; }
+    .values-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; max-width: 960px; margin: 0 auto; }
+    .value-card { padding: 32px 28px; border: 1px solid var(--border); border-radius: 16px; transition: box-shadow .25s, border-color .25s; }
+    .value-card:hover { box-shadow: 0 8px 32px rgba(108,60,225,0.1); border-color: var(--purple-light); }
+    .value-icon { font-size: 32px; margin-bottom: 16px; }
+    .value-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+    .value-card p { font-size: 13.5px; color: var(--gray); line-height: 1.7; }
+
+    /* CTA */
+    .cta-section { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-light) 100%); text-align: center; padding: 80px 48px; }
+    .cta-section h2 { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+    .cta-section p { color: rgba(255,255,255,0.85); font-size: 15px; margin-bottom: 36px; }
+    .cta-btn { background: #fff; color: var(--purple); border: none; border-radius: 50px; padding: 14px 36px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: transform .2s; text-decoration: none; display: inline-block; }
+    .cta-btn:hover { transform: translateY(-2px); }
+
+    /* FOOTER */
+    footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 60px 48px 28px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .footer-logo .logo-dot { background: var(--purple-light); }
+    .footer-desc { font-size: 13.5px; line-height: 1.8; margin-bottom: 20px; }
+    .footer-col h4 { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 18px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a { color: rgba(255,255,255,0.6); font-size: 13.5px; text-decoration: none; transition: color .2s; }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; display: flex; justify-content: space-between; font-size: 13px; }
+
+    @keyframes fadeUp { from { opacity:0; transform: translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    .hero-content { animation: fadeUp .7s ease both; }
+
+    @media(max-width:768px) {
+      nav { padding: 0 20px; } .nav-links { display: none; }
+      .mission-inner { grid-template-columns: 1fr; gap: 40px; }
+      .team-grid, .values-grid, .stats-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .hero-content h1 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="index.html" class="logo"><span class="logo-dot"></span>RouteReady</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="#">Destinations</a></li>
+    <li><a href="#">AI Planner</a></li>
+    <li><a href="#">Blog</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+  </ul>
+  <a href="signup.html" class="nav-cta">Get Started</a>
+</nav>
+
+<!-- DARK HERO -->
+<section class="about-hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">About RouteReady</div>
+    <h1>Reimagining How<br/>You Explore Cities.</h1>
+    <p>RouteReady is on a mission to make every journey smarter, richer, and more meaningful — powered by AI built for the modern traveler.</p>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-number">50<span>+</span></div>
+      <div class="stat-label">Cities Covered</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">10<span>K+</span></div>
+      <div class="stat-label">Happy Travelers</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">4.9<span>★</span></div>
+      <div class="stat-label">Average Rating</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">100<span>%</span></div>
+      <div class="stat-label">AI Powered</div>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section class="mission-section">
+  <div class="mission-inner">
+    <div class="mission-text">
+      <span class="tag">OUR MISSION</span>
+      <h2>Building Smarter Travel Experiences</h2>
+      <p>We believe every traveler deserves a personalized journey — not a generic one. RouteReady uses cutting-edge AI to understand your preferences and craft itineraries that feel handpicked just for you.</p>
+      <p>From the bustling streets of Karachi to the serene valleys of Gilgit, we help you discover Pakistan like never before.</p>
+    </div>
+    <div class="mission-img-wrap">
+      <img class="mission-img" src="https://images.unsplash.com/photo-1539768942893-daf53e448371?w=700&q=80" alt="Travel"/>
+      <div class="mission-img-card">
+        <div class="card-num">98%</div>
+        <div class="card-label">Satisfaction Rate</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="team-section">
+  <div class="section-title">
+    <h2>Meet Our Team</h2>
+    <p>The passionate people building the future of travel</p>
+  </div>
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-avatar" style="background: linear-gradient(135deg, #6C3CE1, #8B5CF6);">AK</div>
+      <div class="team-name">Ahmed Khan</div>
+      <div class="team-role">CEO & Co-Founder</div>
+      <p class="team-bio">Passionate about AI and travel, Ahmed leads RouteReady's vision to make smart travel accessible to everyone.</p>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar" style="background: linear-gradient(135deg, #059669, #34D399);">SR</div>
+      <div class="team-name">Sara Rehman</div>
+      <div class="team-role">Head of Product</div>
+      <p class="team-bio">Sara shapes the user experience at RouteReady, ensuring every feature delights and empowers travelers.</p>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar" style="background: linear-gradient(135deg, #DC2626, #F87171);">UJ</div>
+      <div class="team-name">Usman Javed</div>
+      <div class="team-role">Lead AI Engineer</div>
+      <p class="team-bio">Usman architects the intelligence behind RouteReady's personalization engine and itinerary planner.</p>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="values-section">
+  <div class="section-title">
+    <h2>Our Core Values</h2>
+    <p>The principles that guide everything we build</p>
+  </div>
+  <div class="values-grid">
+    <div class="value-card">
+      <div class="value-icon">🎯</div>
+      <h3>Precision</h3>
+      <p>Every recommendation is data-driven and tailored. We never offer generic suggestions — only what truly fits you.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🤝</div>
+      <h3>Trust</h3>
+      <p>We are transparent about how our AI works and committed to protecting every traveler's privacy and data.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🌍</div>
+      <h3>Discovery</h3>
+      <p>We champion authentic exploration — helping travelers go beyond tourist traps to find what truly matters.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Ready to Explore Your City?</h2>
+  <p>Join RouteReady today and discover Pakistan like never before.</p>
+  <a href="signup.html" class="cta-btn">Start Your Journey →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo"><span class="logo-dot"></span>RouteReady</div>
+      <p class="footer-desc">AI-powered city exploration for the modern traveler. Discover Pakistan's finest destinations with personalized itineraries.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul><li><a href="#">Destinations</a></li><li><a href="#">AI Planner</a></li><li><a href="#">Blog</a></li><li><a href="#">Contact</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul><li><a href="#">Help Center</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact Us</h4>
+      <ul><li><a href="#">📧 hello@routeready.pk</a></li><li><a href="#">📞 +92 300 1234567</a></li><li><a href="#">📍 Islamabad, Pakistan</a></li></ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 RouteReady. All rights reserved.</span>
+    <span>Made with ♥ in Pakistan</span>
+  </div>
+</footer>
+
+</body>
+</html>
