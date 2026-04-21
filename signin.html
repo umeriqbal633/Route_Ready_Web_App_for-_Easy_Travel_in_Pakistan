@@ -120,18 +120,43 @@
       .right-panel { padding: 32px 24px; }
     }
   </style>
+
+    <style>
+      /* Navbar overrides for auth pages */
+      nav { display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+      nav .logo { display: flex; align-items: center; gap: 8px; font-family: "Playfair Display", serif; font-weight: 700; font-size: 20px; color: var(--purple); text-decoration: none; }
+      nav .logo-dot { width: 8px; height: 8px; background: var(--purple); border-radius: 50%; }
+      nav .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+      nav .nav-links a { text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; transition: color 0.2s; }
+      nav .nav-links a:hover { color: var(--purple); }
+      nav .nav-cta { background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: "DM Sans", sans-serif; transition: background 0.2s, transform 0.15s; text-decoration: none; }
+      nav .nav-cta:hover { background: var(--purple-dark); transform: translateY(-1px); }
+      .hamburger { font-size: 24px; cursor: pointer; color: var(--purple); }
+    </style>
+
 </head>
 <body>
 
-<!-- TOP BAR -->
-<div class="top-bar">
-  <a href="index.html" class="logo"><span class="logo-dot"></span>RouteReady</a>
-  <div class="top-bar-links">
-    <a href="#">Destinations</a>
-    <a href="#">AI Planner</a>
-    <a href="about.html">About</a>
-    <a href="signup.html" class="signup-btn">Sign Up</a>
-  </div>
+    <nav>
+      <a href="index.html" class="logo">
+        <span class="logo-dot"></span>RouteReady
+      </a>
+      <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+        &#9776;
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="destinations.html">Destinations</a></li>
+        <li><a href="planner.html">AI Planner</a></li>
+        <li><a href="hidden-gems.html">Hidden Gems</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="signin.html" style="text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; margin-right: 16px;">Sign In</a>
+        <a href="signup.html" class="nav-cta">Get Started</a>
+      </div>
+    </nav>
 </div>
 
 <div class="page-wrap">
@@ -174,7 +199,7 @@
       </div>
 
       <div class="forgot-row">
-        <a href="#">Forgot Password?</a>
+        <a href="javascript:void(0)">Forgot Password?</a>
       </div>
 
       <div class="remember-row">
@@ -182,7 +207,7 @@
         <label for="remember">Remember me for 30 days</label>
       </div>
 
-      <button class="submit-btn">Sign In →</button>
+      <button type="submit" class="submit-btn">Sign In →</button></form>
 
       <p class="signup-prompt">Don't have an account? <a href="signup.html">Sign up for free</a></p>
     </div>
@@ -195,5 +220,29 @@
     el.type = el.type === 'password' ? 'text' : 'password';
   }
 </script>
-</body>
+
+    <style>
+      html { scroll-behavior: smooth; }
+      .hamburger { display: none; font-size: 24px; cursor: pointer; color: var(--purple); }
+      @media (max-width: 768px) {
+        .hamburger { display: block; }
+        .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: #fff; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .nav-links.active { display: flex; }
+        .nav-actions { display: none; }
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === currentPage) {
+            link.style.color = '#6C3CE1';
+            link.style.fontWeight = '600';
+          }
+        });
+      });
+    </script>
+
+  </body>
 </html>
