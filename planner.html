@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RouteReady – AI Itinerary Planner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #6C3CE1; --purple-light: #8B5CF6; --purple-dark: #4C1D95;
+      --purple-soft: #EDE9FE; --white: #ffffff; --dark: #0f0f1a;
+      --gray: #6B7280; --light-gray: #F9FAFB; --border: #E5E7EB;
+    }
+    body { font-family: 'DM Sans', sans-serif; color: #1a1a2e; background: var(--light-gray); overflow-x: hidden; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px; position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--purple); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo-dot { width: 8px; height: 8px; background: var(--purple); border-radius: 50%; }
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; }
+    .nav-links a:hover, .nav-links a.active { color: var(--purple); }
+    .nav-cta { background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 14px; font-weight: 600; text-decoration: none; }
+    .nav-cta:hover { background: var(--purple-dark); }
+
+    /* HEADER */
+    .planner-header {
+      margin-top: 64px; background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 50%, var(--purple-light) 100%);
+      padding: 60px 48px; text-align: center; color: #fff; position: relative; overflow: hidden;
+    }
+    .planner-header::before { content: '🤖'; position: absolute; font-size: 200px; opacity: 0.08; top: 50%; left: 5%; transform: translateY(-50%); }
+    .planner-header::after { content: '✨'; position: absolute; font-size: 200px; opacity: 0.08; top: 50%; right: 5%; transform: translateY(-50%); }
+    .ai-badge {
+      display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3); padding: 6px 14px; border-radius: 50px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 16px;
+    }
+    .planner-header h1 { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 900; margin-bottom: 10px; }
+    .planner-header p { font-size: 16px; opacity: 0.85; max-width: 540px; margin: 0 auto; }
+
+    /* PLANNER CONTAINER */
+    .planner-container { max-width: 1200px; margin: -32px auto 60px; padding: 0 48px; position: relative; z-index: 5; }
+
+    /* INPUT FORM */
+    .planner-form {
+      background: #fff; border-radius: 18px; padding: 32px;
+      box-shadow: 0 8px 32px rgba(76, 29, 149, 0.1);
+    }
+    .form-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+    .form-field { display: flex; flex-direction: column; gap: 7px; }
+    .form-field label { font-size: 12.5px; font-weight: 700; color: var(--purple); letter-spacing: 0.4px; text-transform: uppercase; }
+    .form-field input, .form-field select {
+      padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 14px; font-family: 'DM Sans', sans-serif; background: var(--light-gray);
+      transition: border-color .2s; outline: none;
+    }
+    .form-field input:focus, .form-field select:focus { border-color: var(--purple); background: #fff; }
+
+    .interests-section { margin-top: 4px; }
+    .interests-section label { font-size: 12.5px; font-weight: 700; color: var(--purple); letter-spacing: 0.4px; text-transform: uppercase; display: block; margin-bottom: 12px; }
+    .interest-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip {
+      padding: 9px 18px; border: 1.5px solid var(--border); border-radius: 50px;
+      background: #fff; font-size: 13px; font-weight: 600; color: var(--gray);
+      cursor: pointer; transition: all .2s; user-select: none;
+    }
+    .chip:hover { border-color: var(--purple); color: var(--purple); }
+    .chip.selected { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+    .generate-btn {
+      width: 100%; margin-top: 24px; background: linear-gradient(135deg, var(--purple), var(--purple-light));
+      color: #fff; border: none; border-radius: 12px; padding: 16px;
+      font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: transform .15s, box-shadow .2s;
+      box-shadow: 0 4px 20px rgba(108,60,225,0.35);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(108,60,225,0.45); }
+
+    /* LOADING */
+    .loading-state {
+      display: none; text-align: center; padding: 60px 20px;
+      background: #fff; border-radius: 18px; margin-top: 24px;
+    }
+    .loading-state.active { display: block; }
+    .spinner {
+      width: 50px; height: 50px; border: 4px solid var(--purple-soft);
+      border-top-color: var(--purple); border-radius: 50%;
+      animation: spin .8s linear infinite; margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-state h3 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 6px; }
+    .loading-state p { color: var(--gray); font-size: 14px; }
+
+    /* ITINERARY OUTPUT */
+    .itinerary-output { display: none; margin-top: 32px; }
+    .itinerary-output.active { display: block; }
+
+    .itinerary-header {
+      background: #fff; border-radius: 18px; padding: 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .itinerary-header h2 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+    .itinerary-header p { color: var(--gray); font-size: 14px; }
+    .itinerary-actions { display: flex; gap: 10px; }
+    .action-btn {
+      padding: 10px 18px; border-radius: 9px; border: 1.5px solid var(--border);
+      background: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: all .2s; color: #1a1a2e;
+    }
+    .action-btn:hover { border-color: var(--purple); color: var(--purple); }
+    .action-btn.primary { background: var(--purple); color: #fff; border-color: var(--purple); }
+    .action-btn.primary:hover { background: var(--purple-dark); color: #fff; }
+
+    /* DAY CARDS */
+    .day-card {
+      background: #fff; border-radius: 18px; padding: 28px; margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .day-head { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1.5px solid var(--border); }
+    .day-num {
+      width: 50px; height: 50px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--purple), var(--purple-light));
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900;
+    }
+    .day-title h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; }
+    .day-title p { color: var(--gray); font-size: 13px; }
+
+    .activity { display: grid; grid-template-columns: 100px 1fr auto; gap: 18px; padding: 16px 0; border-bottom: 1px dashed var(--border); align-items: start; }
+    .activity:last-child { border-bottom: none; }
+    .activity-time {
+      background: var(--purple-soft); color: var(--purple);
+      padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      text-align: center; line-height: 1.3;
+    }
+    .activity-time .slot { display: block; font-size: 10px; font-weight: 600; opacity: 0.8; margin-bottom: 2px; }
+    .activity-info h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .activity-info p { font-size: 13px; color: var(--gray); line-height: 1.6; }
+    .activity-meta { display: flex; gap: 10px; margin-top: 8px; font-size: 11.5px; color: var(--gray); }
+    .activity-meta span { background: var(--light-gray); padding: 3px 9px; border-radius: 50px; }
+    .activity-actions { display: flex; flex-direction: column; gap: 6px; }
+    .icon-btn {
+      width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--border);
+      background: #fff; cursor: pointer; font-size: 13px; transition: all .15s;
+    }
+    .icon-btn:hover { border-color: var(--purple); color: var(--purple); }
+    .icon-btn.del:hover { border-color: #DC2626; color: #DC2626; }
+
+    .travel-time {
+      display: flex; align-items: center; gap: 8px; padding: 8px 16px; margin: 4px 0 4px 118px;
+      font-size: 12px; color: var(--gray); font-style: italic;
+    }
+    .travel-time::before { content: '↓'; color: var(--purple); font-weight: 700; }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center; padding: 60px 20px; background: #fff;
+      border-radius: 18px; margin-top: 24px;
+    }
+    .empty-state .emoji { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 6px; }
+    .empty-state p { color: var(--gray); font-size: 14px; }
+
+    @media(max-width: 768px) {
+      nav { padding: 0 20px; } .nav-links { display: none; }
+      .planner-header { padding: 40px 20px; } .planner-header h1 { font-size: 30px; }
+      .planner-container { padding: 0 20px; }
+      .planner-form { padding: 22px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .activity { grid-template-columns: 80px 1fr; }
+      .activity-actions { grid-column: 1 / -1; flex-direction: row; justify-content: flex-end; }
+      .itinerary-header { flex-direction: column; gap: 14px; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+    <nav>
+      <a href="index.html" class="logo">
+        <span class="logo-dot"></span>RouteReady
+      </a>
+      <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+        &#9776;
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="destinations.html">Destinations</a></li>
+        <li><a href="planner.html">AI Planner</a></li>
+        <li><a href="hidden-gems.html">Hidden Gems</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="signin.html" style="text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; margin-right: 16px;">Sign In</a>
+        <a href="signup.html" class="nav-cta">Get Started</a>
+      </div>
+    </nav>
+
+<!-- HEADER -->
+<section class="planner-header">
+  <div class="ai-badge">✨ AI POWERED</div>
+  <h1>Plan Your Perfect Trip</h1>
+  <p>Tell us your preferences and our AI will craft a personalized day-by-day itinerary in seconds.</p>
+</section>
+
+<!-- PLANNER -->
+<section class="planner-container">
+  <div class="planner-form">
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Destination City</label>
+        <select id="city">
+          <option>Islamabad</option>
+          <option>Lahore</option>
+          <option>Karachi</option>
+          <option>Hunza Valley</option>
+          <option>Naran &amp; Kaghan</option>
+          <option>Multan</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Start Date</label>
+        <input type="date" id="startDate" value="2026-04-25"/>
+      </div>
+      <div class="form-field">
+        <label>Trip Length</label>
+        <select id="days">
+          <option value="1">1 Day</option>
+          <option value="2" selected>2 Days</option>
+          <option value="3">3 Days</option>
+          <option value="5">5 Days</option>
+          <option value="7">7 Days</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Travelers</label>
+        <select id="travelers">
+          <option>Solo</option>
+          <option selected>Couple</option>
+          <option>Family (3-5)</option>
+          <option>Group (6+)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="interests-section">
+      <label>What interests you? (pick a few)</label>
+      <div class="interest-chips" id="interests">
+        <div class="chip selected">🏛️ Heritage</div>
+        <div class="chip">🌿 Nature</div>
+        <div class="chip selected">🍽️ Food</div>
+        <div class="chip">🛍️ Shopping</div>
+        <div class="chip">🕌 Religious</div>
+        <div class="chip">📷 Photography</div>
+        <div class="chip">🎭 Art &amp; Culture</div>
+        <div class="chip">🏔️ Adventure</div>
+      </div>
+    </div>
+
+    <button class="generate-btn" onclick="generateItinerary()">✨ Generate My Itinerary</button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-state" id="loading">
+    <div class="spinner"></div>
+    <h3>Crafting your perfect trip...</h3>
+    <p>Our AI is analyzing thousands of options based on your preferences.</p>
+  </div>
+
+  <!-- ITINERARY OUTPUT -->
+  <div class="itinerary-output" id="output">
+    <div class="itinerary-header">
+      <div>
+        <h2 id="tripTitle">Your 2-Day Islamabad Adventure</h2>
+        <p id="tripSub">Personalized itinerary based on your interests</p>
+      </div>
+      <div class="itinerary-actions">
+        <button class="action-btn" onclick="generateItinerary()">🔄 Regenerate</button>
+        <button class="action-btn">📄 Export PDF</button>
+        <button class="action-btn primary">💾 Save Trip</button>
+      </div>
+    </div>
+    <div id="dayContainer"></div>
+  </div>
+</section>
+
+<script>
+  // interest chip toggling
+  document.querySelectorAll('#interests .chip').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('selected'));
+  });
+
+  // sample activity database (would come from backend)
+  const activityDB = {
+    'Islamabad': {
+      morning: [
+        { name: 'Faisal Mosque', desc: 'Start with Pakistan\'s national mosque, an architectural marvel at the foot of Margalla Hills.', dur: '2h', cost: 'Free', tag: 'Religious' },
+        { name: 'Daman-e-Koh', desc: 'Hike up to this hilltop viewpoint for panoramic views of the city.', dur: '2h', cost: 'PKR 50', tag: 'Nature' },
+        { name: 'Pakistan Monument', desc: 'Explore the four-petal flower-shaped monument and the museum inside.', dur: '1.5h', cost: 'PKR 20', tag: 'Heritage' }
+      ],
+      afternoon: [
+        { name: 'Lok Virsa Museum', desc: 'Discover Pakistan\'s rich folk heritage and traditional crafts.', dur: '2h', cost: 'PKR 30', tag: 'Culture' },
+        { name: 'Lunch at Monal Restaurant', desc: 'Enjoy traditional Pakistani cuisine with a view of the city.', dur: '1.5h', cost: 'PKR 2,000', tag: 'Food' },
+        { name: 'Saidpur Village', desc: 'Stroll through this restored traditional village turned cultural hub.', dur: '2h', cost: 'Free', tag: 'Heritage' }
+      ],
+      evening: [
+        { name: 'The Centaurus Mall', desc: 'Shop, dine and unwind at Islamabad\'s premier shopping destination.', dur: '2.5h', cost: 'Free entry', tag: 'Shopping' },
+        { name: 'Rawal Lake', desc: 'Watch the sunset by the water with boating and snacks.', dur: '2h', cost: 'PKR 100', tag: 'Nature' },
+        { name: 'Dinner at Tuscany Courtyard', desc: 'Wrap up your day with authentic Italian fine dining.', dur: '2h', cost: 'PKR 3,500', tag: 'Food' }
+      ]
+    }
+  };
+
+  function getRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function generateItinerary() {
+    const city = document.getElementById('city').value;
+    const days = parseInt(document.getElementById('days').value);
+    document.getElementById('output').classList.remove('active');
+    document.getElementById('loading').classList.add('active');
+
+    setTimeout(() => {
+      document.getElementById('loading').classList.remove('active');
+      document.getElementById('output').classList.add('active');
+      document.getElementById('tripTitle').textContent = `Your ${days}-Day ${city} Adventure`;
+
+      const data = activityDB[city] || activityDB['Islamabad'];
+      const container = document.getElementById('dayContainer');
+      container.innerHTML = '';
+
+      for (let d = 1; d <= days; d++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'day-card';
+        const slots = [
+          { time: '9:00 AM', slot: 'Morning', a: getRandom(data.morning) },
+          { time: '1:00 PM', slot: 'Afternoon', a: getRandom(data.afternoon) },
+          { time: '6:00 PM', slot: 'Evening', a: getRandom(data.evening) }
+        ];
+        let html = `
+          <div class="day-head">
+            <div class="day-num">${d}</div>
+            <div class="day-title">
+              <h3>Day ${d}</h3>
+              <p>${slots.length} activities planned · ~ 6 hours</p>
+            </div>
+          </div>`;
+        slots.forEach((s, i) => {
+          html += `
+            <div class="activity">
+              <div class="activity-time"><span class="slot">${s.slot}</span>${s.time}</div>
+              <div class="activity-info">
+                <h4>${s.a.name}</h4>
+                <p>${s.a.desc}</p>
+                <div class="activity-meta">
+                  <span>⏱ ${s.a.dur}</span>
+                  <span>💰 ${s.a.cost}</span>
+                  <span>🏷️ ${s.a.tag}</span>
+                </div>
+              </div>
+              <div class="activity-actions">
+                <button class="icon-btn" title="Move up">↑</button>
+                <button class="icon-btn" title="Move down">↓</button>
+                <button class="icon-btn del" title="Remove">✕</button>
+              </div>
+            </div>`;
+          if (i < slots.length - 1) {
+            html += `<div class="travel-time">~ 25 min by car</div>`;
+          }
+        });
+        dayDiv.innerHTML = html;
+        container.appendChild(dayDiv);
+      }
+
+      document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 1800);
+  }
+</script>
+
+    <style>
+      html { scroll-behavior: smooth; }
+      .hamburger { display: none; font-size: 24px; cursor: pointer; color: var(--purple); }
+      @media (max-width: 768px) {
+        .hamburger { display: block; }
+        .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: #fff; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .nav-links.active { display: flex; }
+        .nav-actions { display: none; }
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === currentPage) {
+            link.style.color = '#6C3CE1';
+            link.style.fontWeight = '600';
+          }
+        });
+      });
+    </script>
+
+  </body>
+</html>
