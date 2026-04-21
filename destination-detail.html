@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RouteReady – Destination Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #6C3CE1; --purple-light: #8B5CF6; --purple-dark: #4C1D95;
+      --purple-soft: #EDE9FE; --white: #ffffff; --dark: #0f0f1a;
+      --gray: #6B7280; --light-gray: #F9FAFB; --border: #E5E7EB;
+    }
+    body { font-family: 'DM Sans', sans-serif; color: #1a1a2e; background: #fff; overflow-x: hidden; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px; position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--purple); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo-dot { width: 8px; height: 8px; background: var(--purple); border-radius: 50%; }
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--purple); }
+    .nav-cta { background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .2s; text-decoration: none; }
+    .nav-cta:hover { background: var(--purple-dark); }
+
+    /* BREADCRUMB */
+    .breadcrumb { margin-top: 64px; padding: 20px 48px; font-size: 13px; color: var(--gray); background: var(--light-gray); border-bottom: 1px solid var(--border); }
+    .breadcrumb a { color: var(--purple); text-decoration: none; font-weight: 600; }
+    .breadcrumb span { margin: 0 8px; }
+
+    /* HERO */
+    .detail-hero {
+      max-width: 1200px; margin: 32px auto; padding: 0 48px;
+      display: grid; grid-template-columns: 2fr 1fr; gap: 16px;
+    }
+    .hero-main {
+      height: 440px; border-radius: 18px; overflow: hidden;
+      background: linear-gradient(135deg, var(--purple), var(--purple-light));
+      position: relative;
+    }
+    .hero-main img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-side { display: grid; grid-template-rows: 1fr 1fr; gap: 16px; }
+    .hero-thumb {
+      border-radius: 18px; overflow: hidden;
+      background: linear-gradient(135deg, var(--purple-light), var(--purple-dark));
+    }
+    .hero-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* MAIN CONTENT */
+    .detail-content { max-width: 1200px; margin: 0 auto 60px; padding: 0 48px; display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+
+    .info-section h1 { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 900; margin-bottom: 8px; }
+    .info-meta { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; margin-bottom: 24px; color: var(--gray); font-size: 14px; }
+    .info-meta .rating { color: #F59E0B; font-weight: 700; font-size: 15px; }
+    .info-meta .badge { background: var(--purple-soft); color: var(--purple); padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 700; }
+
+    .info-tabs { display: flex; gap: 28px; border-bottom: 1.5px solid var(--border); margin-bottom: 24px; }
+    .tab { padding: 14px 0; font-size: 14px; font-weight: 600; color: var(--gray); cursor: pointer; border-bottom: 2.5px solid transparent; margin-bottom: -1.5px; transition: all .2s; }
+    .tab.active { color: var(--purple); border-color: var(--purple); }
+
+    .tab-panel { display: none; animation: fadeIn .3s ease; }
+    .tab-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .description { font-size: 15px; line-height: 1.85; color: #374151; margin-bottom: 20px; }
+
+    .highlights { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 24px; }
+    .highlight-item {
+      background: var(--light-gray); padding: 16px; border-radius: 12px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .highlight-icon { width: 38px; height: 38px; background: var(--purple-soft); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .highlight-text strong { display: block; font-size: 13px; margin-bottom: 2px; }
+    .highlight-text span { font-size: 12px; color: var(--gray); }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: sticky; top: 88px; align-self: start;
+      background: #fff; border: 1.5px solid var(--border); border-radius: 18px;
+      padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+    }
+    .price-tag { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; color: #1a1a2e; margin-bottom: 4px; }
+    .price-tag span { font-size: 14px; color: var(--gray); font-weight: 400; font-family: 'DM Sans', sans-serif; }
+    .sidebar-info { padding: 18px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 20px 0; }
+    .info-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13.5px; }
+    .info-row span:first-child { color: var(--gray); }
+    .info-row span:last-child { font-weight: 600; color: #1a1a2e; }
+
+    .save-btn, .plan-btn {
+      width: 100%; padding: 13px; border-radius: 10px; border: none;
+      font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all .2s; margin-bottom: 10px;
+    }
+    .plan-btn { background: var(--purple); color: #fff; }
+    .plan-btn:hover { background: var(--purple-dark); }
+    .save-btn { background: #fff; color: var(--purple); border: 1.5px solid var(--purple); }
+    .save-btn:hover { background: var(--purple-soft); }
+    .save-btn.saved { background: var(--purple); color: #fff; }
+
+    /* REVIEWS */
+    .reviews-section { max-width: 1200px; margin: 0 auto 80px; padding: 0 48px; }
+    .reviews-section h2 { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; margin-bottom: 24px; }
+
+    .review-summary { display: grid; grid-template-columns: 200px 1fr; gap: 32px; padding: 28px; background: var(--light-gray); border-radius: 16px; margin-bottom: 32px; }
+    .avg-rating { text-align: center; }
+    .avg-rating .num { font-family: 'Playfair Display', serif; font-size: 56px; font-weight: 900; color: var(--purple); line-height: 1; }
+    .avg-rating .stars { color: #F59E0B; font-size: 18px; margin: 8px 0; }
+    .avg-rating .total { font-size: 12.5px; color: var(--gray); }
+
+    .rating-bars { display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+    .rating-bar { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+    .rating-bar .label { width: 50px; color: var(--gray); }
+    .rating-bar .bar { flex: 1; height: 8px; background: #fff; border-radius: 50px; overflow: hidden; }
+    .rating-bar .bar-fill { height: 100%; background: var(--purple); border-radius: 50px; }
+    .rating-bar .pct { width: 36px; color: var(--gray); text-align: right; }
+
+    /* WRITE REVIEW */
+    .write-review { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 28px; }
+    .write-review h3 { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+    .star-input { display: flex; gap: 6px; margin-bottom: 14px; }
+    .star-input span { font-size: 26px; cursor: pointer; color: #D1D5DB; transition: color .15s, transform .15s; }
+    .star-input span:hover, .star-input span.selected { color: #F59E0B; transform: scale(1.15); }
+    .write-review textarea {
+      width: 100%; min-height: 90px; padding: 12px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; resize: vertical; outline: none;
+    }
+    .write-review textarea:focus { border-color: var(--purple); }
+    .submit-review {
+      margin-top: 12px; background: var(--purple); color: #fff;
+      border: none; padding: 11px 24px; border-radius: 9px;
+      font-weight: 700; cursor: pointer; font-size: 13.5px; font-family: 'DM Sans', sans-serif;
+    }
+    .submit-review:hover { background: var(--purple-dark); }
+
+    /* REVIEW CARDS */
+    .review-list { display: flex; flex-direction: column; gap: 16px; }
+    .review-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+    .review-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .review-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--purple); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .review-name { font-size: 14px; font-weight: 700; }
+    .review-date { font-size: 12px; color: var(--gray); }
+    .review-stars { color: #F59E0B; font-size: 13px; margin-bottom: 8px; }
+    .review-text { font-size: 13.5px; color: #374151; line-height: 1.7; }
+
+    /* FOOTER */
+    footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 60px 48px 28px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .footer-logo .logo-dot { background: var(--purple-light); }
+    .footer-desc { font-size: 13.5px; line-height: 1.8; }
+    .footer-col h4 { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 18px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a { color: rgba(255,255,255,0.6); font-size: 13.5px; text-decoration: none; }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; display: flex; justify-content: space-between; font-size: 13px; }
+
+    @media(max-width: 1024px) {
+      .detail-content { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+    @media(max-width: 768px) {
+      nav, .breadcrumb, .detail-hero, .detail-content, .reviews-section { padding-left: 20px; padding-right: 20px; }
+      .nav-links { display: none; }
+      .detail-hero { grid-template-columns: 1fr; }
+      .hero-side { display: none; }
+      .info-section h1 { font-size: 28px; }
+      .review-summary { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+    <nav>
+      <a href="index.html" class="logo">
+        <span class="logo-dot"></span>RouteReady
+      </a>
+      <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+        &#9776;
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="destinations.html">Destinations</a></li>
+        <li><a href="planner.html">AI Planner</a></li>
+        <li><a href="hidden-gems.html">Hidden Gems</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="signin.html" style="text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; margin-right: 16px;">Sign In</a>
+        <a href="signup.html" class="nav-cta">Get Started</a>
+      </div>
+    </nav>
+
+<div class="breadcrumb">
+  <a href="index.html">Home</a><span>›</span>
+  <a href="destinations.html">Destinations</a><span>›</span>
+  <span id="crumbName">Faisal Mosque</span>
+</div>
+
+<!-- HERO GALLERY -->
+<section class="detail-hero">
+  <div class="hero-main">
+    <img id="mainImg" src="https://images.unsplash.com/photo-1542338347-4fff3276af78?w=1200&q=80" alt="Faisal Mosque"/>
+  </div>
+  <div class="hero-side">
+    <div class="hero-thumb"><img src="https://images.unsplash.com/photo-1548013146-72479768bada?w=600&q=80" alt="thumb"/></div>
+    <div class="hero-thumb"><img src="https://images.unsplash.com/photo-1539768942893-daf53e448371?w=600&q=80" alt="thumb"/></div>
+  </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<section class="detail-content">
+  <div class="info-section">
+    <h1 id="destName">Faisal Mosque</h1>
+    <div class="info-meta">
+      <span class="rating">★ 4.9 (2,184 reviews)</span>
+      <span>📍 Islamabad, Pakistan</span>
+      <span class="badge">Top Pick</span>
+    </div>
+
+    <div class="info-tabs">
+      <div class="tab active" onclick="switchTab(this, 'about')">About</div>
+      <div class="tab" onclick="switchTab(this, 'highlights')">Highlights</div>
+      <div class="tab" onclick="switchTab(this, 'tips')">Travel Tips</div>
+    </div>
+
+    <div class="tab-panel active" id="about">
+      <p class="description">
+        Faisal Mosque, the national mosque of Pakistan, is one of the largest mosques in the world. Located at the foot of the Margalla Hills in Islamabad, this architectural marvel was designed by Turkish architect Vedat Dalokay and completed in 1986.
+      </p>
+      <p class="description">
+        With its unique contemporary design inspired by a Bedouin tent, the mosque can accommodate up to 100,000 worshippers across its main prayer hall, courtyard, and porticoes. The four towering minarets and stunning marble façade make it a must-visit landmark for both spiritual seekers and architecture enthusiasts.
+      </p>
+    </div>
+
+    <div class="tab-panel" id="highlights">
+      <div class="highlights">
+        <div class="highlight-item"><div class="highlight-icon">🕌</div><div class="highlight-text"><strong>Architectural Marvel</strong><span>Modern Bedouin-tent design</span></div></div>
+        <div class="highlight-item"><div class="highlight-icon">📷</div><div class="highlight-text"><strong>Photo Spot</strong><span>Stunning Margalla Hills backdrop</span></div></div>
+        <div class="highlight-item"><div class="highlight-icon">🌅</div><div class="highlight-text"><strong>Sunset Views</strong><span>Best visited in golden hour</span></div></div>
+        <div class="highlight-item"><div class="highlight-icon">🎓</div><div class="highlight-text"><strong>Islamic University</strong><span>Houses IIUI campus nearby</span></div></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tips">
+      <p class="description">
+        🧣 <strong>Dress modestly</strong> — both men and women should cover shoulders and knees. Women are required to cover their heads inside the prayer hall.
+      </p>
+      <p class="description">
+        🕐 <strong>Best time to visit:</strong> Early morning or just before sunset to avoid crowds and enjoy the best lighting for photographs.
+      </p>
+      <p class="description">
+        🚗 <strong>Parking:</strong> Free parking available on-site. Allow 1.5–2 hours for a complete visit including prayer hall and surrounding gardens.
+      </p>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="price-tag">Free <span>entry</span></div>
+    <div class="sidebar-info">
+      <div class="info-row"><span>Opening Hours</span><span>5:00 AM – 11:00 PM</span></div>
+      <div class="info-row"><span>Best Time</span><span>Sunset</span></div>
+      <div class="info-row"><span>Duration</span><span>~ 2 hours</span></div>
+      <div class="info-row"><span>Category</span><span>Religious</span></div>
+      <div class="info-row"><span>Crowd Level</span><span style="color: #10B981;">Low Today</span></div>
+    </div>
+    <button class="plan-btn" onclick="window.location.href='planner.html'">+ Add to Itinerary</button>
+    <button class="save-btn" id="saveBtn" onclick="toggleSave()">♡ Save to Trip</button>
+  </aside>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews-section">
+  <h2>Reviews & Ratings</h2>
+
+  <div class="review-summary">
+    <div class="avg-rating">
+      <div class="num">4.9</div>
+      <div class="stars">★★★★★</div>
+      <div class="total">Based on 2,184 reviews</div>
+    </div>
+    <div class="rating-bars">
+      <div class="rating-bar"><span class="label">5 ★</span><div class="bar"><div class="bar-fill" style="width: 86%"></div></div><span class="pct">86%</span></div>
+      <div class="rating-bar"><span class="label">4 ★</span><div class="bar"><div class="bar-fill" style="width: 10%"></div></div><span class="pct">10%</span></div>
+      <div class="rating-bar"><span class="label">3 ★</span><div class="bar"><div class="bar-fill" style="width: 3%"></div></div><span class="pct">3%</span></div>
+      <div class="rating-bar"><span class="label">2 ★</span><div class="bar"><div class="bar-fill" style="width: 1%"></div></div><span class="pct">1%</span></div>
+      <div class="rating-bar"><span class="label">1 ★</span><div class="bar"><div class="bar-fill" style="width: 0%"></div></div><span class="pct">0%</span></div>
+    </div>
+  </div>
+
+  <div class="write-review">
+    <h3>Write a Review</h3>
+    <div class="star-input" id="starInput">
+      <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+    </div>
+    <textarea placeholder="Share your experience with other travelers..." id="reviewText"></textarea>
+    <button class="submit-review" onclick="submitReview()">Submit Review</button>
+  </div>
+
+  <div class="review-list" id="reviewList">
+    <div class="review-card">
+      <div class="review-head">
+        <div class="review-avatar" style="background: #6C3CE1;">SR</div>
+        <div><div class="review-name">Sara Rehman</div><div class="review-date">2 days ago</div></div>
+      </div>
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">Absolutely breathtaking! The architecture is stunning and the surrounding view of Margalla Hills makes it even more special. Visited at sunset and it was magical.</p>
+    </div>
+    <div class="review-card">
+      <div class="review-head">
+        <div class="review-avatar" style="background: #059669;">AK</div>
+        <div><div class="review-name">Ahmed Khan</div><div class="review-date">1 week ago</div></div>
+      </div>
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">A must-visit landmark in Islamabad. Very well maintained and the grand scale of the mosque is humbling. Plenty of free parking available.</p>
+    </div>
+    <div class="review-card">
+      <div class="review-head">
+        <div class="review-avatar" style="background: #DC2626;">FB</div>
+        <div><div class="review-name">Fatima Baig</div><div class="review-date">3 weeks ago</div></div>
+      </div>
+      <div class="review-stars">★★★★☆</div>
+      <p class="review-text">Beautiful place but can get crowded on weekends. Visit on a weekday morning for the best experience. Don't forget to dress appropriately.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo"><span class="logo-dot"></span>RouteReady</div>
+      <p class="footer-desc">AI-powered city exploration for the modern traveler.</p>
+    </div>
+    <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="destinations.html">Destinations</a></li><li><a href="planner.html">AI Planner</a></li><li><a href="about.html">About</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="javascript:void(0)">Help Center</a></li><li><a href="javascript:void(0)">Privacy Policy</a></li></ul></div>
+    <div class="footer-col"><h4>Contact</h4><ul><li><a href="javascript:void(0)">📧 hello@routeready.pk</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 RouteReady.</span><span>Made with ♥ in Pakistan</span></div>
+</footer>
+
+<script>
+  function switchTab(el, id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  function toggleSave() {
+    const b = document.getElementById('saveBtn');
+    b.classList.toggle('saved');
+    b.textContent = b.classList.contains('saved') ? '✓ Saved to Trip' : '♡ Save to Trip';
+  }
+
+  // star rating input
+  let selectedStars = 0;
+  const stars = document.querySelectorAll('#starInput span');
+  stars.forEach(s => {
+    s.addEventListener('click', () => {
+      selectedStars = parseInt(s.dataset.val);
+      stars.forEach((x, i) => x.classList.toggle('selected', i < selectedStars));
+    });
+  });
+
+  function submitReview() {
+    const text = document.getElementById('reviewText').value.trim();
+    if (!selectedStars) { alert('Please select a star rating'); return; }
+    if (!text) { alert('Please write your review'); return; }
+
+    const list = document.getElementById('reviewList');
+    const card = document.createElement('div');
+    card.className = 'review-card';
+    card.innerHTML = `
+      <div class="review-head">
+        <div class="review-avatar" style="background: #8B5CF6;">YO</div>
+        <div><div class="review-name">You</div><div class="review-date">Just now</div></div>
+      </div>
+      <div class="review-stars">${'★'.repeat(selectedStars)}${'☆'.repeat(5-selectedStars)}</div>
+      <p class="review-text">${text}</p>`;
+    list.prepend(card);
+    document.getElementById('reviewText').value = '';
+    selectedStars = 0;
+    stars.forEach(x => x.classList.remove('selected'));
+  }
+
+  // load destination from URL
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get('name');
+  if (name) {
+    document.getElementById('destName').textContent = name;
+    document.getElementById('crumbName').textContent = name;
+    document.title = `RouteReady – ${name}`;
+  }
+</script>
+
+    <style>
+      html { scroll-behavior: smooth; }
+      .hamburger { display: none; font-size: 24px; cursor: pointer; color: var(--purple); }
+      @media (max-width: 768px) {
+        .hamburger { display: block; }
+        .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: #fff; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .nav-links.active { display: flex; }
+        .nav-actions { display: none; }
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === currentPage) {
+            link.style.color = '#6C3CE1';
+            link.style.fontWeight = '600';
+          }
+        });
+      });
+    </script>
+
+  </body>
+</html>
