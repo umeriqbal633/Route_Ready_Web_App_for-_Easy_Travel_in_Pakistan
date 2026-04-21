@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RouteReady – Explore the City with AI</title>
+    <title>RouteReady - Discover Pakistan with AI</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap"
       rel="stylesheet"
@@ -36,7 +36,6 @@
         overflow-x: hidden;
       }
 
-      /* ── NAVBAR ── */
       nav {
         display: flex;
         align-items: center;
@@ -104,7 +103,6 @@
         transform: translateY(-1px);
       }
 
-      /* ── HERO ── */
       .hero {
         margin-top: 64px;
         position: relative;
@@ -133,7 +131,7 @@
       .hero-content {
         position: relative;
         z-index: 2;
-        max-width: 600px;
+        max-width: 700px;
         padding: 0 24px;
       }
       .hero-content h1 {
@@ -143,9 +141,7 @@
         color: #fff;
         line-height: 1.15;
         margin-bottom: 16px;
-      }
-      .hero-content h1 span {
-        color: #c4b5fd;
+        animation: fadeUp 0.7s ease both;
       }
       .hero-content p {
         color: rgba(255, 255, 255, 0.85);
@@ -153,6 +149,7 @@
         margin-bottom: 32px;
         font-weight: 300;
         letter-spacing: 0.3px;
+        animation: fadeUp 0.7s 0.15s ease both;
       }
       .hero-btn {
         background: var(--purple-light);
@@ -172,16 +169,53 @@
         align-items: center;
         gap: 8px;
         text-decoration: none;
+        animation: fadeUp 0.7s 0.3s ease both;
       }
       .hero-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 32px rgba(109, 60, 225, 0.55);
       }
       .hero-btn::after {
-        content: "→";
+        content: "->";
       }
 
-      /* ── SECTION COMMON ── */
+      .stats-section {
+        background: var(--dark);
+        padding: 56px 48px;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .stat-item {
+        text-align: center;
+        padding: 32px 24px;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .stat-item:last-child {
+        border-right: none;
+      }
+      .stat-number {
+        font-family: "Playfair Display", serif;
+        font-size: 44px;
+        font-weight: 900;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+      .stat-number span {
+        color: var(--purple-light);
+      }
+      .stat-label {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 500;
+        letter-spacing: 0.5px;
+      }
+
       section {
         padding: 80px 48px;
       }
@@ -201,7 +235,6 @@
         font-size: 15px;
       }
 
-      /* ── WHY CHOOSE ── */
       .why-section {
         background: #fff;
       }
@@ -233,8 +266,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 22px;
+        font-size: 18px;
+        font-weight: 700;
         margin-bottom: 18px;
+        color: var(--purple);
       }
       .feature-card h3 {
         font-size: 16px;
@@ -248,7 +283,6 @@
         line-height: 1.7;
       }
 
-      /* ── FEATURED LOCATIONS ── */
       .locations-section {
         background: var(--light-gray);
       }
@@ -344,7 +378,6 @@
         color: #fff;
       }
 
-      /* ── TESTIMONIALS ── */
       .testimonials-section {
         background: #fff;
       }
@@ -401,7 +434,6 @@
         line-height: 1.7;
       }
 
-      /* ── CTA BANNER ── */
       .cta-section {
         background: linear-gradient(
           135deg,
@@ -445,7 +477,6 @@
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
       }
 
-      /* ── FOOTER ── */
       footer {
         background: var(--dark);
         color: rgba(255, 255, 255, 0.7);
@@ -525,7 +556,6 @@
         font-size: 13px;
       }
 
-      /* ── ANIMATIONS ── */
       @keyframes fadeUp {
         from {
           opacity: 0;
@@ -536,30 +566,56 @@
           transform: translateY(0);
         }
       }
-      .hero-content h1 {
-        animation: fadeUp 0.7s ease both;
+
+      html {
+        scroll-behavior: smooth;
       }
-      .hero-content p {
-        animation: fadeUp 0.7s 0.15s ease both;
-      }
-      .hero-btn {
-        animation: fadeUp 0.7s 0.3s ease both;
+      .hamburger {
+        display: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--purple);
       }
 
       @media (max-width: 768px) {
         nav {
           padding: 0 20px;
         }
+        .hamburger {
+          display: block;
+        }
         .nav-links {
+          display: none;
+          flex-direction: column;
+          position: absolute;
+          top: 64px;
+          left: 0;
+          right: 0;
+          background: #fff;
+          padding: 20px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .nav-links.active {
+          display: flex;
+        }
+        .nav-actions {
           display: none;
         }
         section {
           padding: 60px 20px;
         }
         .features-grid,
+        .stats-grid,
         .locations-grid,
         .testimonials-grid {
           grid-template-columns: 1fr;
+        }
+        .stat-item {
+          border-right: none;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .stat-item:last-child {
+          border-bottom: none;
         }
         .footer-grid {
           grid-template-columns: 1fr 1fr;
@@ -571,40 +627,81 @@
     </style>
   </head>
   <body>
-    <!-- NAVBAR -->
     <nav>
-      <a href="index.html" class="logo"
-        ><span class="logo-dot"></span>RouteReady</a
+      <a href="index.html" class="logo">
+        <span class="logo-dot"></span>RouteReady
+      </a>
+      <div
+        class="hamburger"
+        onclick="document.querySelector('.nav-links').classList.toggle('active')"
       >
+        &#9776;
+      </div>
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
-        <li><a href="#">Destinations</a></li>
-        <li><a href="#">AI Planner</a></li>
-        <li><a href="#">Blog</a></li>
+        <li><a href="destinations.html">Destinations</a></li>
+        <li><a href="planner.html">AI Planner</a></li>
+        <li><a href="hidden-gems.html">Hidden Gems</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
         <li><a href="about.html">About</a></li>
       </ul>
-      <a href="signup.html" class="nav-cta">Get Started</a>
+      <div class="nav-actions">
+        <a
+          href="signin.html"
+          style="
+            text-decoration: none;
+            color: var(--gray);
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 16px;
+          "
+          >Sign In</a
+        >
+        <a href="signup.html" class="nav-cta">Get Started</a>
+      </div>
     </nav>
 
-    <!-- HERO -->
     <section class="hero">
       <div class="hero-bg"></div>
       <div class="hero-overlay"></div>
       <div class="hero-content">
-        <h1>Explore the City with<br /><span>AI-Driven Intelligence</span></h1>
-        <p>Smart Plans. Elite Journeys.</p>
-        <a href="signup.html" class="hero-btn">Explore Istanbul</a>
+        <h1>Discover Pakistan with AI</h1>
+        <p>
+          Smart itineraries for Islamabad, Lahore, Karachi, Hunza and beyond -
+          powered by AI
+        </p>
+        <a href="destinations.html" class="hero-btn">Explore Destinations</a>
       </div>
     </section>
 
-    <!-- WHY CHOOSE -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">50<span>+</span></div>
+          <div class="stat-label">Destinations across Pakistan</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">5</div>
+          <div class="stat-label">Major Cities covered</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">10<span>,000+</span></div>
+          <div class="stat-label">Happy Travelers</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">4.9<span>&#9733;</span></div>
+          <div class="stat-label">Average Rating</div>
+        </div>
+      </div>
+    </section>
+
     <section class="why-section">
       <div class="section-title">
         <h2>Why Choose RouteReady?</h2>
       </div>
       <div class="features-grid">
         <div class="feature-card">
-          <div class="feature-icon">⭐</div>
+          <div class="feature-icon">TOP</div>
           <h3>Top Rated Destinations</h3>
           <p>
             Discover the best cities and attractions handpicked by our AI based
@@ -612,7 +709,7 @@
           </p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🤖</div>
+          <div class="feature-icon">AI</div>
           <h3>Smart AI Itineraries</h3>
           <p>
             Our intelligent planner creates personalized day-by-day itineraries
@@ -620,7 +717,7 @@
           </p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">💡</div>
+          <div class="feature-icon">GO</div>
           <h3>Instant City Insights</h3>
           <p>
             Get real-time insights about local culture, weather, crowd levels,
@@ -630,92 +727,104 @@
       </div>
     </section>
 
-    <!-- FEATURED LOCATIONS -->
     <section class="locations-section">
       <div class="section-title">
         <h2>Featured Locations</h2>
         <p>Discover remarkable places handpicked for every kind of traveler</p>
       </div>
       <div class="locations-grid">
-        <div class="location-card">
+        <div
+          class="location-card"
+          onclick="window.location.href='destinations.html'"
+        >
           <div class="location-img-wrap">
             <img
               class="location-img"
-              src="data:image/jpeg;base64,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"
+              src="https://images.unsplash.com/photo-1564507592333-c60657eea523?w=600&q=80"
               alt="Faisal Mosque"
             />
-            <span class="location-badge">Top Pick</span>
+            <span class="location-badge">Religious</span>
           </div>
           <div class="location-info">
             <h4>Faisal Mosque</h4>
-            <p>Islamabad, Pakistan</p>
+            <p>Religious | Islamabad</p>
             <div class="location-meta">
-              <span class="location-rating">★ 4.9</span>
-              <span class="location-price">Free Entry</span>
+              <span class="location-rating">Islamabad</span>
+              <span class="location-price">Religious</span>
             </div>
           </div>
         </div>
-        <div class="location-card">
+        <div
+          class="location-card"
+          onclick="window.location.href='destinations.html'"
+        >
           <div class="location-img-wrap">
             <img
               class="location-img"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTW-R8SrNArwsFHcPZf2o2u-5g9tRDF4ZJXOg&s"
+              src="https://images.unsplash.com/photo-1548013146-72479768bada?w=600&q=80"
               alt="Pakistan Monument"
             />
-            <span class="location-badge">Popular</span>
+            <span class="location-badge">Landmark</span>
           </div>
           <div class="location-info">
             <h4>Pakistan Monument</h4>
-            <p>Islamabad, Pakistan</p>
+            <p>Landmark | Islamabad</p>
             <div class="location-meta">
-              <span class="location-rating">★ 4.7</span>
-              <span class="location-price">PKR 20</span>
+              <span class="location-rating">Islamabad</span>
+              <span class="location-price">Landmark</span>
             </div>
           </div>
         </div>
-        <div class="location-card">
+        <div
+          class="location-card"
+          onclick="window.location.href='destinations.html'"
+        >
           <div class="location-img-wrap">
             <img
               class="location-img"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQROrvsMp8SNXaC5WJIu0EpUYLTEc1vtN0msw&s"
+              src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80"
               alt="Daman-e-Koh"
             />
-            <span class="location-badge">Heritage</span>
+            <span class="location-badge">Nature</span>
           </div>
           <div class="location-info">
             <h4>Daman-e-Koh</h4>
-            <p>Islamabad, Pakistan</p>
+            <p>Nature | Islamabad</p>
             <div class="location-meta">
-              <span class="location-rating">★ 4.8</span>
-              <span class="location-price">PKR 50</span>
+              <span class="location-rating">Islamabad</span>
+              <span class="location-price">Nature</span>
             </div>
           </div>
         </div>
-        <div class="location-card">
+        <div
+          class="location-card"
+          onclick="window.location.href='destinations.html'"
+        >
           <div class="location-img-wrap">
             <img
               class="location-img"
-              src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/736316080.jpg?k=21eefd148f5ef01c5e4a38777c740e2763af9fdb9197c5840ceb2dabdf7c26fc&o="
-              alt="The Centaurus"
+              src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80"
+              alt="Margalla Hills Trail 3"
             />
-            <span class="location-badge">Modern</span>
+            <span class="location-badge">Adventure</span>
           </div>
           <div class="location-info">
-            <h4>The Centaurus</h4>
-            <p>Islamabad, Pakistan</p>
+            <h4>Margalla Hills Trail 3</h4>
+            <p>Adventure | Islamabad</p>
             <div class="location-meta">
-              <span class="location-rating">★ 4.6</span>
-              <span class="location-price">Free</span>
+              <span class="location-rating">Islamabad</span>
+              <span class="location-price">Adventure</span>
             </div>
           </div>
         </div>
       </div>
       <div class="view-all-wrap">
-        <a href="#" class="view-all-btn">View All Locations →</a>
+        <a href="destinations.html" class="view-all-btn"
+          >View All Locations -></a
+        >
       </div>
     </section>
 
-    <!-- TESTIMONIALS -->
     <section class="testimonials-section">
       <div class="section-title">
         <h2>What Our Customers Say</h2>
@@ -724,60 +833,52 @@
       <div class="testimonials-grid">
         <div class="testimonial-card">
           <div class="t-header">
-            <div class="t-avatar" style="background: #6c3ce1">SR</div>
+            <div class="t-avatar" style="background: #6c3ce1">AR</div>
             <div>
-              <div class="t-name">Sara Rehman</div>
-              <div class="t-role">Solo Traveler</div>
+              <div class="t-name">Ahmed Raza</div>
+              <div class="t-role">Lahore</div>
             </div>
           </div>
-          <div class="t-stars">★★★★★</div>
+          <div class="t-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
           <p class="t-text">
-            RouteReady completely transformed how I travel. The AI itinerary for
-            Lahore was spot-on — every restaurant, every monument perfectly
-            timed.
+            "Found hidden gems in Hunza I never knew existed"
           </p>
         </div>
         <div class="testimonial-card">
           <div class="t-header">
-            <div class="t-avatar" style="background: #059669">AK</div>
+            <div class="t-avatar" style="background: #059669">AM</div>
             <div>
-              <div class="t-name">Ahmed Khan</div>
-              <div class="t-role">Family Traveler</div>
+              <div class="t-name">Ayesha Malik</div>
+              <div class="t-role">Karachi</div>
             </div>
           </div>
-          <div class="t-stars">★★★★★</div>
-          <p class="t-text">
-            Planning a family trip to Islamabad used to be stressful. RouteReady
-            made it effortless — the kids loved every place it suggested!
-          </p>
+          <div class="t-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="t-text">"The AI planner saved us 3 hours of research"</p>
         </div>
         <div class="testimonial-card">
           <div class="t-header">
-            <div class="t-avatar" style="background: #dc2626">FB</div>
+            <div class="t-avatar" style="background: #dc2626">UT</div>
             <div>
-              <div class="t-name">Fatima Baig</div>
-              <div class="t-role">Weekend Explorer</div>
+              <div class="t-name">Usman Tariq</div>
+              <div class="t-role">Islamabad</div>
             </div>
           </div>
-          <div class="t-stars">★★★★☆</div>
+          <div class="t-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
           <p class="t-text">
-            I discovered hidden gems in Karachi I never knew existed. The
-            real-time insights feature is genuinely impressive and super useful.
+            "Student mode fit perfectly in my Rs 5000 budget"
           </p>
         </div>
       </div>
     </section>
 
-    <!-- CTA BANNER -->
     <section class="cta-section">
-      <h2>Ready to Explore Your City?</h2>
+      <h2>Ready to Explore Pakistan?</h2>
       <p>
         Join thousands of smart travelers who plan better with RouteReady's AI.
       </p>
-      <a href="signup.html" class="cta-btn">Start Your Journey →</a>
+      <a href="signup.html" class="cta-btn">Start Your Journey -></a>
     </section>
 
-    <!-- FOOTER -->
     <footer>
       <div class="footer-grid">
         <div>
@@ -789,43 +890,57 @@
             Pakistan's finest destinations with personalized itineraries.
           </p>
           <div class="footer-socials">
-            <a href="#" class="social-btn">𝕏</a>
-            <a href="#" class="social-btn">in</a>
-            <a href="#" class="social-btn">📘</a>
-            <a href="#" class="social-btn">📸</a>
+            <a href="javascript:void(0)" class="social-btn">X</a>
+            <a href="javascript:void(0)" class="social-btn">in</a>
+            <a href="javascript:void(0)" class="social-btn">Fb</a>
+            <a href="javascript:void(0)" class="social-btn">Ig</a>
           </div>
         </div>
         <div class="footer-col">
           <h4>Quick Links</h4>
           <ul>
-            <li><a href="#">Destinations</a></li>
-            <li><a href="#">AI Planner</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><a href="javascript:void(0)">Destinations</a></li>
+            <li><a href="javascript:void(0)">AI Planner</a></li>
+            <li><a href="javascript:void(0)">Blog</a></li>
+            <li><a href="javascript:void(0)">Contact</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Support</h4>
           <ul>
-            <li><a href="#">Help Center</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Refund Policy</a></li>
+            <li><a href="javascript:void(0)">Help Center</a></li>
+            <li><a href="javascript:void(0)">Privacy Policy</a></li>
+            <li><a href="javascript:void(0)">Terms of Service</a></li>
+            <li><a href="javascript:void(0)">Refund Policy</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Contact Us</h4>
           <ul>
-            <li><a href="#">📧 hello@routeready.pk</a></li>
-            <li><a href="#">📞 +92 300 1234567</a></li>
-            <li><a href="#">📍 Islamabad, Pakistan</a></li>
+            <li><a href="javascript:void(0)">Email: hello@routeready.pk</a></li>
+            <li><a href="javascript:void(0)">Phone: +92 300 1234567</a></li>
+            <li><a href="javascript:void(0)">Islamabad, Pakistan</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2024 RouteReady. All rights reserved.</span>
-        <span>Made with ♥ in Pakistan</span>
+        <span>&copy; 2024 RouteReady. All rights reserved.</span>
+        <span>Made with love in Pakistan</span>
       </div>
     </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const currentPage =
+          window.location.pathname.split("/").pop() || "index.html";
+        const navLinks = document.querySelectorAll(".nav-links a");
+        navLinks.forEach((link) => {
+          if (link.getAttribute("href") === currentPage) {
+            link.style.color = "#6C3CE1";
+            link.style.fontWeight = "600";
+          }
+        });
+      });
+    </script>
   </body>
 </html>
