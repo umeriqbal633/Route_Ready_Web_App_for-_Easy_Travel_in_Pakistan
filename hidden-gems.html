@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RouteReady – Hidden Gems</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #6C3CE1; --purple-light: #8B5CF6; --purple-dark: #4C1D95;
+      --purple-soft: #EDE9FE; --gold: #F59E0B; --gold-soft: #FEF3C7;
+      --white: #ffffff; --dark: #0f0f1a;
+      --gray: #6B7280; --light-gray: #F9FAFB; --border: #E5E7EB;
+    }
+    body { font-family: 'DM Sans', sans-serif; color: #1a1a2e; background: #fff; overflow-x: hidden; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px; position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--purple); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo-dot { width: 8px; height: 8px; background: var(--purple); border-radius: 50%; }
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; }
+    .nav-links a:hover, .nav-links a.active { color: var(--purple); }
+    .nav-cta { background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 14px; font-weight: 600; text-decoration: none; }
+
+    /* HERO */
+    .gems-hero {
+      margin-top: 64px; height: 380px; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center; text-align: center;
+    }
+    .gems-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, #1F0F3D 0%, var(--purple-dark) 50%, var(--purple) 100%);
+    }
+    .gems-bg::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: radial-gradient(circle at 20% 50%, rgba(245,158,11,0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 30%, rgba(196,181,253,0.2) 0%, transparent 40%);
+    }
+    .gems-content { position: relative; z-index: 2; max-width: 720px; padding: 0 24px; color: #fff; }
+    .sparkle-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.4);
+      color: var(--gold); padding: 6px 16px; border-radius: 50px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 20px; text-transform: uppercase;
+    }
+    .gems-content h1 { font-family: 'Playfair Display', serif; font-size: 50px; font-weight: 900; line-height: 1.15; margin-bottom: 16px; }
+    .gems-content h1 span { background: linear-gradient(135deg, #FBBF24, #F59E0B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .gems-content p { font-size: 16px; opacity: 0.85; line-height: 1.7; }
+
+    /* INTRO */
+    .gems-intro {
+      max-width: 900px; margin: 60px auto 40px; padding: 0 48px; text-align: center;
+    }
+    .gems-intro h2 { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; margin-bottom: 12px; }
+    .gems-intro p { color: var(--gray); font-size: 15px; line-height: 1.8; }
+
+    /* CITY FILTER */
+    .city-tabs {
+      max-width: 1100px; margin: 0 auto 32px; padding: 0 48px;
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    }
+    .city-pill {
+      padding: 10px 22px; border: 1.5px solid var(--border); border-radius: 50px;
+      background: #fff; font-size: 13.5px; font-weight: 600; color: var(--gray);
+      cursor: pointer; transition: all .2s; font-family: 'DM Sans', sans-serif;
+    }
+    .city-pill:hover { border-color: var(--purple); color: var(--purple); }
+    .city-pill.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+    /* GEMS GRID */
+    .gems-grid {
+      max-width: 1200px; margin: 0 auto 60px; padding: 0 48px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+
+    .gem-card {
+      background: #fff; border-radius: 18px; overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06); transition: transform .3s, box-shadow .3s;
+      border: 1px solid var(--border); position: relative;
+    }
+    .gem-card:hover { transform: translateY(-6px); box-shadow: 0 20px 44px rgba(108,60,225,0.18); }
+
+    .gem-img-wrap { position: relative; height: 200px; overflow: hidden; }
+    .gem-img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+    .gem-card:hover .gem-img { transform: scale(1.08); }
+    .gem-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(15,15,26,0.7) 100%); }
+
+    .gem-rarity {
+      position: absolute; top: 14px; left: 14px;
+      background: linear-gradient(135deg, #FBBF24, #F59E0B); color: #fff;
+      padding: 5px 12px; border-radius: 50px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.5px;
+      display: flex; align-items: center; gap: 4px; text-transform: uppercase;
+      box-shadow: 0 4px 12px rgba(245,158,11,0.4);
+    }
+
+    .gem-locals {
+      position: absolute; bottom: 14px; left: 14px;
+      color: #fff; font-size: 11.5px; font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .gem-locals::before { content: ''; width: 8px; height: 8px; background: #10B981; border-radius: 50%; box-shadow: 0 0 8px #10B981; }
+
+    .gem-body { padding: 22px; }
+    .gem-body h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .gem-loc { font-size: 12.5px; color: var(--gray); margin-bottom: 14px; display: flex; align-items: center; gap: 4px; }
+    .gem-desc { font-size: 13.5px; color: #374151; line-height: 1.7; margin-bottom: 16px; }
+
+    .gem-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .gem-tag {
+      background: var(--purple-soft); color: var(--purple);
+      padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600;
+    }
+
+    .gem-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--border); }
+    .gem-meta { display: flex; gap: 12px; font-size: 12px; color: var(--gray); }
+    .gem-meta span { display: flex; align-items: center; gap: 3px; }
+    .gem-explore {
+      background: var(--purple); color: #fff; border: none;
+      padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .2s;
+    }
+    .gem-explore:hover { background: var(--purple-dark); }
+
+    /* INSIDER TIPS */
+    .insider-section {
+      background: linear-gradient(135deg, #1F0F3D 0%, var(--purple-dark) 100%);
+      padding: 70px 48px; color: #fff; margin: 60px 0;
+    }
+    .insider-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.3fr; gap: 60px; align-items: center; }
+    .insider-text .badge {
+      display: inline-block; background: rgba(245,158,11,0.2); color: var(--gold);
+      padding: 5px 14px; border-radius: 50px; font-size: 11.5px; font-weight: 700;
+      letter-spacing: 0.6px; margin-bottom: 18px; text-transform: uppercase;
+    }
+    .insider-text h2 { font-family: 'Playfair Display', serif; font-size: 34px; line-height: 1.2; margin-bottom: 16px; }
+    .insider-text p { opacity: 0.8; line-height: 1.8; font-size: 14.5px; }
+
+    .insider-tips { display: flex; flex-direction: column; gap: 16px; }
+    .tip-card {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 20px; backdrop-filter: blur(10px);
+      display: flex; gap: 14px;
+    }
+    .tip-icon {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--gold), #D97706);
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+      flex-shrink: 0;
+    }
+    .tip-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .tip-card p { font-size: 12.5px; opacity: 0.75; line-height: 1.6; }
+
+    /* CTA */
+    .gems-cta {
+      max-width: 900px; margin: 0 auto 80px; padding: 0 48px; text-align: center;
+    }
+    .gems-cta h2 { font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 12px; }
+    .gems-cta p { color: var(--gray); margin-bottom: 24px; }
+    .cta-btn {
+      display: inline-block; background: var(--purple); color: #fff; border: none;
+      border-radius: 50px; padding: 14px 32px; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 16px rgba(108,60,225,0.35);
+    }
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,60,225,0.45); }
+
+    /* FOOTER */
+    footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 60px 48px 28px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .footer-logo .logo-dot { background: var(--purple-light); }
+    .footer-desc { font-size: 13.5px; line-height: 1.8; }
+    .footer-col h4 { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 18px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a { color: rgba(255,255,255,0.6); font-size: 13.5px; text-decoration: none; }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; display: flex; justify-content: space-between; font-size: 13px; }
+
+    @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .gem-card { animation: fadeUp .5s ease both; }
+    .gem-card:nth-child(2) { animation-delay: .08s; }
+    .gem-card:nth-child(3) { animation-delay: .16s; }
+    .gem-card:nth-child(4) { animation-delay: .24s; }
+    .gem-card:nth-child(5) { animation-delay: .32s; }
+    .gem-card:nth-child(6) { animation-delay: .40s; }
+
+    @media(max-width: 1024px) {
+      .gems-grid { grid-template-columns: repeat(2, 1fr); }
+      .insider-inner { grid-template-columns: 1fr; gap: 40px; }
+    }
+    @media(max-width: 768px) {
+      nav { padding: 0 20px; } .nav-links { display: none; }
+      .gems-content h1 { font-size: 32px; }
+      .gems-grid, .gems-intro, .city-tabs, .insider-section, .gems-cta { padding-left: 20px; padding-right: 20px; }
+      .gems-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+    <nav>
+      <a href="index.html" class="logo">
+        <span class="logo-dot"></span>RouteReady
+      </a>
+      <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+        &#9776;
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="destinations.html">Destinations</a></li>
+        <li><a href="planner.html">AI Planner</a></li>
+        <li><a href="hidden-gems.html">Hidden Gems</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="signin.html" style="text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; margin-right: 16px;">Sign In</a>
+        <a href="signup.html" class="nav-cta">Get Started</a>
+      </div>
+    </nav>
+
+<!-- HERO -->
+<section class="gems-hero">
+  <div class="gems-bg"></div>
+  <div class="gems-content">
+    <div class="sparkle-badge">✨ Locally Curated</div>
+    <h1>Discover Pakistan's<br/><span>Hidden Gems</span></h1>
+    <p>Skip the tourist traps. Explore the secret spots, family-run cafes, and unmarked viewpoints that locals love and travel guides miss.</p>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section class="gems-intro">
+  <h2>Beyond the Beaten Path</h2>
+  <p>Our AI scans local recommendations, traveler diaries, and community submissions to surface the most authentic, lesser-known places — the kind of spots that make travelers say "I'm so glad I found this."</p>
+</section>
+
+<!-- CITY TABS -->
+<div class="city-tabs">
+  <button class="city-pill active" onclick="filterCity('all', this)">All Cities</button>
+  <button class="city-pill" onclick="filterCity('Islamabad', this)">Islamabad</button>
+  <button class="city-pill" onclick="filterCity('Lahore', this)">Lahore</button>
+  <button class="city-pill" onclick="filterCity('Karachi', this)">Karachi</button>
+  <button class="city-pill" onclick="filterCity('Hunza', this)">Hunza</button>
+  <button class="city-pill" onclick="filterCity('Peshawar', this)">Peshawar</button>
+</div>
+
+<!-- GEMS GRID -->
+<section class="gems-grid" id="gemsGrid">
+  <!-- populated by JS -->
+</section>
+
+<!-- INSIDER TIPS -->
+<section class="insider-section">
+  <div class="insider-inner">
+    <div class="insider-text">
+      <span class="badge">💡 INSIDER WISDOM</span>
+      <h2>How We Find These Places</h2>
+      <p>Every hidden gem on RouteReady is verified by locals, travelers, and our AI quality checks. We don't include a place until at least 3 trusted sources confirm it's worth the trip.</p>
+    </div>
+    <div class="insider-tips">
+      <div class="tip-card">
+        <div class="tip-icon">👥</div>
+        <div><h4>Local Recommendations</h4><p>Verified by residents who actually live in the area, not seasonal tourists.</p></div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🤖</div>
+        <div><h4>AI Quality Filter</h4><p>Our model cross-references reviews, photos, and travel blogs for authenticity.</p></div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🕵️</div>
+        <div><h4>Off the Tourist Map</h4><p>Spots that don't appear in the top 50 results of any major travel guide.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="gems-cta">
+  <h2>Found a Hidden Gem?</h2>
+  <p>Help fellow travelers discover what makes Pakistan special. Submit your favorite secret spot.</p>
+  <a href="javascript:void(0)" class="cta-btn">Submit a Hidden Gem →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo"><span class="logo-dot"></span>RouteReady</div>
+      <p class="footer-desc">AI-powered city exploration for the modern traveler.</p>
+    </div>
+    <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="destinations.html">Destinations</a></li><li><a href="planner.html">AI Planner</a></li><li><a href="hidden-gems.html">Hidden Gems</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="javascript:void(0)">Help Center</a></li><li><a href="javascript:void(0)">Privacy Policy</a></li></ul></div>
+    <div class="footer-col"><h4>Contact</h4><ul><li><a href="javascript:void(0)">📧 hello@routeready.pk</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 RouteReady.</span><span>Made with ♥ in Pakistan</span></div>
+</footer>
+
+<script>
+  const gems = [
+  {
+    name: "Kel Village, Neelum Valley", city: "northern", area: "Neelum Valley",
+    img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
+    rarity: "LEGENDARY", desc: "Remote village accessible only by jeep track, untouched forests",
+    tags: ["Nature", "Off-Road"], time: "2 days", cost: "Moderate", locals: "94% locals"
+  },
+  {
+    name: "Deosai Plains", city: "northern", area: "Astore/Skardu",
+    img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    rarity: "ULTRA RARE", desc: "World's second highest plateau, snow leopard habitat",
+    tags: ["Wildlife", "Camping"], time: "1 day", cost: "Moderate", locals: "89% locals"
+  },
+  {
+    name: "Gorakh Hill Station, Sindh", city: "karachi", area: "Dadu",
+    img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&q=80",
+    rarity: "ULTRA RARE", desc: "Sindh's only hill station, cloud level camping",
+    tags: ["Camping", "Views"], time: "2 days", cost: "Budget", locals: "91% locals"
+  },
+  {
+    name: "Shigar Fort, Baltistan", city: "northern", area: "Skardu",
+    img: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&q=80",
+    rarity: "RARE", desc: "400 year old raja fort converted to boutique hotel",
+    tags: ["Heritage", "Luxury"], time: "3 hours", cost: "High", locals: "78% locals"
+  },
+  {
+    name: "Hanna Lake, Quetta", city: "quetta", area: "Quetta",
+    img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&q=80",
+    rarity: "RARE", desc: "Turquoise lake surrounded by bare rocky mountains",
+    tags: ["Nature", "Boating"], time: "Half day", cost: "Budget", locals: "82% locals"
+  },
+  {
+    name: "Ranikot Fort, Sindh", city: "karachi", area: "Jamshoro",
+    img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80",
+    rarity: "LEGENDARY", desc: "World's largest fort, the Great Wall of Sindh",
+    tags: ["History", "Hiking"], time: "1 day", cost: "Budget", locals: "96% locals"
+  },
+  {
+    name: "Saif ul Malook Lake", city: "northern", area: "Kaghan Valley",
+    img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&q=80",
+    rarity: "RARE", desc: "Mythical lake at 3224m, only accessible by jeep or horse",
+    tags: ["Mythology", "Nature"], time: "Half day", cost: "Moderate", locals: "71% locals"
+  },
+  {
+    name: "Katas Raj Temples, Chakwal", city: "islamabad", area: "Chakwal",
+    img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80",
+    rarity: "RARE", desc: "Ancient Hindu temple complex around sacred lake, 5000 years old",
+    tags: ["History", "Spirituality"], time: "1 day", cost: "Budget", locals: "85% locals"
+  }
+];
+
+  let currentCity = 'all';
+
+  function renderGems() {
+    const grid = document.getElementById('gemsGrid');
+    const list = currentCity === 'all' ? gems : gems.filter(g => g.city === currentCity);
+    grid.innerHTML = list.map(g => `
+      <div class="gem-card">
+        <div class="gem-img-wrap">
+          <img class="gem-img" src="${g.img}" alt="${g.name}" onerror="this.src='https://via.placeholder.com/600x400/4C1D95/ffffff?text=${encodeURIComponent(g.name)}'"/>
+          <div class="gem-overlay"></div>
+          <div class="gem-rarity" style="background-color:${g.rarity===\'LEGENDARY\'?\'#F59E0B\':g.rarity===\'ULTRA RARE\'?\'#6C3CE1\':\'#10B981\'}">✨ ${g.rarity}</div>
+          <div class="gem-locals">${g.locals}</div>
+        </div>
+        <div class="gem-body">
+          <h3>${g.name}</h3>
+          <div class="gem-loc">📍 ${g.area}, ${g.city}</div>
+          <p class="gem-desc">${g.desc}</p>
+          <div class="gem-tags">${g.tags.map(t => `<span class="gem-tag">${t}</span>`).join('')}</div>
+          <div class="gem-footer">
+            <div class="gem-meta">
+              <span>⏱ ${g.time}</span>
+              <span>💰 ${g.cost}</span>
+            </div>
+            <button class="gem-explore">Explore →</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    if (list.length === 0) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray);">No hidden gems found for this city yet. Check back soon!</div>`;
+    }
+  }
+
+  function filterCity(city, el) {
+    document.querySelectorAll('.city-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    currentCity = city;
+    renderGems();
+  }
+
+  renderGems();
+</script>
+
+    <style>
+      html { scroll-behavior: smooth; }
+      .hamburger { display: none; font-size: 24px; cursor: pointer; color: var(--purple); }
+      @media (max-width: 768px) {
+        .hamburger { display: block; }
+        .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: #fff; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .nav-links.active { display: flex; }
+        .nav-actions { display: none; }
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === currentPage) {
+            link.style.color = '#6C3CE1';
+            link.style.fontWeight = '600';
+          }
+        });
+      });
+    </script>
+
+  </body>
+</html>
