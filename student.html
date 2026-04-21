@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RouteReady – Student Budget Mode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #6C3CE1; --purple-light: #8B5CF6; --purple-dark: #4C1D95;
+      --purple-soft: #EDE9FE; --green: #10B981; --green-soft: #D1FAE5;
+      --orange: #F59E0B; --white: #ffffff; --dark: #0f0f1a;
+      --gray: #6B7280; --light-gray: #F9FAFB; --border: #E5E7EB;
+    }
+    body { font-family: 'DM Sans', sans-serif; color: #1a1a2e; background: var(--light-gray); overflow-x: hidden; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px; position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--purple); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo-dot { width: 8px; height: 8px; background: var(--purple); border-radius: 50%; }
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; }
+    .nav-links a:hover, .nav-links a.active { color: var(--purple); }
+    .nav-cta { background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 14px; font-weight: 600; text-decoration: none; }
+
+    /* HERO */
+    .student-hero {
+      margin-top: 64px;
+      background: linear-gradient(135deg, var(--green) 0%, #047857 100%);
+      padding: 60px 48px 90px; color: #fff; position: relative; overflow: hidden;
+    }
+    .student-hero::before { content: '🎓'; position: absolute; font-size: 240px; opacity: 0.08; top: -20px; right: 5%; }
+    .student-hero::after { content: '💰'; position: absolute; font-size: 200px; opacity: 0.08; bottom: -30px; left: 5%; }
+    .hero-inner { max-width: 1200px; margin: 0 auto; text-align: center; position: relative; z-index: 2; }
+    .student-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+      padding: 6px 16px; border-radius: 50px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.6px; margin-bottom: 18px; text-transform: uppercase;
+    }
+    .student-hero h1 { font-family: 'Playfair Display', serif; font-size: 46px; font-weight: 900; margin-bottom: 14px; }
+    .student-hero p { font-size: 16px; opacity: 0.9; max-width: 580px; margin: 0 auto; }
+
+    /* BUDGET CALCULATOR */
+    .calc-section { max-width: 1100px; margin: -50px auto 50px; padding: 0 48px; position: relative; z-index: 5; }
+    .calc-card {
+      background: #fff; border-radius: 20px; padding: 36px;
+      box-shadow: 0 8px 32px rgba(16, 185, 129, 0.15);
+    }
+    .calc-card h2 { font-family: 'Playfair Display', serif; font-size: 26px; margin-bottom: 6px; }
+    .calc-card .sub { color: var(--gray); font-size: 14px; margin-bottom: 26px; }
+
+    .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 24px; }
+    .calc-field { display: flex; flex-direction: column; gap: 7px; }
+    .calc-field label { font-size: 12px; font-weight: 700; color: var(--green); letter-spacing: 0.5px; text-transform: uppercase; }
+    .calc-field input, .calc-field select {
+      padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 14px; font-family: 'DM Sans', sans-serif; background: var(--light-gray); outline: none;
+      transition: border-color .2s;
+    }
+    .calc-field input:focus, .calc-field select:focus { border-color: var(--green); background: #fff; }
+
+    .budget-slider-wrap { margin-top: 8px; }
+    .budget-slider-wrap label { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 12px; display: flex; justify-content: space-between; }
+    .budget-slider-wrap label .val { color: var(--green); font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; }
+    input[type="range"] { width: 100%; -webkit-appearance: none; height: 6px; background: var(--border); border-radius: 50px; outline: none; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: var(--green); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(16,185,129,0.4); }
+
+    .calc-btn {
+      width: 100%; margin-top: 24px; background: linear-gradient(135deg, var(--green), #047857);
+      color: #fff; border: none; border-radius: 12px; padding: 15px;
+      font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: transform .15s, box-shadow .2s;
+      box-shadow: 0 4px 16px rgba(16,185,129,0.35);
+    }
+    .calc-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,185,129,0.45); }
+
+    /* RESULT BREAKDOWN */
+    .result-section { max-width: 1100px; margin: 0 auto 50px; padding: 0 48px; display: none; }
+    .result-section.active { display: block; }
+
+    .result-summary {
+      background: #fff; border-radius: 18px; padding: 28px; margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px;
+    }
+    .summary-cell { text-align: center; padding: 14px; border-right: 1px solid var(--border); }
+    .summary-cell:last-child { border-right: none; }
+    .summary-cell .label { font-size: 11.5px; color: var(--gray); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .summary-cell .num { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; }
+    .summary-cell .savings { color: var(--green); font-size: 11px; font-weight: 700; margin-top: 4px; }
+
+    .breakdown-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; }
+
+    .breakdown-card { background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+    .breakdown-card h3 { font-family: 'Playfair Display', serif; font-size: 19px; margin-bottom: 16px; }
+
+    .expense-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--border); }
+    .expense-row:last-child { border-bottom: none; }
+    .expense-info { display: flex; align-items: center; gap: 12px; }
+    .expense-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--green-soft); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .expense-name { font-size: 13.5px; font-weight: 600; }
+    .expense-detail { font-size: 11.5px; color: var(--gray); }
+    .expense-amt { font-size: 14px; font-weight: 700; color: #1a1a2e; }
+    .expense-amt .original { text-decoration: line-through; color: var(--gray); font-weight: 400; font-size: 12px; margin-right: 6px; }
+
+    /* PIE CHART (CSS) */
+    .chart-card { display: flex; flex-direction: column; align-items: center; }
+    .pie-chart {
+      width: 200px; height: 200px; border-radius: 50%; margin: 14px auto 20px;
+      background: conic-gradient(var(--green) 0% 35%, #34D399 35% 60%, #6EE7B7 60% 80%, #A7F3D0 80% 100%);
+      position: relative;
+    }
+    .pie-chart::before {
+      content: ''; position: absolute; inset: 30px; background: #fff; border-radius: 50%;
+    }
+    .pie-center {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 2;
+    }
+    .pie-center .total { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; }
+    .pie-center .label { font-size: 11px; color: var(--gray); }
+
+    .legend { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+    /* DISCOUNTS */
+    .discounts-section { max-width: 1200px; margin: 60px auto; padding: 0 48px; }
+    .section-title { text-align: center; margin-bottom: 36px; }
+    .section-title h2 { font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 8px; }
+    .section-title p { color: var(--gray); }
+
+    .discount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .discount-card {
+      background: #fff; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05); border: 1.5px solid var(--border);
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+    }
+    .discount-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(16,185,129,0.15); border-color: var(--green); }
+
+    .discount-head { padding: 18px 20px; background: linear-gradient(135deg, var(--green-soft), #ECFDF5); display: flex; justify-content: space-between; align-items: start; }
+    .discount-icon { width: 42px; height: 42px; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .discount-pct {
+      background: var(--green); color: #fff; padding: 4px 12px; border-radius: 50px;
+      font-size: 13px; font-weight: 800;
+    }
+    .discount-body { padding: 18px 20px; }
+    .discount-body h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .discount-body p { font-size: 12.5px; color: var(--gray); margin-bottom: 14px; line-height: 1.6; }
+    .discount-meta { display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; }
+    .discount-meta .city { color: var(--gray); }
+    .discount-meta .code { background: var(--light-gray); color: var(--green); padding: 3px 10px; border-radius: 6px; font-weight: 700; letter-spacing: 0.5px; font-family: monospace; }
+
+    /* HOSTELS */
+    .hostels-section { max-width: 1200px; margin: 0 auto 80px; padding: 0 48px; }
+    .hostels-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .hostel-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.05); transition: transform .25s; }
+    .hostel-card:hover { transform: translateY(-4px); }
+    .hostel-img { width: 100%; height: 160px; object-fit: cover; background: linear-gradient(135deg, var(--green), #047857); }
+    .hostel-body { padding: 18px; }
+    .hostel-tag { display: inline-block; background: var(--green-soft); color: #047857; font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 50px; margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .hostel-body h4 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .hostel-body .loc { font-size: 12px; color: var(--gray); margin-bottom: 12px; }
+    .hostel-amenities { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .amenity { font-size: 11px; color: var(--gray); background: var(--light-gray); padding: 3px 9px; border-radius: 50px; }
+    .hostel-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); }
+    .price-block .from { font-size: 11px; color: var(--gray); }
+    .price-block .price { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: var(--green); }
+    .price-block .price span { font-size: 11px; color: var(--gray); font-weight: 400; font-family: 'DM Sans', sans-serif; }
+    .hostel-rating { color: var(--orange); font-size: 13px; font-weight: 700; }
+
+    /* FOOTER */
+    footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 60px 48px 28px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .footer-logo .logo-dot { background: var(--purple-light); }
+    .footer-desc { font-size: 13.5px; line-height: 1.8; }
+    .footer-col h4 { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 18px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a { color: rgba(255,255,255,0.6); font-size: 13.5px; text-decoration: none; }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; display: flex; justify-content: space-between; font-size: 13px; }
+
+    @media(max-width: 1024px) {
+      .calc-grid { grid-template-columns: repeat(2, 1fr); }
+      .result-summary { grid-template-columns: 1fr 1fr; }
+      .breakdown-grid { grid-template-columns: 1fr; }
+      .discount-grid, .hostels-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media(max-width: 768px) {
+      nav { padding: 0 20px; } .nav-links { display: none; }
+      .student-hero { padding: 40px 20px 70px; } .student-hero h1 { font-size: 32px; }
+      .calc-section, .result-section, .discounts-section, .hostels-section { padding: 0 20px; }
+      .calc-card { padding: 22px; }
+      .calc-grid { grid-template-columns: 1fr; }
+      .discount-grid, .hostels-grid { grid-template-columns: 1fr; }
+      .summary-cell { border-right: none; border-bottom: 1px solid var(--border); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+    <nav>
+      <a href="index.html" class="logo">
+        <span class="logo-dot"></span>RouteReady
+      </a>
+      <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+        &#9776;
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="destinations.html">Destinations</a></li>
+        <li><a href="planner.html">AI Planner</a></li>
+        <li><a href="hidden-gems.html">Hidden Gems</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="signin.html" style="text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; margin-right: 16px;">Sign In</a>
+        <a href="signup.html" class="nav-cta">Get Started</a>
+      </div>
+    </nav>
+
+<!-- HERO -->
+<section class="student-hero">
+  <div class="hero-inner">
+    <div class="student-badge">🎓 Student Budget Mode</div>
+    <h1>Travel Smart, Spend Less</h1>
+    <p>Built for students. Built for explorers. Get exclusive discounts, hostel deals, and AI-curated trips that fit a student wallet.</p>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="calc-section">
+  <div class="calc-card">
+    <h2>Plan Your Budget Trip</h2>
+    <p class="sub">Tell us your budget and we'll show you what's possible.</p>
+
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Destination</label>
+        <select id="city">
+          <option>Islamabad</option>
+          <option>Lahore</option>
+          <option>Karachi</option>
+          <option>Hunza Valley</option>
+          <option>Naran &amp; Kaghan</option>
+        </select>
+      </div>
+      <div class="calc-field">
+        <label>From City</label>
+        <select id="fromCity">
+          <option>Islamabad</option>
+          <option>Lahore</option>
+          <option>Karachi</option>
+          <option>Peshawar</option>
+        </select>
+      </div>
+      <div class="calc-field">
+        <label>Trip Length</label>
+        <select id="days">
+          <option value="1">1 Day</option>
+          <option value="2" selected>2 Days</option>
+          <option value="3">3 Days</option>
+          <option value="5">5 Days</option>
+        </select>
+      </div>
+      <div class="calc-field">
+        <label>Travelers</label>
+        <select id="travelers">
+          <option>1 Student</option>
+          <option selected>2 Students</option>
+          <option>3 Students</option>
+          <option>4+ Students</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="budget-slider-wrap">
+      <label>Total Budget <span class="val" id="budgetVal">PKR 15,000</span></label>
+      <input type="range" id="budget" min="3000" max="50000" step="1000" value="15000"/>
+    </div>
+
+    <button class="calc-btn" onclick="calculateBudget()">💰 Calculate My Budget Trip</button>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="result-section" id="result">
+  <div class="result-summary">
+    <div class="summary-cell">
+      <div class="label">Your Budget</div>
+      <div class="num" id="userBudget">PKR 15,000</div>
+    </div>
+    <div class="summary-cell">
+      <div class="label">Estimated Cost</div>
+      <div class="num" id="estCost">PKR 11,800</div>
+      <div class="savings">After student discount</div>
+    </div>
+    <div class="summary-cell">
+      <div class="label">You Save</div>
+      <div class="num" style="color: var(--green);" id="savings">PKR 3,200</div>
+      <div class="savings">21% saved</div>
+    </div>
+    <div class="summary-cell">
+      <div class="label">Trip Status</div>
+      <div class="num" style="color: var(--green); font-size: 18px;">✓ Within Budget</div>
+      <div class="savings">PKR 3,200 buffer</div>
+    </div>
+  </div>
+
+  <div class="breakdown-grid">
+    <div class="breakdown-card">
+      <h3>Cost Breakdown</h3>
+      <div class="expense-row">
+        <div class="expense-info">
+          <div class="expense-icon">🛏️</div>
+          <div><div class="expense-name">Hostel (2 nights)</div><div class="expense-detail">Backpackers Lodge · Shared room</div></div>
+        </div>
+        <div class="expense-amt"><span class="original">PKR 4,000</span>PKR 2,800</div>
+      </div>
+      <div class="expense-row">
+        <div class="expense-info">
+          <div class="expense-icon">🚌</div>
+          <div><div class="expense-name">Transport (round trip)</div><div class="expense-detail">Daewoo Bus · Student fare</div></div>
+        </div>
+        <div class="expense-amt"><span class="original">PKR 3,400</span>PKR 2,400</div>
+      </div>
+      <div class="expense-row">
+        <div class="expense-info">
+          <div class="expense-icon">🍔</div>
+          <div><div class="expense-name">Food (6 meals)</div><div class="expense-detail">Student-friendly cafés</div></div>
+        </div>
+        <div class="expense-amt">PKR 3,000</div>
+      </div>
+      <div class="expense-row">
+        <div class="expense-info">
+          <div class="expense-icon">🎟️</div>
+          <div><div class="expense-name">Attractions</div><div class="expense-detail">5 entries · Student pricing</div></div>
+        </div>
+        <div class="expense-amt"><span class="original">PKR 1,200</span>PKR 600</div>
+      </div>
+      <div class="expense-row">
+        <div class="expense-info">
+          <div class="expense-icon">🚕</div>
+          <div><div class="expense-name">Local Transport</div><div class="expense-detail">Bykea + walking</div></div>
+        </div>
+        <div class="expense-amt">PKR 1,500</div>
+      </div>
+      <div class="expense-row">
+        <div class="expense-info">
+          <div class="expense-icon">💼</div>
+          <div><div class="expense-name">Buffer / Misc</div><div class="expense-detail">Souvenirs, snacks</div></div>
+        </div>
+        <div class="expense-amt">PKR 1,500</div>
+      </div>
+    </div>
+
+    <div class="breakdown-card chart-card">
+      <h3 style="align-self: flex-start;">Spending Distribution</h3>
+      <div class="pie-chart">
+        <div class="pie-center">
+          <div class="total">PKR 11,800</div>
+          <div class="label">Total Estimate</div>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background: var(--green);"></div><span>Stay (24%)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background: #34D399;"></div><span>Food (25%)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background: #6EE7B7;"></div><span>Transport (33%)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background: #A7F3D0;"></div><span>Other (18%)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STUDENT DISCOUNTS -->
+<section class="discounts-section">
+  <div class="section-title">
+    <h2>Student-Only Discounts</h2>
+    <p>Show your student ID and unlock exclusive savings across Pakistan.</p>
+  </div>
+
+  <div class="discount-grid">
+    <div class="discount-card">
+      <div class="discount-head"><div class="discount-icon">🛏️</div><div class="discount-pct">-30%</div></div>
+      <div class="discount-body">
+        <h4>Backpackers Hostels Pakistan</h4>
+        <p>Verified student rates at 12 partner hostels nationwide. Free Wi-Fi and breakfast included.</p>
+        <div class="discount-meta"><span class="city">12 cities</span><span class="code">ISIC2024</span></div>
+      </div>
+    </div>
+    <div class="discount-card">
+      <div class="discount-head"><div class="discount-icon">🚌</div><div class="discount-pct">-25%</div></div>
+      <div class="discount-body">
+        <h4>Daewoo Express</h4>
+        <p>Discounted intercity bus fares for university students. Valid Mon-Thu travel.</p>
+        <div class="discount-meta"><span class="city">All routes</span><span class="code">STUDENT30</span></div>
+      </div>
+    </div>
+    <div class="discount-card">
+      <div class="discount-head"><div class="discount-icon">🎟️</div><div class="discount-pct">-50%</div></div>
+      <div class="discount-body">
+        <h4>Heritage Site Entry</h4>
+        <p>Half-price tickets at Lahore Fort, Mohenjo-Daro, Pakistan Monument and more.</p>
+        <div class="discount-meta"><span class="city">Nationwide</span><span class="code">DAEWOO15</span></div>
+      </div>
+    </div>
+    <div class="discount-card">
+      <div class="discount-head"><div class="discount-icon">🍕</div><div class="discount-pct">-20%</div></div>
+      <div class="discount-body">
+        <h4>Student Food Network</h4>
+        <p>30+ partner restaurants offering meal discounts. Just show your ISIC card.</p>
+        <div class="discount-meta"><span class="city">Major cities</span><span class="code">HUNZA20</span></div>
+      </div>
+    </div>
+    <div class="discount-card">
+      <div class="discount-head"><div class="discount-icon">🚕</div><div class="discount-pct">-15%</div></div>
+      <div class="discount-body">
+        <h4>Bykea Student Plan</h4>
+        <p>Discounted bike and rickshaw rides for students within city limits.</p>
+        <div class="discount-meta"><span class="city">Urban areas</span><span class="code">RIDE15</span></div>
+      </div>
+    </div>
+    <div class="discount-card">
+      <div class="discount-head"><div class="discount-icon">📷</div><div class="discount-pct">-40%</div></div>
+      <div class="discount-body">
+        <h4>Museum &amp; Gallery Pass</h4>
+        <p>Annual pass covering 25 museums and galleries at student rates.</p>
+        <div class="discount-meta"><span class="city">Nationwide</span><span class="code">MUSEUM50</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUDGET HOSTELS -->
+<section class="hostels-section">
+  <div class="section-title">
+    <h2>Top-Rated Student Hostels</h2>
+    <p>Affordable, safe, and social — handpicked for the student traveler.</p>
+  </div>
+
+  <div class="hostels-grid">
+    <div class="hostel-card">
+      <img class="hostel-img" src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80" alt="Backpackers Lodge"/>
+      <div class="hostel-body">
+        <span class="hostel-tag">Most Popular</span>
+        <h4>Backpackers Lodge</h4>
+        <div class="loc">📍 F-7, Islamabad</div>
+        <div class="hostel-amenities"><span class="amenity">Wi-Fi</span><span class="amenity">Breakfast</span><span class="amenity">Common Room</span></div>
+        <div class="hostel-foot">
+          <div class="price-block"><div class="from">From</div><div class="price">PKR 1,400 <span>/ night</span></div></div>
+          <div class="hostel-rating">★ 4.8</div>
+        </div>
+      </div>
+    </div>
+    <div class="hostel-card">
+      <img class="hostel-img" src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80" alt="Lahore Hostel"/>
+      <div class="hostel-body">
+        <span class="hostel-tag">Best Value</span>
+        <h4>Old City Hostel</h4>
+        <div class="loc">📍 Anarkali, Lahore</div>
+        <div class="hostel-amenities"><span class="amenity">Wi-Fi</span><span class="amenity">Rooftop</span><span class="amenity">Tour Help</span></div>
+        <div class="hostel-foot">
+          <div class="price-block"><div class="from">From</div><div class="price">PKR 1,200 <span>/ night</span></div></div>
+          <div class="hostel-rating">★ 4.7</div>
+        </div>
+      </div>
+    </div>
+    <div class="hostel-card">
+      <img class="hostel-img" src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=600&q=80" alt="Hunza Hostel"/>
+      <div class="hostel-body">
+        <span class="hostel-tag">Eco Friendly</span>
+        <h4>Karimabad Backpackers</h4>
+        <div class="loc">📍 Karimabad, Hunza</div>
+        <div class="hostel-amenities"><span class="amenity">Mountain View</span><span class="amenity">Meals</span><span class="amenity">Trekking</span></div>
+        <div class="hostel-foot">
+          <div class="price-block"><div class="from">From</div><div class="price">PKR 1,800 <span>/ night</span></div></div>
+          <div class="hostel-rating">★ 4.9</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo"><span class="logo-dot"></span>RouteReady</div>
+      <p class="footer-desc">AI-powered city exploration for the modern traveler.</p>
+    </div>
+    <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="destinations.html">Destinations</a></li><li><a href="planner.html">AI Planner</a></li><li><a href="student.html">Student Mode</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="javascript:void(0)">Help Center</a></li><li><a href="javascript:void(0)">Privacy Policy</a></li></ul></div>
+    <div class="footer-col"><h4>Contact</h4><ul><li><a href="javascript:void(0)">📧 hello@routeready.pk</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 RouteReady.</span><span>Made with ♥ in Pakistan</span></div>
+</footer>
+
+<script>
+  const slider = document.getElementById('budget');
+  const val = document.getElementById('budgetVal');
+  slider.addEventListener('input', () => {
+    val.textContent = 'PKR ' + parseInt(slider.value).toLocaleString();
+  });
+
+  function calculateBudget() {
+    const budget = parseInt(slider.value);
+    const days = parseInt(document.getElementById('days').value);
+    const city = document.getElementById('city').value;
+    
+    // Calculate per-day base cost according to city
+    let baseCostPerDay = 4500;
+    if (city === 'Islamabad') baseCostPerDay = 1900;
+    else if (city === 'Lahore') baseCostPerDay = 1600;
+    else if (city === 'Karachi') baseCostPerDay = 1750;
+    else if (city === 'Hunza Valley') baseCostPerDay = 2700;
+    else if (city === 'Naran & Kaghan') baseCostPerDay = 2050;
+    else if (city === 'Peshawar') baseCostPerDay = 1500;
+
+    const baseCost = baseCostPerDay * days;
+    const discount = Math.floor(baseCost * 0.21);
+    const finalCost = baseCost - discount;
+
+    document.getElementById('userBudget').textContent = 'PKR ' + budget.toLocaleString();
+    document.getElementById('estCost').textContent = 'PKR ' + finalCost.toLocaleString();
+    document.getElementById('savings').textContent = 'PKR ' + discount.toLocaleString();
+
+    document.getElementById('result').classList.add('active');
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+
+    <style>
+      html { scroll-behavior: smooth; }
+      .hamburger { display: none; font-size: 24px; cursor: pointer; color: var(--purple); }
+      @media (max-width: 768px) {
+        .hamburger { display: block; }
+        .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: #fff; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .nav-links.active { display: flex; }
+        .nav-actions { display: none; }
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === currentPage) {
+            link.style.color = '#6C3CE1';
+            link.style.fontWeight = '600';
+          }
+        });
+      });
+    </script>
+
+  </body>
+</html>
