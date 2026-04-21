@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RouteReady – Explore Destinations</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #6C3CE1; --purple-light: #8B5CF6; --purple-dark: #4C1D95;
+      --purple-soft: #EDE9FE; --white: #ffffff; --dark: #0f0f1a;
+      --gray: #6B7280; --light-gray: #F9FAFB; --border: #E5E7EB;
+    }
+    body { font-family: 'DM Sans', sans-serif; color: #1a1a2e; background: #fff; overflow-x: hidden; }
+
+    /* NAV */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px; position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--purple); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo-dot { width: 8px; height: 8px; background: var(--purple); border-radius: 50%; }
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--purple); }
+    .nav-cta { background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .2s; text-decoration: none; }
+    .nav-cta:hover { background: var(--purple-dark); }
+
+    /* PAGE HEADER */
+    .page-header {
+      margin-top: 64px;
+      background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+      padding: 60px 48px 80px; text-align: center; color: #fff;
+      position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%;
+      background: rgba(255,255,255,0.05); top: -150px; right: -100px;
+    }
+    .page-header::after {
+      content: ''; position: absolute; width: 250px; height: 250px; border-radius: 50%;
+      background: rgba(255,255,255,0.04); bottom: -80px; left: -50px;
+    }
+    .page-header h1 { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 900; margin-bottom: 12px; position: relative; z-index: 2; }
+    .page-header p { font-size: 16px; opacity: 0.85; max-width: 540px; margin: 0 auto; position: relative; z-index: 2; }
+
+    /* SEARCH BAR */
+    .search-section {
+      max-width: 1100px; margin: -40px auto 0; padding: 0 48px; position: relative; z-index: 5;
+    }
+    .search-bar {
+      background: #fff; border-radius: 16px; padding: 20px 24px;
+      box-shadow: 0 8px 32px rgba(76, 29, 149, 0.15);
+      display: grid; grid-template-columns: 2fr 1.2fr 1.2fr auto; gap: 14px;
+      align-items: end;
+    }
+    .search-field { display: flex; flex-direction: column; gap: 6px; }
+    .search-field label { font-size: 11.5px; font-weight: 700; color: var(--purple); letter-spacing: 0.5px; text-transform: uppercase; }
+    .search-field input, .search-field select {
+      padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 9px;
+      font-size: 14px; font-family: 'DM Sans', sans-serif; background: var(--light-gray);
+      color: #1a1a2e; transition: border-color .2s; outline: none;
+    }
+    .search-field input:focus, .search-field select:focus { border-color: var(--purple); background: #fff; }
+    .search-btn {
+      background: var(--purple); color: #fff; border: none; border-radius: 9px;
+      padding: 13px 28px; font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: background .2s;
+    }
+    .search-btn:hover { background: var(--purple-dark); }
+
+    /* RESULTS BAR */
+    .results-section { max-width: 1200px; margin: 48px auto 0; padding: 0 48px; }
+    .results-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
+    .results-count { font-size: 15px; color: var(--gray); }
+    .results-count strong { color: #1a1a2e; font-weight: 700; }
+
+    .filter-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      padding: 8px 16px; border: 1.5px solid var(--border); border-radius: 50px;
+      background: #fff; font-size: 13px; font-weight: 600; color: var(--gray);
+      cursor: pointer; transition: all .2s; font-family: 'DM Sans', sans-serif;
+    }
+    .pill:hover { border-color: var(--purple); color: var(--purple); }
+    .pill.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+    /* GRID */
+    .destinations-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+      margin-bottom: 60px;
+    }
+    .dest-card {
+      background: #fff; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); transition: transform .25s, box-shadow .25s;
+      cursor: pointer; border: 1px solid var(--border);
+    }
+    .dest-card:hover { transform: translateY(-6px); box-shadow: 0 16px 36px rgba(108,60,225,0.18); }
+    .dest-img-wrap { position: relative; height: 180px; overflow: hidden; }
+    .dest-img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform .4s;
+    }
+    .dest-card:hover .dest-img { transform: scale(1.08); }
+    .dest-badge {
+      position: absolute; top: 12px; left: 12px; background: var(--purple); color: #fff;
+      font-size: 10.5px; font-weight: 700; padding: 4px 11px; border-radius: 20px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .dest-fav {
+      position: absolute; top: 12px; right: 12px; width: 34px; height: 34px;
+      background: rgba(255,255,255,0.92); border-radius: 50%; border: none;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+      cursor: pointer; transition: transform .2s, background .2s;
+    }
+    .dest-fav:hover { transform: scale(1.1); background: #fff; }
+    .dest-fav.saved { color: #DC2626; }
+    .dest-info { padding: 16px 18px; }
+    .dest-info h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: #1a1a2e; }
+    .dest-location { font-size: 12.5px; color: var(--gray); margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+    .dest-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); }
+    .dest-rating { font-size: 13px; color: #F59E0B; font-weight: 700; }
+    .dest-price { font-size: 13px; color: var(--purple); font-weight: 700; }
+
+    /* NO RESULTS */
+    .no-results {
+      grid-column: 1 / -1; text-align: center; padding: 80px 20px;
+      background: var(--light-gray); border-radius: 16px;
+    }
+    .no-results .emoji { font-size: 56px; margin-bottom: 16px; }
+    .no-results h3 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 8px; }
+    .no-results p { color: var(--gray); font-size: 14px; }
+
+    /* FOOTER */
+    footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 60px 48px 28px; margin-top: 60px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .footer-logo .logo-dot { background: var(--purple-light); }
+    .footer-desc { font-size: 13.5px; line-height: 1.8; margin-bottom: 20px; }
+    .footer-col h4 { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 18px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a { color: rgba(255,255,255,0.6); font-size: 13.5px; text-decoration: none; transition: color .2s; }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; display: flex; justify-content: space-between; font-size: 13px; }
+
+    @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .dest-card { animation: fadeUp .5s ease both; }
+    .dest-card:nth-child(2) { animation-delay: .05s; }
+    .dest-card:nth-child(3) { animation-delay: .1s; }
+    .dest-card:nth-child(4) { animation-delay: .15s; }
+    .dest-card:nth-child(5) { animation-delay: .2s; }
+    .dest-card:nth-child(6) { animation-delay: .25s; }
+    .dest-card:nth-child(7) { animation-delay: .3s; }
+    .dest-card:nth-child(8) { animation-delay: .35s; }
+
+    @media(max-width: 1024px) {
+      .destinations-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media(max-width: 768px) {
+      nav { padding: 0 20px; } .nav-links { display: none; }
+      .page-header { padding: 40px 20px 70px; } .page-header h1 { font-size: 32px; }
+      .search-section, .results-section { padding: 0 20px; }
+      .search-bar { grid-template-columns: 1fr; }
+      .destinations-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media(max-width: 480px) {
+      .destinations-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+    <nav>
+      <a href="index.html" class="logo">
+        <span class="logo-dot"></span>RouteReady
+      </a>
+      <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+        &#9776;
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="destinations.html">Destinations</a></li>
+        <li><a href="planner.html">AI Planner</a></li>
+        <li><a href="hidden-gems.html">Hidden Gems</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="signin.html" style="text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; margin-right: 16px;">Sign In</a>
+        <a href="signup.html" class="nav-cta">Get Started</a>
+      </div>
+    </nav>
+
+<!-- HEADER -->
+<section class="page-header">
+  <h1>Explore Destinations</h1>
+  <p>Discover the most loved places across Pakistan, handpicked and ranked by AI for every kind of traveler.</p>
+</section>
+
+<!-- SEARCH BAR -->
+<section class="search-section">
+  <div class="search-bar">
+    <div class="search-field">
+      <label>Search</label>
+      <input type="text" id="searchInput" placeholder="Try 'Faisal Mosque' or 'Lahore'..."/>
+    </div>
+    <div class="search-field">
+        <label>City</label>
+        <select id="cityFilter">
+          <option value="all">All Cities</option>
+          <option value="islamabad">Islamabad</option>
+          <option value="lahore">Lahore</option>
+          <option value="karachi">Karachi</option>
+          <option value="hunza">Hunza</option>
+          <option value="swat">Swat</option>
+        </select>
+      </div>
+      <div class="search-field">
+        <label>Category</label>
+        <select id="categoryFilter">
+          <option value="all">All Categories</option>
+          <option value="Religious">Religious</option>
+          <option value="Nature">Nature</option>
+          <option value="Landmark">Landmark</option>
+          <option value="Culture">Culture</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Historic">Historic</option>
+          <option value="Beach">Beach</option>
+          <option value="Food">Food</option>
+          <option value="Adventure">Adventure</option>
+        </select>
+    </div>
+    <div class="search-field">
+      <label>Sort By</label>
+      <select id="sortFilter">
+        <option value="rating">Highest Rated</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="name">Name (A–Z)</option>
+      </select>
+    </div>
+    <button class="search-btn" onclick="filterDestinations()">Search</button>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="results-section">
+  <div class="results-bar">
+    <div class="results-count"><strong id="resultCount">12</strong> destinations found</div>
+    <div class="filter-pills">
+        <button class="pill active" onclick="quickFilter('all', this)">All</button>
+        <button class="pill" onclick="quickFilter('Religious', this)">Religious</button>
+        <button class="pill" onclick="quickFilter('Nature', this)">Nature</button>
+        <button class="pill" onclick="quickFilter('Historic', this)">Historic</button>
+        <button class="pill" onclick="quickFilter('Food', this)">Food</button>
+        <button class="pill" onclick="quickFilter('Adventure', this)">Adventure</button>
+      </div>
+  </div>
+
+  <div class="destinations-grid" id="destGrid">
+    <!-- populated by JS -->
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo"><span class="logo-dot"></span>RouteReady</div>
+      <p class="footer-desc">AI-powered city exploration for the modern traveler. Discover Pakistan's finest destinations with personalized itineraries.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul><li><a href="destinations.html">Destinations</a></li><li><a href="planner.html">AI Planner</a></li><li><a href="hidden-gems.html">Hidden Gems</a></li><li><a href="about.html">About</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul><li><a href="javascript:void(0)">Help Center</a></li><li><a href="javascript:void(0)">Privacy Policy</a></li><li><a href="javascript:void(0)">Terms of Service</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact Us</h4>
+      <ul><li><a href="javascript:void(0)">📧 hello@routeready.pk</a></li><li><a href="javascript:void(0)">📞 +92 300 1234567</a></li><li><a href="javascript:void(0)">📍 Islamabad, Pakistan</a></li></ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 RouteReady. All rights reserved.</span>
+    <span>Made with ♥ in Pakistan</span>
+  </div>
+</footer>
+
+<script>
+  const destinations = [
+  { name: "Faisal Mosque", city: "Islamabad", category: "Religious", rating: 4.9, price: 0, badge: 'Iconic', img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80", desc: "An iconic white marble mosque featuring contemporary Islamic architecture." },
+  { name: "Daman-e-Koh", city: "Islamabad", category: "Nature", rating: 4.7, price: 50, badge: 'Viewpoint', img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", desc: "A hilltop garden offering panoramic views of the capital city." },
+  { name: "Pakistan Monument", city: "Islamabad", category: "Landmark", rating: 4.8, price: 100, badge: 'Heritage', img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80", desc: "A bronze lotus petal monument symbolizing the country's diverse cultures." },
+  { name: "Margalla Hills", city: "Islamabad", category: "Nature", rating: 4.9, price: 0, badge: 'Trails', img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80", desc: "Green hills harboring popular hiking trails and dense forests." },
+  { name: "Lok Virsa Museum", city: "Islamabad", category: "Culture", rating: 4.6, price: 200, badge: 'Museum', img: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&q=80", desc: "A cultural museum preserving the rich heritage and traditions of Pakistan." },
+  { name: "Centaurus Mall", city: "Islamabad", category: "Shopping", rating: 4.5, price: 0, badge: 'Modern', img: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800&q=80", desc: "A modern, multi-story shopping mall with premium brands and food." },
+
+  { name: "Badshahi Mosque", city: "Lahore", category: "Religious", rating: 4.9, price: 50, badge: 'Grand', img: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800&q=80", desc: "A massive, beautifully crafted Mughal-era mosque." },
+  { name: "Lahore Fort", city: "Lahore", category: "Historic", rating: 4.8, price: 100, badge: 'UNESCO', img: "https://images.unsplash.com/photo-1599413987323-b2b8c0d7d9c8?w=800&q=80", desc: "A historical fort complex reflecting royal Mughal architecture." },
+  { name: "Shalimar Gardens", city: "Lahore", category: "Nature", rating: 4.5, price: 50, badge: 'Scenic', img: "https://images.unsplash.com/photo-1585325701165-f1f97d41bb6b?w=800&q=80", desc: "Terraced Mughal gardens built as a royal paradise of water and flora." },
+  { name: "Walled City Lahore", city: "Lahore", category: "Culture", rating: 4.7, price: 0, badge: 'Bazaars', img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80", desc: "The bustling historic heart of the city full of lively bazaars and narrow streets." },
+  { name: "Wagah Border", city: "Lahore", category: "Landmark", rating: 4.8, price: 0, badge: 'Patriotic', img: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&q=80", desc: "Famous for the daily, energetic flag-lowering military ceremony." },
+  { name: "Food Street Lahore", city: "Lahore", category: "Food", rating: 4.9, price: 1500, badge: 'Culinary', img: "https://images.unsplash.com/photo-1567337710282-00832b415979?w=800&q=80", desc: "A lively culinary hub serving authentic traditional Lahori delicacies." },
+
+  { name: "Clifton Beach", city: "Karachi", category: "Beach", rating: 4.4, price: 0, badge: 'Relax', img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80", desc: "A popular city beach along the Arabian Sea coast." },
+  { name: "Quaid Mausoleum", city: "Karachi", category: "Historic", rating: 4.7, price: 50, badge: 'Mazar', img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80", desc: "The serene white marble resting place of Pakistan's founder." },
+  { name: "Mohatta Palace", city: "Karachi", category: "Culture", rating: 4.6, price: 150, badge: 'Museum', img: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&q=80", desc: "A grand, intricately designed palace serving as an art and heritage museum." },
+  { name: "Port Grand", city: "Karachi", category: "Food", rating: 4.5, price: 500, badge: 'Dining', img: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80", desc: "A scenic waterfront complex full of diverse food stands and entertainment." },
+  { name: "Empress Market", city: "Karachi", category: "Shopping", rating: 4.3, price: 0, badge: 'Bazaar', img: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800&q=80", desc: "A historic, colonial-era market bustling with fresh goods and spices." },
+  { name: "Manora Island", city: "Karachi", category: "Nature", rating: 4.2, price: 200, badge: 'Island', img: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80", desc: "A small, peaceful island accessible by boat featuring a tall lighthouse." },
+
+  { name: "Rakaposhi View Point", city: "Hunza", category: "Nature", rating: 4.9, price: 0, badge: 'Vista', img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80", desc: "A breathtaking roadside stop with direct views of the 7,788m Rakaposhi peak." },
+  { name: "Attabad Lake", city: "Hunza", category: "Nature", rating: 5.0, price: 300, badge: 'Lake', img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&q=80", desc: "A stunning turquoise blue lake perfect for boating and photography." },
+  { name: "Baltit Fort", city: "Hunza", category: "Historic", rating: 4.8, price: 500, badge: 'Ancient', img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", desc: "An ancient fort perched high offering sweeping views of the valley." },
+  { name: "Eagle Nest", city: "Hunza", category: "Adventure", rating: 4.9, price: 200, badge: 'High Point', img: "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&q=80", desc: "The highest viewpoint in Hunza, famous for majestic golden hour vistas." },
+  { name: "Karimabad Bazaar", city: "Hunza", category: "Shopping", rating: 4.6, price: 0, badge: 'Local', img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80", desc: "A vibrant local market rich with handicrafts, gems, and dry fruits." },
+  { name: "Passu Cones", city: "Hunza", category: "Adventure", rating: 5.0, price: 0, badge: 'Peaks', img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", desc: "Dramatic, jagged rock spires standing majestically along the highway." },
+
+  { name: "Malam Jabba", city: "Swat", category: "Adventure", rating: 4.8, price: 1000, badge: 'Ski', img: "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&q=80", desc: "A premier hill station and ski resort ideal for winter sports." },
+  { name: "Mingora Bazaar", city: "Swat", category: "Shopping", rating: 4.2, price: 0, badge: 'Market', img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80", desc: "The main commercial hub of the valley, offering everything from clothes to spices." },
+  { name: "Swat River", city: "Swat", category: "Nature", rating: 4.7, price: 0, badge: 'Scenic', img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&q=80", desc: "A fast-flowing, crystal-clear river coursing through the picturesque green valley." },
+  { name: "Butkara Stupa", city: "Swat", category: "Historic", rating: 4.4, price: 200, badge: 'Ruins', img: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&q=80", desc: "Ancient Buddhist archaeological ruins unearthing Swat's profound history." }
+];
+
+  let currentCategory = 'all';
+
+  function renderDestinations(list) {
+    const grid = document.getElementById('destGrid');
+    document.getElementById('resultCount').textContent = list.length;
+    if (list.length === 0) {
+      grid.innerHTML = `
+        <div class="no-results">
+          <div class="emoji">🗺️</div>
+          <h3>No destinations found</h3>
+          <p>Try adjusting your search or filters.</p>
+        </div>`;
+      return;
+    }
+    grid.innerHTML = list.map(d => `
+      <div class="dest-card" data-city="${d.city.toLowerCase()}" data-category="${d.category}" onclick="window.location.href=\'destination-detail.html?name=${encodeURIComponent(d.name)}\'">
+        <div class="dest-img-wrap">
+          <img class="dest-img" src="${d.img}" alt="${d.name}" onerror="this.src='https://via.placeholder.com/600x400/6C3CE1/ffffff?text=${encodeURIComponent(d.name)}'"/>
+          <span class="dest-badge">${d.badge}</span>
+          <button class="dest-fav" onclick="event.stopPropagation(); toggleFav(this)">♡</button>
+        </div>
+        <div class="dest-info">
+          <h3>${d.name}</h3>
+          <div class="dest-location">📍 ${d.city}, Pakistan</div>
+          <p style="font-size: 13.5px; color: var(--gray); margin: 8px 0; line-height: 1.6;">${d.desc}</p> 
+              <div class="dest-meta">
+            <span class="dest-rating">★ ${d.rating}</span>
+            <span class="dest-price">${d.price === 0 ? 'Free Entry' : 'PKR ' + d.price}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function toggleFav(btn) {
+    btn.classList.toggle('saved');
+    btn.textContent = btn.classList.contains('saved') ? '♥' : '♡';
+  }
+
+  function filterDestinations() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const category = document.getElementById('categoryFilter').value;
+      const city = document.getElementById('cityFilter').value;
+      const sort = document.getElementById('sortFilter').value;
+
+      let filtered = destinations.filter(d => {
+        const matchSearch = d.name.toLowerCase().includes(search) || d.city.toLowerCase().includes(search);
+        const matchCat = category === 'all' || d.category === category;
+        const matchCity = city === 'all' || d.city.toLowerCase() === city;
+        const matchPill = currentCategory === 'all' || d.category === currentCategory;
+        return matchSearch && matchCat && matchCity && matchPill;
+      });
+
+    if (sort === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+    else if (sort === 'price-low') filtered.sort((a, b) => a.price - b.price);
+    else if (sort === 'price-high') filtered.sort((a, b) => b.price - a.price);
+    else if (sort === 'name') filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+    renderDestinations(filtered);
+  }
+
+  function quickFilter(cat, el) {
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    currentCategory = cat;
+    document.getElementById('categoryFilter').value = cat;
+    filterDestinations();
+  }
+
+  document.getElementById('searchInput').addEventListener('input', filterDestinations);
+  document.getElementById('cityFilter').addEventListener('change', filterDestinations);
+    document.getElementById('categoryFilter').addEventListener('change', filterDestinations);
+  document.getElementById('sortFilter').addEventListener('change', filterDestinations);
+
+  // initial
+  filterDestinations();
+</script>
+
+    <style>
+      html { scroll-behavior: smooth; }
+      .hamburger { display: none; font-size: 24px; cursor: pointer; color: var(--purple); }
+      @media (max-width: 768px) {
+        .hamburger { display: block; }
+        .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: #fff; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .nav-links.active { display: flex; }
+        .nav-actions { display: none; }
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === currentPage) {
+            link.style.color = '#6C3CE1';
+            link.style.fontWeight = '600';
+          }
+        });
+      });
+    </script>
+
+  </body>
+</html>
