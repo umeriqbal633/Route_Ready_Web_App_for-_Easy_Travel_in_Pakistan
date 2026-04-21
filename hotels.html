@@ -1,0 +1,1634 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RouteReady – Find Hotels by Budget</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --purple: #6c3ce1;
+        --purple-light: #8b5cf6;
+        --purple-dark: #4c1d95;
+        --purple-soft: #ede9fe;
+        --green: #10b981;
+        --gold: #f59e0b;
+        --white: #ffffff;
+        --dark: #0f0f1a;
+        --gray: #6b7280;
+        --light-gray: #f9fafb;
+        --border: #e5e7eb;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        color: #1a1a2e;
+        background: var(--light-gray);
+        overflow-x: hidden;
+      }
+
+      /* NAV */
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 48px;
+        height: 64px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+      }
+      .logo {
+        font-family: "Playfair Display", serif;
+        font-weight: 700;
+        font-size: 20px;
+        color: var(--purple);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .logo-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--purple);
+        border-radius: 50%;
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        list-style: none;
+      }
+      .nav-links a {
+        text-decoration: none;
+        color: var(--gray);
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: var(--purple);
+      }
+      .nav-cta {
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 22px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s;
+      }
+      .nav-cta:hover {
+        background: var(--purple-dark);
+      }
+
+      /* HEADER */
+      .hotels-header {
+        margin-top: 64px;
+        background: linear-gradient(
+          135deg,
+          var(--purple-dark) 0%,
+          var(--purple) 100%
+        );
+        padding: 60px 48px 90px;
+        text-align: center;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+      }
+      .hotels-header::before {
+        content: "🏨";
+        position: absolute;
+        font-size: 220px;
+        opacity: 0.07;
+        top: -10px;
+        right: 5%;
+      }
+      .hotels-header::after {
+        content: "🛏️";
+        position: absolute;
+        font-size: 200px;
+        opacity: 0.07;
+        bottom: -20px;
+        left: 5%;
+      }
+      .hotels-header h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 44px;
+        font-weight: 900;
+        margin-bottom: 12px;
+        position: relative;
+        z-index: 2;
+      }
+      .hotels-header p {
+        font-size: 16px;
+        opacity: 0.85;
+        max-width: 540px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+      }
+
+      /* SEARCH PANEL */
+      .search-section {
+        max-width: 1100px;
+        margin: -50px auto 32px;
+        padding: 0 48px;
+        position: relative;
+        z-index: 5;
+      }
+      .search-panel {
+        background: #fff;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 8px 32px rgba(76, 29, 149, 0.15);
+      }
+      .search-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+      .search-field {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .search-field label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--purple);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      .search-field input,
+      .search-field select {
+        padding: 12px 14px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: "DM Sans", sans-serif;
+        background: var(--light-gray);
+        transition: border-color 0.2s;
+        outline: none;
+      }
+      .search-field input:focus,
+      .search-field select:focus {
+        border-color: var(--purple);
+        background: #fff;
+      }
+
+      .budget-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 18px;
+        align-items: end;
+      }
+      .budget-slider {
+        padding-top: 4px;
+      }
+      .budget-slider .top {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 13px;
+      }
+      .budget-slider .top .label {
+        font-weight: 700;
+        color: var(--purple);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 12px;
+      }
+      .budget-slider .top .val {
+        font-family: "Playfair Display", serif;
+        font-weight: 900;
+        color: var(--purple);
+        font-size: 18px;
+      }
+      input[type="range"] {
+        width: 100%;
+        -webkit-appearance: none;
+        height: 6px;
+        background: var(--border);
+        border-radius: 50px;
+        outline: none;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 22px;
+        height: 22px;
+        background: var(--purple);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(108, 60, 225, 0.4);
+      }
+      .search-btn {
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 13px 32px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        transition: background 0.2s;
+        height: fit-content;
+      }
+      .search-btn:hover {
+        background: var(--purple-dark);
+      }
+
+      /* RESULTS LAYOUT */
+      .results-section {
+        max-width: 1200px;
+        margin: 0 auto 60px;
+        padding: 0 48px;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 28px;
+        align-items: start;
+      }
+
+      /* SIDEBAR FILTERS */
+      .filter-sidebar {
+        background: #fff;
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        position: sticky;
+        top: 88px;
+      }
+      .filter-sidebar h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 18px;
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+        border-bottom: 1.5px solid var(--border);
+      }
+      .filter-group {
+        margin-bottom: 22px;
+      }
+      .filter-group h4 {
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: #1a1a2e;
+      }
+      .filter-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .filter-check {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: #374151;
+        cursor: pointer;
+      }
+      .filter-check input {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--purple);
+        cursor: pointer;
+      }
+      .filter-check .count {
+        margin-left: auto;
+        color: var(--gray);
+        font-size: 12px;
+      }
+
+      .star-filter {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .star-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 8px;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .star-row:hover {
+        background: var(--light-gray);
+      }
+      .star-row.active {
+        background: var(--purple-soft);
+      }
+      .star-row input {
+        accent-color: var(--purple);
+      }
+      .star-row .stars {
+        color: var(--gold);
+        font-size: 13px;
+      }
+
+      .clear-btn {
+        width: 100%;
+        padding: 10px;
+        background: transparent;
+        border: 1.5px solid var(--border);
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        color: var(--gray);
+        transition: all 0.2s;
+      }
+      .clear-btn:hover {
+        border-color: var(--purple);
+        color: var(--purple);
+      }
+
+      /* RESULTS MAIN */
+      .results-main {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .results-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .results-count {
+        font-size: 14.5px;
+        color: var(--gray);
+      }
+      .results-count strong {
+        color: #1a1a2e;
+      }
+      .sort-select {
+        padding: 9px 14px;
+        border: 1.5px solid var(--border);
+        border-radius: 9px;
+        font-size: 13px;
+        font-family: "DM Sans", sans-serif;
+        background: #fff;
+        cursor: pointer;
+        outline: none;
+      }
+      .sort-select:focus {
+        border-color: var(--purple);
+      }
+
+      /* HOTEL CARD */
+      .hotel-card {
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        transition:
+          transform 0.25s,
+          box-shadow 0.25s;
+        display: grid;
+        grid-template-columns: 280px 1fr auto;
+        gap: 0;
+      }
+      .hotel-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 32px rgba(108, 60, 225, 0.12);
+      }
+
+      .hotel-img-wrap {
+        position: relative;
+        height: 100%;
+        min-height: 200px;
+      }
+      .hotel-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .hotel-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: var(--purple);
+        color: #fff;
+        font-size: 10.5px;
+        font-weight: 700;
+        padding: 4px 11px;
+        border-radius: 50px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      .hotel-badge.budget {
+        background: var(--green);
+      }
+      .hotel-badge.luxury {
+        background: var(--gold);
+      }
+      .hotel-fav {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 50%;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .hotel-fav:hover {
+        transform: scale(1.1);
+      }
+      .hotel-fav.saved {
+        color: #dc2626;
+      }
+
+      .hotel-info {
+        padding: 22px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .hotel-info .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 12px;
+      }
+      .hotel-info h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+      .hotel-stars {
+        color: var(--gold);
+        font-size: 13px;
+        white-space: nowrap;
+      }
+      .hotel-loc {
+        font-size: 12.5px;
+        color: var(--gray);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .hotel-rating-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .rating-pill {
+        background: var(--purple);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 7px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .rating-text {
+        font-size: 12.5px;
+        color: var(--gray);
+      }
+      .rating-text strong {
+        color: #1a1a2e;
+      }
+      .hotel-amenities {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin-top: 6px;
+      }
+      .amenity {
+        font-size: 11px;
+        color: var(--gray);
+        background: var(--light-gray);
+        padding: 4px 10px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .hotel-price-block {
+        padding: 22px 24px;
+        border-left: 1px dashed var(--border);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-end;
+        min-width: 200px;
+      }
+      .price-tag-wrap {
+        text-align: right;
+      }
+      .price-tag-wrap .from {
+        font-size: 11.5px;
+        color: var(--gray);
+      }
+      .price-tag-wrap .price {
+        font-family: "Playfair Display", serif;
+        font-size: 26px;
+        font-weight: 900;
+        color: var(--purple);
+        line-height: 1.2;
+      }
+      .price-tag-wrap .price span {
+        font-size: 11.5px;
+        color: var(--gray);
+        font-weight: 400;
+        font-family: "DM Sans", sans-serif;
+      }
+      .price-tag-wrap .deal {
+        font-size: 11.5px;
+        color: var(--green);
+        font-weight: 700;
+        margin-top: 4px;
+      }
+      .book-btn {
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 9px;
+        padding: 10px 22px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        transition: background 0.2s;
+      }
+      .book-btn:hover {
+        background: var(--purple-dark);
+      }
+      .view-btn {
+        margin-top: 8px;
+        background: transparent;
+        color: var(--purple);
+        border: 1.5px solid var(--purple);
+        border-radius: 9px;
+        padding: 8px 22px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        transition: all 0.2s;
+      }
+      .view-btn:hover {
+        background: var(--purple-soft);
+      }
+
+      /* BUDGET INSIGHT */
+      .insight-card {
+        background: linear-gradient(135deg, var(--purple-soft), #f5f3ff);
+        border: 1.5px solid var(--purple-light);
+        border-radius: 14px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .insight-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: var(--purple);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .insight-text {
+        font-size: 13.5px;
+        color: #374151;
+        line-height: 1.6;
+      }
+      .insight-text strong {
+        color: var(--purple-dark);
+      }
+
+      /* MAP MOCK */
+      .map-card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        margin-top: 18px;
+      }
+      .map-card h3 {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .map-mock {
+        width: 100%;
+        height: 180px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+        position: relative;
+        overflow: hidden;
+      }
+      .map-mock::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(108, 60, 225, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(108, 60, 225, 0.1) 1px, transparent 1px);
+        background-size: 30px 30px;
+      }
+      .map-pin {
+        position: absolute;
+        font-size: 22px;
+        filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+      }
+      .map-pin.p1 {
+        top: 30%;
+        left: 25%;
+      }
+      .map-pin.p2 {
+        top: 55%;
+        left: 50%;
+      }
+      .map-pin.p3 {
+        top: 25%;
+        left: 70%;
+      }
+      .map-pin.p4 {
+        top: 70%;
+        left: 30%;
+      }
+      .map-pin.p5 {
+        top: 60%;
+        left: 75%;
+      }
+      .map-info {
+        font-size: 12px;
+        color: var(--gray);
+        text-align: center;
+        margin-top: 10px;
+      }
+
+      /* NO RESULTS */
+      .no-results {
+        background: #fff;
+        border-radius: 16px;
+        text-align: center;
+        padding: 60px 20px;
+      }
+      .no-results .emoji {
+        font-size: 56px;
+        margin-bottom: 14px;
+      }
+      .no-results h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 22px;
+        margin-bottom: 6px;
+      }
+      .no-results p {
+        color: var(--gray);
+        font-size: 14px;
+      }
+
+      /* FOOTER */
+      footer {
+        background: var(--dark);
+        color: rgba(255, 255, 255, 0.7);
+        padding: 60px 48px 28px;
+      }
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 48px;
+      }
+      .footer-logo {
+        font-family: "Playfair Display", serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .footer-logo .logo-dot {
+        background: var(--purple-light);
+      }
+      .footer-desc {
+        font-size: 13.5px;
+        line-height: 1.8;
+      }
+      .footer-col h4 {
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 18px;
+      }
+      .footer-col ul {
+        list-style: none;
+      }
+      .footer-col ul li {
+        margin-bottom: 10px;
+      }
+      .footer-col ul li a {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 13.5px;
+        text-decoration: none;
+      }
+      .footer-col ul li a:hover {
+        color: #fff;
+      }
+      .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 24px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .hotel-card {
+        animation: fadeUp 0.4s ease both;
+      }
+      .hotel-card:nth-child(2) {
+        animation-delay: 0.05s;
+      }
+      .hotel-card:nth-child(3) {
+        animation-delay: 0.1s;
+      }
+      .hotel-card:nth-child(4) {
+        animation-delay: 0.15s;
+      }
+      .hotel-card:nth-child(5) {
+        animation-delay: 0.2s;
+      }
+
+      @media (max-width: 1024px) {
+        .results-section {
+          grid-template-columns: 1fr;
+        }
+        .filter-sidebar {
+          position: static;
+        }
+        .search-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .hotel-card {
+          grid-template-columns: 240px 1fr;
+        }
+        .hotel-price-block {
+          grid-column: 1 / -1;
+          flex-direction: row;
+          padding: 16px 24px;
+          border-left: none;
+          border-top: 1px dashed var(--border);
+        }
+      }
+      @media (max-width: 768px) {
+        nav {
+          padding: 0 20px;
+        }
+        .nav-links {
+          display: none;
+        }
+        .hotels-header {
+          padding: 40px 20px 70px;
+        }
+        .hotels-header h1 {
+          font-size: 30px;
+        }
+        .search-section,
+        .results-section {
+          padding: 0 20px;
+        }
+        .search-panel {
+          padding: 20px;
+        }
+        .search-grid {
+          grid-template-columns: 1fr;
+        }
+        .hotel-card {
+          grid-template-columns: 1fr;
+        }
+        .hotel-img-wrap {
+          height: 180px;
+        }
+        .footer-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav>
+      <a href="index.html" class="logo">
+        <span class="logo-dot"></span>RouteReady
+      </a>
+      <div
+        class="hamburger"
+        onclick="
+          document.querySelector('.nav-links').classList.toggle('active')
+        "
+      >
+        &#9776;
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="destinations.html">Destinations</a></li>
+        <li><a href="planner.html">AI Planner</a></li>
+        <li><a href="hidden-gems.html">Hidden Gems</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a
+          href="signin.html"
+          style="
+            text-decoration: none;
+            color: var(--gray);
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 16px;
+          "
+          >Sign In</a
+        >
+        <a href="signup.html" class="nav-cta">Get Started</a>
+      </div>
+    </nav>
+
+    <!-- HEADER -->
+    <section class="hotels-header">
+      <h1>Find Hotels by Budget</h1>
+      <p>
+        Smart hotel matching powered by AI. Tell us your budget and we'll find
+        the best stays that fit.
+      </p>
+    </section>
+
+    <!-- SEARCH PANEL -->
+    <section class="search-section">
+      <div class="search-panel">
+        <div class="search-grid">
+          <div class="search-field">
+            <label>Destination</label>
+            <select id="city">
+              <option value="all">All Cities</option>
+              <option value="islamabad" selected>Islamabad</option>
+              <option value="lahore">Lahore</option>
+              <option value="karachi">Karachi</option>
+              <option value="hunza">Hunza</option>
+            </select>
+          </div>
+          <div class="search-field">
+            <label>Check-in</label>
+            <input type="date" id="checkin" value="2026-04-25" />
+          </div>
+          <div class="search-field">
+            <label>Check-out</label>
+            <input type="date" id="checkout" value="2026-04-27" />
+          </div>
+          <div class="search-field">
+            <label>Guests</label>
+            <select id="guests">
+              <option>1 Guest</option>
+              <option selected>2 Guests</option>
+              <option>3 Guests</option>
+              <option>4+ Guests</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="budget-row">
+          <div class="budget-slider">
+            <div class="top">
+              <span class="label">Your Budget per Night</span>
+              <span class="val" id="budgetVal">PKR 40,000</span>
+            </div>
+            <input
+              type="range"
+              id="budget"
+              min="2000"
+              max="40000"
+              step="500"
+              value="40000"
+            />
+          </div>
+          <button class="search-btn" onclick="filterHotels()">
+            🔍 Search Hotels
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="results-section">
+      <!-- FILTERS SIDEBAR -->
+      <aside class="filter-sidebar">
+        <h3>Filters</h3>
+
+        <div class="filter-group">
+          <h4>Star Rating</h4>
+          <div class="star-filter">
+            <label class="star-row"
+              ><input type="checkbox" class="star-cb" value="5" /><span
+                class="stars"
+                >★★★★★</span
+              ><span class="count">3</span></label
+            >
+            <label class="star-row"
+              ><input type="checkbox" class="star-cb" value="4" /><span
+                class="stars"
+                >★★★★</span
+              ><span class="count">5</span></label
+            >
+            <label class="star-row"
+              ><input type="checkbox" class="star-cb" value="3" /><span
+                class="stars"
+                >★★★</span
+              ><span class="count">4</span></label
+            >
+            <label class="star-row"
+              ><input type="checkbox" class="star-cb" value="2" /><span
+                class="stars"
+                >★★</span
+              ><span class="count">2</span></label
+            >
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h4>Amenities</h4>
+          <div class="filter-options">
+            <label class="filter-check"
+              ><input type="checkbox" class="amen-cb" value="WiFi" /> Free WiFi
+              <span class="count">12</span></label
+            >
+            <label class="filter-check"
+              ><input type="checkbox" class="amen-cb" value="Pool" /> Swimming
+              Pool <span class="count">6</span></label
+            >
+            <label class="filter-check"
+              ><input type="checkbox" class="amen-cb" value="Gym" /> Fitness
+              Center <span class="count">8</span></label
+            >
+            <label class="filter-check"
+              ><input type="checkbox" class="amen-cb" value="Breakfast" /> Free
+              Breakfast <span class="count">9</span></label
+            >
+            <label class="filter-check"
+              ><input type="checkbox" class="amen-cb" value="Parking" /> Free
+              Parking <span class="count">11</span></label
+            >
+            <label class="filter-check"
+              ><input type="checkbox" class="amen-cb" value="Spa" /> Spa &
+              Wellness <span class="count">4</span></label
+            >
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h4>Property Type</h4>
+          <div class="filter-options">
+            <label class="filter-check"
+              ><input type="checkbox" /> Hotels
+              <span class="count">10</span></label
+            >
+            <label class="filter-check"
+              ><input type="checkbox" /> Guesthouses
+              <span class="count">3</span></label
+            >
+            <label class="filter-check"
+              ><input type="checkbox" /> Resorts
+              <span class="count">2</span></label
+            >
+            <label class="filter-check"
+              ><input type="checkbox" /> Apartments
+              <span class="count">5</span></label
+            >
+          </div>
+        </div>
+
+        <button class="clear-btn" onclick="clearFilters()">
+          Clear All Filters
+        </button>
+
+        <!-- MAP MOCK -->
+        <div class="map-card">
+          <h3>📍 Hotels Near You</h3>
+          <div class="map-mock">
+            <div class="map-pin p1">📍</div>
+            <div class="map-pin p2">📍</div>
+            <div class="map-pin p3">📍</div>
+            <div class="map-pin p4">📍</div>
+            <div class="map-pin p5">📍</div>
+          </div>
+          <div class="map-info">5 hotels within 8 km</div>
+        </div>
+      </aside>
+
+      <!-- RESULTS MAIN -->
+      <div class="results-main">
+        <div class="results-bar">
+          <div class="results-count">
+            <strong id="resultCount">5</strong> hotels match your budget
+          </div>
+          <select class="sort-select" id="sortBy" onchange="filterHotels()">
+            <option value="recommended">Recommended</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="rating">Highest Rated</option>
+          </select>
+        </div>
+
+        <!-- AI INSIGHT -->
+        <div class="insight-card">
+          <div class="insight-icon">✨</div>
+          <div class="insight-text">
+            <strong>AI Insight:</strong> For your
+            <strong id="insightBudget">PKR 12,000</strong>/night budget in
+            <strong id="insightCity">Islamabad</strong>, we recommend 4-star
+            hotels in the F-7/F-8 sectors — best value for location and
+            amenities.
+          </div>
+        </div>
+
+        <div id="hotelList">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo">
+            <span class="logo-dot"></span>RouteReady
+          </div>
+          <p class="footer-desc">
+            AI-powered city exploration for the modern traveler. Discover
+            Pakistan's finest destinations with personalized itineraries.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="destinations.html">Destinations</a></li>
+            <li><a href="planner.html">AI Planner</a></li>
+            <li><a href="hotels.html">Hotels</a></li>
+            <li><a href="hidden-gems.html">Hidden Gems</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="javascript:void(0)">Help Center</a></li>
+            <li><a href="javascript:void(0)">Privacy Policy</a></li>
+            <li><a href="javascript:void(0)">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Us</h4>
+          <ul>
+            <li><a href="javascript:void(0)">📧 hello@routeready.pk</a></li>
+            <li><a href="javascript:void(0)">📞 +92 300 1234567</a></li>
+            <li><a href="javascript:void(0)">📍 Islamabad, Pakistan</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 RouteReady. All rights reserved.</span>
+        <span>Made with ♥ in Pakistan</span>
+      </div>
+    </footer>
+
+    <script>
+      const hotels = [
+        // ISLAMABAD
+        {
+          name: "Serena Hotel Islamabad",
+          city: "Islamabad",
+          area: "Diplomatic Enclave",
+          img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80",
+          stars: 5,
+          rating: 9.3,
+          reviewCount: 2150,
+          price: 35000,
+          original: 40000,
+          badge: "Top Luxury",
+          badgeClass: "luxury",
+          amenities: ["WiFi", "Pool", "Spa", "Restaurant", "Gym"],
+        },
+        {
+          name: "Marriott Islamabad",
+          city: "Islamabad",
+          area: "Aga Khan Road",
+          img: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80",
+          stars: 5,
+          rating: 8.9,
+          reviewCount: 1800,
+          price: 30000,
+          original: 35000,
+          badge: "Popular",
+          badgeClass: "",
+          amenities: ["WiFi", "Pool", "Restaurant", "Gym", "Parking"],
+        },
+        {
+          name: "PC Hotel Islamabad",
+          city: "Islamabad",
+          area: "Blue Area",
+          img: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80",
+          stars: 4,
+          rating: 8.5,
+          reviewCount: 1200,
+          price: 18000,
+          original: 22000,
+          badge: "Business",
+          badgeClass: "",
+          amenities: ["WiFi", "Restaurant", "Gym", "Parking"],
+        },
+        {
+          name: "Envoy Continental",
+          city: "Islamabad",
+          area: "Blue Area",
+          img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80",
+          stars: 3,
+          rating: 8.1,
+          reviewCount: 850,
+          price: 8000,
+          original: 10000,
+          badge: "Value",
+          badgeClass: "",
+          amenities: ["WiFi", "Restaurant", "Parking"],
+        },
+        {
+          name: "Islamabad Backpackers Hostel",
+          city: "Islamabad",
+          area: "F-6",
+          img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80",
+          stars: 1,
+          rating: 7.9,
+          reviewCount: 400,
+          price: 2500,
+          original: 0,
+          badge: "Budget",
+          badgeClass: "",
+          amenities: ["WiFi", "Common Room", "Lockers"],
+        },
+
+        // LAHORE
+        {
+          name: "Pearl Continental Lahore",
+          city: "Lahore",
+          area: "Mall Road",
+          img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80",
+          stars: 5,
+          rating: 9.1,
+          reviewCount: 2500,
+          price: 32000,
+          original: 38000,
+          badge: "Top Luxury",
+          badgeClass: "luxury",
+          amenities: ["WiFi", "Pool", "Spa", "Restaurant", "Gym"],
+        },
+        {
+          name: "Avari Hotel Lahore",
+          city: "Lahore",
+          area: "Mall Road",
+          img: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80",
+          stars: 4,
+          rating: 8.8,
+          reviewCount: 1900,
+          price: 20000,
+          original: 24000,
+          badge: "Popular",
+          badgeClass: "",
+          amenities: ["WiFi", "Pool", "Restaurant", "Gym"],
+        },
+        {
+          name: "Faletti's Hotel",
+          city: "Lahore",
+          area: "Egerton Road",
+          img: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80",
+          stars: 4,
+          rating: 8.6,
+          reviewCount: 1560,
+          price: 15000,
+          original: 18000,
+          badge: "Heritage",
+          badgeClass: "",
+          amenities: ["WiFi", "Restaurant", "Historic Building", "Parking"],
+        },
+        {
+          name: "Hotel One Lahore",
+          city: "Lahore",
+          area: "Gulberg",
+          img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80",
+          stars: 3,
+          rating: 8.2,
+          reviewCount: 1100,
+          price: 7000,
+          original: 9000,
+          badge: "Value",
+          badgeClass: "",
+          amenities: ["WiFi", "Restaurant", "Parking"],
+        },
+        {
+          name: "Lahore Backpackers",
+          city: "Lahore",
+          area: "Mall Road",
+          img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80",
+          stars: 1,
+          rating: 7.8,
+          reviewCount: 650,
+          price: 2000,
+          original: 0,
+          badge: "Budget",
+          badgeClass: "",
+          amenities: ["WiFi", "Common Room"],
+        },
+
+        // KARACHI
+        {
+          name: "PC Hotel Karachi",
+          city: "Karachi",
+          area: "Club Road",
+          img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80",
+          stars: 5,
+          rating: 9.0,
+          reviewCount: 3100,
+          price: 38000,
+          original: 45000,
+          badge: "Top Luxury",
+          badgeClass: "luxury",
+          amenities: ["WiFi", "Pool", "Spa", "Restaurant", "Gym", "Beach View"],
+        },
+        {
+          name: "Movenpick Karachi",
+          city: "Karachi",
+          area: "Club Road",
+          img: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80",
+          stars: 5,
+          rating: 8.9,
+          reviewCount: 2600,
+          price: 40000,
+          original: 46000,
+          badge: "Popular",
+          badgeClass: "",
+          amenities: ["WiFi", "Pool", "Spa", "Restaurant", "Gym"],
+        },
+        {
+          name: "Ramada Karachi",
+          city: "Karachi",
+          area: "Airport",
+          img: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80",
+          stars: 4,
+          rating: 8.4,
+          reviewCount: 1800,
+          price: 16000,
+          original: 20000,
+          badge: "Business",
+          badgeClass: "",
+          amenities: ["WiFi", "Pool", "Restaurant", "Gym"],
+        },
+        {
+          name: "Hotel Mehran",
+          city: "Karachi",
+          area: "Shahrah-e-Faisal",
+          img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80",
+          stars: 3,
+          rating: 8.0,
+          reviewCount: 1300,
+          price: 9000,
+          original: 11000,
+          badge: "Value",
+          badgeClass: "",
+          amenities: ["WiFi", "Restaurant", "Parking"],
+        },
+        {
+          name: "Karachi Hostel",
+          city: "Karachi",
+          area: "Saddar",
+          img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80",
+          stars: 1,
+          rating: 7.6,
+          reviewCount: 500,
+          price: 2200,
+          original: 0,
+          badge: "Budget",
+          badgeClass: "",
+          amenities: ["WiFi", "Common Room", "Lockers"],
+        },
+
+        // HUNZA
+        {
+          name: "Serena Hunza",
+          city: "Hunza",
+          area: "Karimabad",
+          img: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80",
+          stars: 4,
+          rating: 9.4,
+          reviewCount: 1400,
+          price: 22000,
+          original: 25000,
+          badge: "Scenic",
+          badgeClass: "luxury",
+          amenities: ["WiFi", "Restaurant", "Mountain View", "Garden"],
+        },
+        {
+          name: "Eagle Nest Hotel",
+          city: "Hunza",
+          area: "Duikar",
+          img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80",
+          stars: 3,
+          rating: 9.0,
+          reviewCount: 1600,
+          price: 12000,
+          original: 15000,
+          badge: "Views",
+          badgeClass: "",
+          amenities: ["WiFi", "Restaurant", "Panoramic View"],
+        },
+        {
+          name: "Hunza Explorers Inn",
+          city: "Hunza",
+          area: "Aliabad",
+          img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80",
+          stars: 2,
+          rating: 8.4,
+          reviewCount: 850,
+          price: 5000,
+          original: 7000,
+          badge: "Value",
+          badgeClass: "",
+          amenities: ["WiFi", "Basic Meals", "Mountain View"],
+        },
+        {
+          name: "Old Hunza Inn",
+          city: "Hunza",
+          area: "Karimabad",
+          img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80",
+          stars: 1,
+          rating: 8.2,
+          reviewCount: 1200,
+          price: 3000,
+          original: 4000,
+          badge: "Budget",
+          badgeClass: "",
+          amenities: ["WiFi", "Meals Included"],
+        },
+      ];
+
+      const slider = document.getElementById("budget");
+      const budgetVal = document.getElementById("budgetVal");
+      slider.addEventListener("input", () => {
+        const v = parseInt(slider.value);
+        budgetVal.textContent = "PKR " + v.toLocaleString();
+        document.getElementById("insightBudget").textContent =
+          "PKR " + v.toLocaleString();
+      });
+
+      function getSelectedStars() {
+        return Array.from(document.querySelectorAll(".star-cb:checked")).map(
+          (c) => parseInt(c.value),
+        );
+      }
+      function getSelectedAmenities() {
+        return Array.from(document.querySelectorAll(".amen-cb:checked")).map(
+          (c) => c.value,
+        );
+      }
+
+      function filterHotels() {
+        const budget = parseInt(slider.value);
+        const city = document.getElementById("city").value;
+        const sort = document.getElementById("sortBy").value;
+        const stars = getSelectedStars();
+        const amens = getSelectedAmenities();
+
+        let list = hotels.filter((h) => {
+          if (h.price > budget) return false;
+          if (city !== "all" && h.city.toLowerCase() !== city) return false;
+          if (stars.length && !stars.includes(h.stars)) return false;
+          if (amens.length && !amens.every((a) => h.amenities.includes(a)))
+            return false;
+          return true;
+        });
+
+        if (sort === "price-low") list.sort((a, b) => a.price - b.price);
+        else if (sort === "price-high") list.sort((a, b) => b.price - a.price);
+        else if (sort === "rating") list.sort((a, b) => b.rating - a.rating);
+        else list.sort((a, b) => b.rating - a.rating); // recommended
+
+        const cityDisplay =
+          city === "all"
+            ? "All Cities"
+            : city.charAt(0).toUpperCase() + city.slice(1);
+        document.getElementById("insightCity").textContent = cityDisplay;
+        renderHotels(list);
+      }
+
+      function renderHotels(list) {
+        const wrap = document.getElementById("hotelList");
+        document.getElementById("resultCount").textContent = list.length;
+
+        if (list.length === 0) {
+          wrap.innerHTML = `
+        <div class="no-results">
+          <div class="emoji">🏨</div>
+          <h3>No hotels match your filters</h3>
+          <p>Try increasing your budget or removing some filters.</p>
+        </div>`;
+          return;
+        }
+
+        const ratingLabel = (r) =>
+          r >= 9
+            ? "Exceptional"
+            : r >= 8.5
+              ? "Excellent"
+              : r >= 8
+                ? "Very Good"
+                : r >= 7.5
+                  ? "Good"
+                  : "Pleasant";
+
+        wrap.innerHTML = list
+          .map(
+            (h) => `
+      <div class="hotel-card" data-city="${h.city.toLowerCase()}" data-stars="${h.stars}" data-price="${h.price}">
+        <div class="hotel-img-wrap">
+          <img class="hotel-img" src="${h.img}" alt="${h.name}" onerror="this.src='https://via.placeholder.com/600x400/6C3CE1/ffffff?text=${encodeURIComponent(h.name)}'"/>
+          <span class="hotel-badge ${h.badgeClass}">${h.badge}</span>
+          <button class="hotel-fav" onclick="toggleFav(this)">♡</button>
+        </div>
+        <div class="hotel-info">
+          <div class="top-row">
+            <h3>${h.name}</h3>
+            <span class="hotel-stars">${"★".repeat(h.stars)}</span>
+          </div>
+          <div class="hotel-loc">📍 ${h.area}, ${h.city}</div>
+          <div class="hotel-rating-row">
+            <span class="rating-pill">${h.rating}</span>
+            <span class="rating-text"><strong>${ratingLabel(h.rating)}</strong> · ${h.reviewCount.toLocaleString()} reviews</span>
+          </div>
+          <div class="hotel-amenities">
+            ${h.amenities.map((a) => `<span class="amenity">${amenityIcon(a)} ${a}</span>`).join("")}
+          </div>
+        </div>
+        <div class="hotel-price-block">
+          <div class="price-tag-wrap">
+            <div class="from">From</div>
+            <div class="price">PKR ${h.price.toLocaleString()} <span>/ night</span></div>
+            ${h.original ? `<div class="deal">Save PKR ${(h.original - h.price).toLocaleString()}</div>` : ""}
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px; align-items: stretch; min-width: 130px;">
+            <button class="book-btn">Book Now</button>
+            <button class="view-btn">View Details</button>
+          </div>
+        </div>
+      </div>
+    `,
+          )
+          .join("");
+      }
+
+      function amenityIcon(a) {
+        const map = {
+          WiFi: "📶",
+          Pool: "🏊",
+          Gym: "💪",
+          Breakfast: "🍳",
+          Parking: "🅿️",
+          Spa: "💆",
+          Restaurant: "🍽️",
+          "Common Room": "🛋️",
+          Lockers: "🛅",
+          "Historic Building": "🏛️",
+          "Beach View": "🏖️",
+          "Mountain View": "🏔️",
+          Garden: "🌳",
+          "Panoramic View": "⛰️",
+          "Basic Meals": "🍲",
+          "Meals Included": "🍱",
+        };
+        return map[a] || "✓";
+      }
+
+      function toggleFav(btn) {
+        btn.classList.toggle("saved");
+        btn.textContent = btn.classList.contains("saved") ? "♥" : "♡";
+      }
+
+      function clearFilters() {
+        document
+          .querySelectorAll(".star-cb, .amen-cb")
+          .forEach((c) => (c.checked = false));
+        document
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach((c) => (c.checked = false));
+        filterHotels();
+      }
+
+      // listen for filter changes
+      document
+        .querySelectorAll(".star-cb, .amen-cb")
+        .forEach((c) => c.addEventListener("change", filterHotels));
+      document.getElementById("city").addEventListener("change", filterHotels);
+      document.getElementById("budget").addEventListener("input", filterHotels);
+      document
+        .getElementById("sortBy")
+        .addEventListener("change", filterHotels);
+
+      // initial render
+      filterHotels();
+    </script>
+
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      .hamburger {
+        display: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--purple);
+      }
+      @media (max-width: 768px) {
+        .hamburger {
+          display: block;
+        }
+        .nav-links {
+          display: none;
+          flex-direction: column;
+          position: absolute;
+          top: 64px;
+          left: 0;
+          right: 0;
+          background: #fff;
+          padding: 20px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .nav-links.active {
+          display: flex;
+        }
+        .nav-actions {
+          display: none;
+        }
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const currentPage =
+          window.location.pathname.split("/").pop() || "index.html";
+        const navLinks = document.querySelectorAll(".nav-links a");
+        navLinks.forEach((link) => {
+          if (link.getAttribute("href") === currentPage) {
+            link.style.color = "#6C3CE1";
+            link.style.fontWeight = "600";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
