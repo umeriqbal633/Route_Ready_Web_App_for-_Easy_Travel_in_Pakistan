@@ -293,43 +293,46 @@
 </footer>
 
 <script>
-  const destinations = [
-  { name: "Faisal Mosque", city: "Islamabad", category: "Religious", rating: 4.9, price: 0, badge: 'Iconic', img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80", desc: "An iconic white marble mosque featuring contemporary Islamic architecture." },
-  { name: "Daman-e-Koh", city: "Islamabad", category: "Nature", rating: 4.7, price: 50, badge: 'Viewpoint', img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", desc: "A hilltop garden offering panoramic views of the capital city." },
-  { name: "Pakistan Monument", city: "Islamabad", category: "Landmark", rating: 4.8, price: 100, badge: 'Heritage', img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80", desc: "A bronze lotus petal monument symbolizing the country's diverse cultures." },
-  { name: "Margalla Hills", city: "Islamabad", category: "Nature", rating: 4.9, price: 0, badge: 'Trails', img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80", desc: "Green hills harboring popular hiking trails and dense forests." },
-  { name: "Lok Virsa Museum", city: "Islamabad", category: "Culture", rating: 4.6, price: 200, badge: 'Museum', img: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&q=80", desc: "A cultural museum preserving the rich heritage and traditions of Pakistan." },
-  { name: "Centaurus Mall", city: "Islamabad", category: "Shopping", rating: 4.5, price: 0, badge: 'Modern', img: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800&q=80", desc: "A modern, multi-story shopping mall with premium brands and food." },
-
-  { name: "Badshahi Mosque", city: "Lahore", category: "Religious", rating: 4.9, price: 50, badge: 'Grand', img: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800&q=80", desc: "A massive, beautifully crafted Mughal-era mosque." },
-  { name: "Lahore Fort", city: "Lahore", category: "Historic", rating: 4.8, price: 100, badge: 'UNESCO', img: "https://images.unsplash.com/photo-1599413987323-b2b8c0d7d9c8?w=800&q=80", desc: "A historical fort complex reflecting royal Mughal architecture." },
-  { name: "Shalimar Gardens", city: "Lahore", category: "Nature", rating: 4.5, price: 50, badge: 'Scenic', img: "https://images.unsplash.com/photo-1585325701165-f1f97d41bb6b?w=800&q=80", desc: "Terraced Mughal gardens built as a royal paradise of water and flora." },
-  { name: "Walled City Lahore", city: "Lahore", category: "Culture", rating: 4.7, price: 0, badge: 'Bazaars', img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80", desc: "The bustling historic heart of the city full of lively bazaars and narrow streets." },
-  { name: "Wagah Border", city: "Lahore", category: "Landmark", rating: 4.8, price: 0, badge: 'Patriotic', img: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&q=80", desc: "Famous for the daily, energetic flag-lowering military ceremony." },
-  { name: "Food Street Lahore", city: "Lahore", category: "Food", rating: 4.9, price: 1500, badge: 'Culinary', img: "https://images.unsplash.com/photo-1567337710282-00832b415979?w=800&q=80", desc: "A lively culinary hub serving authentic traditional Lahori delicacies." },
-
-  { name: "Clifton Beach", city: "Karachi", category: "Beach", rating: 4.4, price: 0, badge: 'Relax', img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80", desc: "A popular city beach along the Arabian Sea coast." },
-  { name: "Quaid Mausoleum", city: "Karachi", category: "Historic", rating: 4.7, price: 50, badge: 'Mazar', img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80", desc: "The serene white marble resting place of Pakistan's founder." },
-  { name: "Mohatta Palace", city: "Karachi", category: "Culture", rating: 4.6, price: 150, badge: 'Museum', img: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&q=80", desc: "A grand, intricately designed palace serving as an art and heritage museum." },
-  { name: "Port Grand", city: "Karachi", category: "Food", rating: 4.5, price: 500, badge: 'Dining', img: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80", desc: "A scenic waterfront complex full of diverse food stands and entertainment." },
-  { name: "Empress Market", city: "Karachi", category: "Shopping", rating: 4.3, price: 0, badge: 'Bazaar', img: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800&q=80", desc: "A historic, colonial-era market bustling with fresh goods and spices." },
-  { name: "Manora Island", city: "Karachi", category: "Nature", rating: 4.2, price: 200, badge: 'Island', img: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80", desc: "A small, peaceful island accessible by boat featuring a tall lighthouse." },
-
-  { name: "Rakaposhi View Point", city: "Hunza", category: "Nature", rating: 4.9, price: 0, badge: 'Vista', img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80", desc: "A breathtaking roadside stop with direct views of the 7,788m Rakaposhi peak." },
-  { name: "Attabad Lake", city: "Hunza", category: "Nature", rating: 5.0, price: 300, badge: 'Lake', img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&q=80", desc: "A stunning turquoise blue lake perfect for boating and photography." },
-  { name: "Baltit Fort", city: "Hunza", category: "Historic", rating: 4.8, price: 500, badge: 'Ancient', img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", desc: "An ancient fort perched high offering sweeping views of the valley." },
-  { name: "Eagle Nest", city: "Hunza", category: "Adventure", rating: 4.9, price: 200, badge: 'High Point', img: "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&q=80", desc: "The highest viewpoint in Hunza, famous for majestic golden hour vistas." },
-  { name: "Karimabad Bazaar", city: "Hunza", category: "Shopping", rating: 4.6, price: 0, badge: 'Local', img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80", desc: "A vibrant local market rich with handicrafts, gems, and dry fruits." },
-  { name: "Passu Cones", city: "Hunza", category: "Adventure", rating: 5.0, price: 0, badge: 'Peaks', img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", desc: "Dramatic, jagged rock spires standing majestically along the highway." },
-
-  { name: "Malam Jabba", city: "Swat", category: "Adventure", rating: 4.8, price: 1000, badge: 'Ski', img: "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&q=80", desc: "A premier hill station and ski resort ideal for winter sports." },
-  { name: "Mingora Bazaar", city: "Swat", category: "Shopping", rating: 4.2, price: 0, badge: 'Market', img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80", desc: "The main commercial hub of the valley, offering everything from clothes to spices." },
-  { name: "Swat River", city: "Swat", category: "Nature", rating: 4.7, price: 0, badge: 'Scenic', img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&q=80", desc: "A fast-flowing, crystal-clear river coursing through the picturesque green valley." },
-  { name: "Butkara Stupa", city: "Swat", category: "Historic", rating: 4.4, price: 200, badge: 'Ruins', img: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&q=80", desc: "Ancient Buddhist archaeological ruins unearthing Swat's profound history." }
-];
-
+  const API = 'http://localhost:5000';
+  let allDestinations = [];
   let currentCategory = 'all';
 
+  // ── FETCH FROM BACKEND ──────────────────────────────────────────────
+  async function loadDestinations() {
+    const grid = document.getElementById('destGrid');
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#6B7280;font-size:16px;">⏳ Loading destinations...</div>`;
+    try {
+      const res = await fetch(`${API}/api/destinations?limit=200`);
+      const data = await res.json();
+      if (data.success && data.data) {
+        // Normalise API shape → same shape the render fn expects
+        allDestinations = data.data.map(d => ({
+          id: d.id,
+          name: d.name,
+          city: d.city,
+          category: d.category,
+          rating: d.averageRating || d.rating || 4.5,
+          price: d.entryFee || d.price || 0,
+          badge: d.badge || d.category,
+          img: d.image || d.imageUrl || d.img || `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80`,
+          desc: d.description || d.desc || ''
+        }));
+      } else {
+        throw new Error('Bad response');
+      }
+    } catch (err) {
+      console.error('API error:', err);
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;">
+        <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+        <h3 style="color:#1a1a2e;margin-bottom:8px;">Could not connect to server</h3>
+        <p style="color:#6B7280;">Make sure the backend is running: <code>npm run dev</code></p>
+      </div>`;
+      return;
+    }
+    filterDestinations();
+  }
+
+  // ── RENDER ──────────────────────────────────────────────────────────
   function renderDestinations(list) {
     const grid = document.getElementById('destGrid');
     document.getElementById('resultCount').textContent = list.length;
@@ -343,48 +346,71 @@
       return;
     }
     grid.innerHTML = list.map(d => `
-      <div class="dest-card" data-city="${d.city.toLowerCase()}" data-category="${d.category}" onclick="window.location.href=\'destination-detail.html?name=${encodeURIComponent(d.name)}\'">
+      <div class="dest-card" data-city="${d.city.toLowerCase()}" data-category="${d.category}" onclick="window.location.href='destination-detail.html?id=${d.id}&name=${encodeURIComponent(d.name)}'">
         <div class="dest-img-wrap">
           <img class="dest-img" src="${d.img}" alt="${d.name}" onerror="this.src='https://via.placeholder.com/600x400/6C3CE1/ffffff?text=${encodeURIComponent(d.name)}'"/>
           <span class="dest-badge">${d.badge}</span>
-          <button class="dest-fav" onclick="event.stopPropagation(); toggleFav(this)">♡</button>
+          <button class="dest-fav" onclick="event.stopPropagation(); toggleFav(this, '${d.id}')">♡</button>
         </div>
         <div class="dest-info">
           <h3>${d.name}</h3>
           <div class="dest-location">📍 ${d.city}, Pakistan</div>
-          <p style="font-size: 13.5px; color: var(--gray); margin: 8px 0; line-height: 1.6;">${d.desc}</p> 
-              <div class="dest-meta">
-            <span class="dest-rating">★ ${d.rating}</span>
+          <p style="font-size:13.5px;color:var(--gray);margin:8px 0;line-height:1.6;">${d.desc}</p>
+          <div class="dest-meta">
+            <span class="dest-rating">★ ${Number(d.rating).toFixed(1)}</span>
             <span class="dest-price">${d.price === 0 ? 'Free Entry' : 'PKR ' + d.price}</span>
           </div>
         </div>
       </div>
     `).join('');
+
+    // Mark already-saved destinations
+    const saved = JSON.parse(localStorage.getItem('rr_saved') || '[]');
+    document.querySelectorAll('.dest-fav').forEach(btn => {
+      const id = btn.getAttribute('onclick').match(/'([^']+)'\)/)?.[1];
+      if (saved.includes(id)) { btn.classList.add('saved'); btn.textContent = '♥'; }
+    });
   }
 
-  function toggleFav(btn) {
+  // ── FAV / SAVE ───────────────────────────────────────────────────────
+  async function toggleFav(btn, destId) {
     btn.classList.toggle('saved');
     btn.textContent = btn.classList.contains('saved') ? '♥' : '♡';
+    const token = localStorage.getItem('rr_token');
+    if (token && destId) {
+      try {
+        await fetch(`${API}/api/destinations/${destId}/save`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+      } catch(e) { console.warn('Save failed:', e); }
+    }
+    // Also persist locally
+    let saved = JSON.parse(localStorage.getItem('rr_saved') || '[]');
+    if (btn.classList.contains('saved')) { if (!saved.includes(destId)) saved.push(destId); }
+    else { saved = saved.filter(id => id !== destId); }
+    localStorage.setItem('rr_saved', JSON.stringify(saved));
   }
 
+  // ── FILTER & SORT ────────────────────────────────────────────────────
   function filterDestinations() {
-      const search = document.getElementById('searchInput').value.toLowerCase();
-      const category = document.getElementById('categoryFilter').value;
-      const city = document.getElementById('cityFilter').value;
-      const sort = document.getElementById('sortFilter').value;
+    const search   = document.getElementById('searchInput').value.toLowerCase();
+    const category = document.getElementById('categoryFilter').value;
+    const city     = document.getElementById('cityFilter').value;
+    const sort     = document.getElementById('sortFilter').value;
 
-      let filtered = destinations.filter(d => {
-        const matchSearch = d.name.toLowerCase().includes(search) || d.city.toLowerCase().includes(search);
-        const matchCat = category === 'all' || d.category === category;
-        const matchCity = city === 'all' || d.city.toLowerCase() === city;
-        const matchPill = currentCategory === 'all' || d.category === currentCategory;
-        return matchSearch && matchCat && matchCity && matchPill;
-      });
+    let filtered = allDestinations.filter(d => {
+      const matchSearch = d.name.toLowerCase().includes(search) || d.city.toLowerCase().includes(search) || d.desc.toLowerCase().includes(search);
+      const matchCat    = category === 'all' || d.category === category;
+      const matchCity   = city === 'all' || d.city.toLowerCase() === city;
+      const matchPill   = currentCategory === 'all' || d.category === currentCategory;
+      return matchSearch && matchCat && matchCity && matchPill;
+    });
 
-    if (sort === 'rating') filtered.sort((a, b) => b.rating - a.rating);
-    else if (sort === 'price-low') filtered.sort((a, b) => a.price - b.price);
-    else if (sort === 'price-high') filtered.sort((a, b) => b.price - a.price);
-    else if (sort === 'name') filtered.sort((a, b) => a.name.localeCompare(b.name));
+    if (sort === 'rating')      filtered.sort((a,b) => b.rating - a.rating);
+    else if (sort === 'price-low')  filtered.sort((a,b) => a.price - b.price);
+    else if (sort === 'price-high') filtered.sort((a,b) => b.price - a.price);
+    else if (sort === 'name')   filtered.sort((a,b) => a.name.localeCompare(b.name));
 
     renderDestinations(filtered);
   }
@@ -399,11 +425,18 @@
 
   document.getElementById('searchInput').addEventListener('input', filterDestinations);
   document.getElementById('cityFilter').addEventListener('change', filterDestinations);
-    document.getElementById('categoryFilter').addEventListener('change', filterDestinations);
+  document.getElementById('categoryFilter').addEventListener('change', filterDestinations);
   document.getElementById('sortFilter').addEventListener('change', filterDestinations);
 
-  // initial
-  filterDestinations();
+  // ── BOOT ─────────────────────────────────────────────────────────────
+  loadDestinations();
+
+  // ── OLD STATIC DATA REMOVED ──────────────────────────────────────────
+  // All data now fetched live from /api/destinations
+
+  // keep dummy so nothing breaks if referenced elsewhere
+  const destinations = [];
+
 </script>
 
     <style>
@@ -429,5 +462,31 @@
       });
     </script>
 
-  </body>
+  
+    <script>
+      // Auth UI state update
+      document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('rr_token');
+        const userStr = localStorage.getItem('rr_user');
+        const navActions = document.querySelector('.nav-actions');
+        
+        if (token && userStr && navActions) {
+          try {
+            const user = JSON.parse(userStr);
+            navActions.innerHTML = `
+              <span style="font-weight: 500; font-size: 14px; margin-right: 16px; color: var(--purple);">Hi, ${user.name}</span>
+              <button id="logoutBtn" style="background: none; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">Logout</button>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+              localStorage.removeItem('rr_token');
+              localStorage.removeItem('rr_user');
+              window.location.href = 'index.html';
+            });
+          } catch(e) {
+            console.error('Error parsing user data', e);
+          }
+        }
+      });
+    </script>
+</body>
 </html>

@@ -191,14 +191,14 @@
       <h2>Create Account</h2>
       <p class="subtitle">Already have an account? <a href="signin.html">Sign in</a></p>
 
-      <form action="signin.html"><div class="form-row">
+      <form><div class="form-row">
         <div class="form-group">
           <label>First Name</label>
-          <input type="text" placeholder="e.g. Ahmed"/>
+          <input type="text" id="firstName" placeholder="e.g. Ahmed"/>
         </div>
         <div class="form-group">
           <label>Last Name</label>
-          <input type="text" placeholder="e.g. Khan"/>
+          <input type="text" id="lastName" placeholder="e.g. Khan"/>
         </div>
       </div>
 
@@ -270,5 +270,115 @@
       });
     </script>
 
-  </body>
+  
+    <script>
+      // Auth UI state update
+      document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('rr_token');
+        const userStr = localStorage.getItem('rr_user');
+        const navActions = document.querySelector('.nav-actions');
+        
+        if (token && userStr && navActions) {
+          try {
+            const user = JSON.parse(userStr);
+            navActions.innerHTML = `
+              <span style="font-weight: 500; font-size: 14px; margin-right: 16px; color: var(--purple);">Hi, ${user.name}</span>
+              <button id="logoutBtn" style="background: none; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">Logout</button>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+              localStorage.removeItem('rr_token');
+              localStorage.removeItem('rr_user');
+              window.location.href = 'index.html';
+            });
+          } catch(e) {
+            console.error('Error parsing user data', e);
+          }
+        }
+      });
+    </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const signupForm = document.querySelector('form');
+    if (!signupForm) return;
+
+    // Create error message container
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = "color: #DC2626; font-size: 13px; margin-top: 10px; text-align: center;";
+    signupForm.appendChild(errorDiv);
+
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.textContent = "";
+
+      // Capture first + last name and concatenate
+      const firstName = document.getElementById('firstName')?.value.trim() || '';
+      const lastName = document.getElementById('lastName')?.value.trim() || '';
+      const name = (firstName + ' ' + lastName).trim();
+
+      if (!name) {
+        errorDiv.textContent = "Please enter your name.";
+        return;
+      }
+
+      const emailInput = signupForm.querySelector('input[type="email"]');
+      const pass1 = document.getElementById('pass1');
+      const pass2 = document.getElementById('pass2');
+      const termsCheckbox = document.getElementById('terms');
+
+      if (!emailInput?.value) {
+        errorDiv.textContent = "Please enter your email address.";
+        return;
+      }
+
+      if (!pass1?.value || pass1.value.length < 8) {
+        errorDiv.textContent = "Password must be at least 8 characters.";
+        return;
+      }
+
+      if (pass1.value !== pass2?.value) {
+        errorDiv.textContent = "Passwords do not match.";
+        return;
+      }
+
+      if (!termsCheckbox?.checked) {
+        errorDiv.textContent = "Please agree to the Terms of Service.";
+        return;
+      }
+
+      const email = emailInput.value;
+      const password = pass1.value;
+
+      // Disable button while loading
+      const submitBtn = signupForm.querySelector('.submit-btn');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Creating Account...';
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch("http://localhost:5000/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+          localStorage.setItem("rr_token", data.token);
+          localStorage.setItem("rr_user", JSON.stringify(data.user));
+          window.location.href = "index.html";
+        } else {
+          errorDiv.textContent = data.message || "Registration failed.";
+        }
+      } catch (err) {
+        errorDiv.textContent = "Server error. Please make sure backend is running.";
+      } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+  });
+</script>
+</body>
 </html>

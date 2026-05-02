@@ -348,6 +348,11 @@
 </footer>
 
 <script>
+  const API = 'http://localhost:5000';
+  let destId   = null;
+  let selectedStars = 0;
+
+  // ── TAB SWITCHER ──────────────────────────────────────────────────────
   function switchTab(el, id) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -355,14 +360,20 @@
     document.getElementById(id).classList.add('active');
   }
 
-  function toggleSave() {
+  // ── SAVE TOGGLE ───────────────────────────────────────────────────────
+  async function toggleSave() {
     const b = document.getElementById('saveBtn');
     b.classList.toggle('saved');
     b.textContent = b.classList.contains('saved') ? '✓ Saved to Trip' : '♡ Save to Trip';
+    const token = localStorage.getItem('rr_token');
+    if (token && destId) {
+      await fetch(`${API}/api/destinations/${destId}/save`, {
+        method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
+      }).catch(e => console.warn(e));
+    }
   }
 
-  // star rating input
-  let selectedStars = 0;
+  // ── STAR INPUT ────────────────────────────────────────────────────────
   const stars = document.querySelectorAll('#starInput span');
   stars.forEach(s => {
     s.addEventListener('click', () => {
@@ -371,35 +382,108 @@
     });
   });
 
-  function submitReview() {
-    const text = document.getElementById('reviewText').value.trim();
+  // ── SUBMIT REVIEW (real API) ──────────────────────────────────────────
+  async function submitReview() {
+    const text  = document.getElementById('reviewText').value.trim();
+    const token = localStorage.getItem('rr_token');
+    if (!token) { alert('Please sign in to post a review.'); window.location.href='signin.html'; return; }
     if (!selectedStars) { alert('Please select a star rating'); return; }
     if (!text) { alert('Please write your review'); return; }
+    if (!destId) { alert('Destination not loaded yet.'); return; }
 
-    const list = document.getElementById('reviewList');
-    const card = document.createElement('div');
-    card.className = 'review-card';
-    card.innerHTML = `
-      <div class="review-head">
-        <div class="review-avatar" style="background: #8B5CF6;">YO</div>
-        <div><div class="review-name">You</div><div class="review-date">Just now</div></div>
-      </div>
-      <div class="review-stars">${'★'.repeat(selectedStars)}${'☆'.repeat(5-selectedStars)}</div>
-      <p class="review-text">${text}</p>`;
-    list.prepend(card);
-    document.getElementById('reviewText').value = '';
-    selectedStars = 0;
-    stars.forEach(x => x.classList.remove('selected'));
+    try {
+      const res  = await fetch(`${API}/api/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ destId, rating: selectedStars, comment: text })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      // append to UI immediately
+      const user = JSON.parse(localStorage.getItem('rr_user') || '{}');
+      const initials = (user.name||'Y').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      const list = document.getElementById('reviewList');
+      const card = document.createElement('div');
+      card.className = 'review-card';
+      card.innerHTML = `
+        <div class="review-head">
+          <div class="review-avatar" style="background:#8B5CF6;">${initials}</div>
+          <div><div class="review-name">${user.name||'You'}</div><div class="review-date">Just now</div></div>
+        </div>
+        <div class="review-stars">${'★'.repeat(selectedStars)}${'☆'.repeat(5-selectedStars)}</div>
+        <p class="review-text">${text}</p>`;
+      list.prepend(card);
+      document.getElementById('reviewText').value = '';
+      selectedStars = 0;
+      stars.forEach(x => x.classList.remove('selected'));
+    } catch(e) { alert('Review failed: ' + e.message); }
   }
 
-  // load destination from URL
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get('name');
-  if (name) {
-    document.getElementById('destName').textContent = name;
-    document.getElementById('crumbName').textContent = name;
-    document.title = `RouteReady – ${name}`;
+  // ── LOAD DESTINATION FROM API ─────────────────────────────────────────
+  async function loadDestination() {
+    const params = new URLSearchParams(window.location.search);
+    destId       = params.get('id');
+    const name   = params.get('name');
+
+    // Set title immediately from URL param while loading
+    if (name) {
+      document.getElementById('destName').textContent  = name;
+      document.getElementById('crumbName').textContent = name;
+      document.title = `RouteReady – ${name}`;
+    }
+
+    if (!destId) return; // old links without id — just show name
+
+    try {
+      const res  = await fetch(`${API}/api/destinations/${destId}`);
+      const data = await res.json();
+      if (!data.success) return;
+      const d = data.data;
+
+      document.getElementById('destName').textContent  = d.name;
+      document.getElementById('crumbName').textContent = d.name;
+      document.title = `RouteReady – ${d.name}`;
+
+      // Fill hero image if element exists
+      const heroImg = document.querySelector('.hero-main img, .detail-hero img');
+      if (heroImg && (d.image || d.imageUrl)) heroImg.src = d.image || d.imageUrl;
+
+      // Fill rating / category / city if elements exist
+      const ratingEl = document.querySelector('.dest-rating-big, .rating-number');
+      if (ratingEl) ratingEl.textContent = Number(d.averageRating||4.5).toFixed(1);
+
+      // Load reviews for this destination
+      loadReviews();
+    } catch(e) { console.error('Destination load error:', e); }
   }
+
+  // ── LOAD REVIEWS ──────────────────────────────────────────────────────
+  async function loadReviews() {
+    if (!destId) return;
+    try {
+      const res  = await fetch(`${API}/api/reviews/destination/${destId}`);
+      const data = await res.json();
+      if (!data.success || !data.data.length) return;
+      const list = document.getElementById('reviewList');
+      if (!list) return;
+      list.innerHTML = data.data.map(r => {
+        const initials = (r.user?.name||'U').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+        const date     = new Date(r.createdAt).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+        return `
+          <div class="review-card">
+            <div class="review-head">
+              <div class="review-avatar">${initials}</div>
+              <div><div class="review-name">${r.user?.name||'Traveler'}</div><div class="review-date">${date}</div></div>
+            </div>
+            <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+            <p class="review-text">${r.comment}</p>
+          </div>`;
+      }).join('');
+    } catch(e) { console.error('Reviews load error:', e); }
+  }
+
+  // ── BOOT ──────────────────────────────────────────────────────────────
+  loadDestination();
 </script>
 
     <style>
@@ -425,5 +509,31 @@
       });
     </script>
 
-  </body>
+  
+    <script>
+      // Auth UI state update
+      document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('rr_token');
+        const userStr = localStorage.getItem('rr_user');
+        const navActions = document.querySelector('.nav-actions');
+        
+        if (token && userStr && navActions) {
+          try {
+            const user = JSON.parse(userStr);
+            navActions.innerHTML = `
+              <span style="font-weight: 500; font-size: 14px; margin-right: 16px; color: var(--purple);">Hi, ${user.name}</span>
+              <button id="logoutBtn" style="background: none; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">Logout</button>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+              localStorage.removeItem('rr_token');
+              localStorage.removeItem('rr_user');
+              window.location.href = 'index.html';
+            });
+          } catch(e) {
+            console.error('Error parsing user data', e);
+          }
+        }
+      });
+    </script>
+</body>
 </html>

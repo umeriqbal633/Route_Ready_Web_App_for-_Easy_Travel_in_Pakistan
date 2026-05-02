@@ -185,6 +185,7 @@
 
       <div class="divider"><span></span><p>or sign in with email</p><span></span></div>
 
+      <form>
       <div class="form-group">
         <label>Email Address</label>
         <input type="email" placeholder="you@example.com"/>
@@ -207,7 +208,8 @@
         <label for="remember">Remember me for 30 days</label>
       </div>
 
-      <button type="submit" class="submit-btn">Sign In →</button></form>
+      <button type="submit" class="submit-btn">Sign In →</button>
+      </form>
 
       <p class="signup-prompt">Don't have an account? <a href="signup.html">Sign up for free</a></p>
     </div>
@@ -244,5 +246,93 @@
       });
     </script>
 
-  </body>
+  
+    <script>
+      // Auth UI state update
+      document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('rr_token');
+        const userStr = localStorage.getItem('rr_user');
+        const navActions = document.querySelector('.nav-actions');
+        
+        if (token && userStr && navActions) {
+          try {
+            const user = JSON.parse(userStr);
+            navActions.innerHTML = `
+              <span style="font-weight: 500; font-size: 14px; margin-right: 16px; color: var(--purple);">Hi, ${user.name}</span>
+              <button id="logoutBtn" style="background: none; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">Logout</button>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+              localStorage.removeItem('rr_token');
+              localStorage.removeItem('rr_user');
+              window.location.href = 'index.html';
+            });
+          } catch(e) {
+            console.error('Error parsing user data', e);
+          }
+        }
+      });
+    </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const signinForm = document.querySelector('form');
+    if (!signinForm) return;
+
+    // Create error message container
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = "color: #DC2626; font-size: 13px; margin-top: 10px; text-align: center;";
+    signinForm.appendChild(errorDiv);
+
+    signinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.textContent = "";
+
+      const emailInput = signinForm.querySelector('input[type="email"]');
+      const passInput = signinForm.querySelector('input[type="password"]');
+
+      if (!emailInput?.value) {
+        errorDiv.textContent = "Please enter your email address.";
+        return;
+      }
+
+      if (!passInput?.value) {
+        errorDiv.textContent = "Please enter your password.";
+        return;
+      }
+
+      const email = emailInput.value;
+      const password = passInput.value;
+
+      // Disable button while loading
+      const submitBtn = signinForm.querySelector('.submit-btn');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Signing In...';
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch("http://localhost:5000/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+          localStorage.setItem("rr_token", data.token);
+          localStorage.setItem("rr_user", JSON.stringify(data.user));
+          window.location.href = "index.html";
+        } else {
+          errorDiv.textContent = data.message || "Invalid email or password";
+        }
+      } catch (err) {
+        errorDiv.textContent = "Server error. Please make sure backend is running.";
+      } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+  });
+</script>
+</body>
 </html>

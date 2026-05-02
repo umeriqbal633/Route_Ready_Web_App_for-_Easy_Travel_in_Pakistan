@@ -561,5 +561,31 @@
       });
     </script>
 
-  </body>
+  
+    <script>
+      // Auth UI state update
+      document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('rr_token');
+        const userStr = localStorage.getItem('rr_user');
+        const navActions = document.querySelector('.nav-actions');
+        
+        if (token && userStr && navActions) {
+          try {
+            const user = JSON.parse(userStr);
+            navActions.innerHTML = `
+              <span style="font-weight: 500; font-size: 14px; margin-right: 16px; color: var(--purple);">Hi, ${user.name}</span>
+              <button id="logoutBtn" style="background: none; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">Logout</button>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+              localStorage.removeItem('rr_token');
+              localStorage.removeItem('rr_user');
+              window.location.href = 'index.html';
+            });
+          } catch(e) {
+            console.error('Error parsing user data', e);
+          }
+        }
+      });
+    </script>
+</body>
 </html>

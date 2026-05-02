@@ -306,91 +306,84 @@
 </footer>
 
 <script>
-  const gems = [
-  {
-    name: "Kel Village, Neelum Valley", city: "northern", area: "Neelum Valley",
-    img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
-    rarity: "LEGENDARY", desc: "Remote village accessible only by jeep track, untouched forests",
-    tags: ["Nature", "Off-Road"], time: "2 days", cost: "Moderate", locals: "94% locals"
-  },
-  {
-    name: "Deosai Plains", city: "northern", area: "Astore/Skardu",
-    img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-    rarity: "ULTRA RARE", desc: "World's second highest plateau, snow leopard habitat",
-    tags: ["Wildlife", "Camping"], time: "1 day", cost: "Moderate", locals: "89% locals"
-  },
-  {
-    name: "Gorakh Hill Station, Sindh", city: "karachi", area: "Dadu",
-    img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&q=80",
-    rarity: "ULTRA RARE", desc: "Sindh's only hill station, cloud level camping",
-    tags: ["Camping", "Views"], time: "2 days", cost: "Budget", locals: "91% locals"
-  },
-  {
-    name: "Shigar Fort, Baltistan", city: "northern", area: "Skardu",
-    img: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&q=80",
-    rarity: "RARE", desc: "400 year old raja fort converted to boutique hotel",
-    tags: ["Heritage", "Luxury"], time: "3 hours", cost: "High", locals: "78% locals"
-  },
-  {
-    name: "Hanna Lake, Quetta", city: "quetta", area: "Quetta",
-    img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&q=80",
-    rarity: "RARE", desc: "Turquoise lake surrounded by bare rocky mountains",
-    tags: ["Nature", "Boating"], time: "Half day", cost: "Budget", locals: "82% locals"
-  },
-  {
-    name: "Ranikot Fort, Sindh", city: "karachi", area: "Jamshoro",
-    img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80",
-    rarity: "LEGENDARY", desc: "World's largest fort, the Great Wall of Sindh",
-    tags: ["History", "Hiking"], time: "1 day", cost: "Budget", locals: "96% locals"
-  },
-  {
-    name: "Saif ul Malook Lake", city: "northern", area: "Kaghan Valley",
-    img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&q=80",
-    rarity: "RARE", desc: "Mythical lake at 3224m, only accessible by jeep or horse",
-    tags: ["Mythology", "Nature"], time: "Half day", cost: "Moderate", locals: "71% locals"
-  },
-  {
-    name: "Katas Raj Temples, Chakwal", city: "islamabad", area: "Chakwal",
-    img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80",
-    rarity: "RARE", desc: "Ancient Hindu temple complex around sacred lake, 5000 years old",
-    tags: ["History", "Spirituality"], time: "1 day", cost: "Budget", locals: "85% locals"
-  }
-];
+  const API = 'http://localhost:5000';
+  let allGems      = [];
+  let currentCity  = 'all';
 
-  let currentCity = 'all';
-
-  function renderGems() {
+  // ── FETCH FROM API ────────────────────────────────────────────────────
+  async function loadGems() {
     const grid = document.getElementById('gemsGrid');
-    const list = currentCity === 'all' ? gems : gems.filter(g => g.city === currentCity);
-    grid.innerHTML = list.map(g => `
-      <div class="gem-card">
-        <div class="gem-img-wrap">
-          <img class="gem-img" src="${g.img}" alt="${g.name}" onerror="this.src='https://via.placeholder.com/600x400/4C1D95/ffffff?text=${encodeURIComponent(g.name)}'"/>
-          <div class="gem-overlay"></div>
-          <div class="gem-rarity" style="background-color:${g.rarity===\'LEGENDARY\'?\'#F59E0B\':g.rarity===\'ULTRA RARE\'?\'#6C3CE1\':\'#10B981\'}">✨ ${g.rarity}</div>
-          <div class="gem-locals">${g.locals}</div>
-        </div>
-        <div class="gem-body">
-          <h3>${g.name}</h3>
-          <div class="gem-loc">📍 ${g.area}, ${g.city}</div>
-          <p class="gem-desc">${g.desc}</p>
-          <div class="gem-tags">${g.tags.map(t => `<span class="gem-tag">${t}</span>`).join('')}</div>
-          <div class="gem-footer">
-            <div class="gem-meta">
-              <span>⏱ ${g.time}</span>
-              <span>💰 ${g.cost}</span>
-            </div>
-            <button class="gem-explore">Explore →</button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-
-    if (list.length === 0) {
-      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray);">No hidden gems found for this city yet. Check back soon!</div>`;
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#6B7280;font-size:16px;">⏳ Loading hidden gems...</div>`;
+    try {
+      const res  = await fetch(`${API}/api/gems?limit=200`);
+      const data = await res.json();
+      if (!data.success) throw new Error('Bad response');
+      allGems = data.data.map(g => ({
+        id:      g.id,
+        name:    g.name,
+        city:    (g.city || '').toLowerCase(),
+        area:    g.area || g.city,
+        img:     g.imageUrl || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80',
+        rarity:  g.rarity || 'RARE',
+        desc:    g.description || g.desc || '',
+        tags:    g.tags || [],
+        time:    g.visitDuration || g.time || 'Half day',
+        cost:    g.estimatedCost || g.cost || 'Moderate',
+        locals:  g.localsPercentage ? `${g.localsPercentage}% locals` : (g.locals || '80% locals')
+      }));
+      renderGems();
+    } catch(e) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;">
+        <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+        <h3>Could not connect to server</h3>
+        <p style="color:#6B7280;">Make sure backend is running: <code>npm run dev</code></p>
+      </div>`;
     }
   }
 
+  // ── RENDER ────────────────────────────────────────────────────────────
+  function renderGems() {
+    const grid = document.getElementById('gemsGrid');
+    const list = currentCity === 'all' ? allGems : allGems.filter(g => g.city === currentCity);
+
+    if (list.length === 0) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray);">No hidden gems found for this city yet. Check back soon!</div>`;
+      return;
+    }
+
+    const rarityColor = { LEGENDARY: '#F59E0B', ULTRA_RARE: '#6C3CE1', RARE: '#10B981', ULTRA: '#6C3CE1' };
+
+    grid.innerHTML = list.map(g => {
+      const rColor = rarityColor[g.rarity] || rarityColor.RARE;
+      const rarityLabel = g.rarity.replace('_', ' ');
+      const tagsHtml = (g.tags||[]).map(t => `<span class="gem-tag">${t}</span>`).join('');
+      return `
+        <div class="gem-card">
+          <div class="gem-img-wrap">
+            <img class="gem-img" src="${g.img}" alt="${g.name}"
+              onerror="this.src='https://via.placeholder.com/600x400/4C1D95/ffffff?text=${encodeURIComponent(g.name)}'"/>
+            <div class="gem-overlay"></div>
+            <div class="gem-rarity" style="background-color:${rColor}">✨ ${rarityLabel}</div>
+            <div class="gem-locals">${g.locals}</div>
+          </div>
+          <div class="gem-body">
+            <h3>${g.name}</h3>
+            <div class="gem-loc">📍 ${g.area}${g.area!==g.city?', '+g.city:''}</div>
+            <p class="gem-desc">${g.desc}</p>
+            <div class="gem-tags">${tagsHtml}</div>
+            <div class="gem-footer">
+              <div class="gem-meta">
+                <span>⏱ ${g.time}</span>
+                <span>💰 ${g.cost}</span>
+              </div>
+              <button class="gem-explore" onclick="window.location.href='destinations.html'">Explore →</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── CITY FILTER ───────────────────────────────────────────────────────
   function filterCity(city, el) {
     document.querySelectorAll('.city-pill').forEach(p => p.classList.remove('active'));
     el.classList.add('active');
@@ -398,7 +391,8 @@
     renderGems();
   }
 
-  renderGems();
+  // ── BOOT ──────────────────────────────────────────────────────────────
+  loadGems();
 </script>
 
     <style>
@@ -424,5 +418,31 @@
       });
     </script>
 
-  </body>
+  
+    <script>
+      // Auth UI state update
+      document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('rr_token');
+        const userStr = localStorage.getItem('rr_user');
+        const navActions = document.querySelector('.nav-actions');
+        
+        if (token && userStr && navActions) {
+          try {
+            const user = JSON.parse(userStr);
+            navActions.innerHTML = `
+              <span style="font-weight: 500; font-size: 14px; margin-right: 16px; color: var(--purple);">Hi, ${user.name}</span>
+              <button id="logoutBtn" style="background: none; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">Logout</button>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+              localStorage.removeItem('rr_token');
+              localStorage.removeItem('rr_user');
+              window.location.href = 'index.html';
+            });
+          } catch(e) {
+            console.error('Error parsing user data', e);
+          }
+        }
+      });
+    </script>
+</body>
 </html>

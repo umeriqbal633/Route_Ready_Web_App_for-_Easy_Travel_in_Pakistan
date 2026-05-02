@@ -1389,69 +1389,71 @@
           badgeClass: "",
           amenities: ["WiFi", "Restaurant", "Panoramic View"],
         },
-        {
-          name: "Hunza Explorers Inn",
-          city: "Hunza",
-          area: "Aliabad",
-          img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80",
-          stars: 2,
-          rating: 8.4,
-          reviewCount: 850,
-          price: 5000,
-          original: 7000,
-          badge: "Value",
-          badgeClass: "",
-          amenities: ["WiFi", "Basic Meals", "Mountain View"],
-        },
-        {
-          name: "Old Hunza Inn",
-          city: "Hunza",
-          area: "Karimabad",
-          img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80",
-          stars: 1,
-          rating: 8.2,
-          reviewCount: 1200,
-          price: 3000,
-          original: 4000,
-          badge: "Budget",
-          badgeClass: "",
-          amenities: ["WiFi", "Meals Included"],
-        },
-      ];
+      ];  // legacy array kept empty - data now from API
+      let allHotels = [];
 
       const slider = document.getElementById("budget");
       const budgetVal = document.getElementById("budgetVal");
       slider.addEventListener("input", () => {
         const v = parseInt(slider.value);
         budgetVal.textContent = "PKR " + v.toLocaleString();
-        document.getElementById("insightBudget").textContent =
-          "PKR " + v.toLocaleString();
+        document.getElementById("insightBudget").textContent = "PKR " + v.toLocaleString();
+        filterHotels();
       });
 
+      // ── FETCH FROM API ────────────────────────────────────────────────
+      async function loadHotels() {
+        const wrap = document.getElementById("hotelList");
+        wrap.innerHTML = `<div style="text-align:center;padding:60px;color:#6B7280;font-size:16px;">⏳ Loading hotels...</div>`;
+        try {
+          const res  = await fetch('http://localhost:5000/api/hotels?limit=200');
+          const data = await res.json();
+          if (!data.success) throw new Error('Bad response');
+          allHotels = data.data.map(h => ({
+            id:          h.id,
+            name:        h.name,
+            city:        h.city,
+            area:        h.area || h.city,
+            img:         h.imageUrl || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
+            stars:       h.stars || h.starRating || 3,
+            rating:      parseFloat(h.rating || h.averageRating || 8.0),
+            reviewCount: h.reviewCount || 0,
+            price:       h.pricePerNight || h.price || 5000,
+            original:    h.originalPrice || 0,
+            badge:       h.badge || (h.isStudentFriendly ? 'Student Friendly' : (h.stars >= 5 ? 'Luxury' : 'Value')),
+            badgeClass:  h.stars >= 5 ? 'luxury' : (h.pricePerNight < 5000 ? 'budget' : ''),
+            amenities:   h.amenities || [],
+            studentFriendly: h.isStudentFriendly || false
+          }));
+          filterHotels();
+        } catch(e) {
+          wrap.innerHTML = `<div style="text-align:center;padding:60px;">
+            <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+            <h3>Could not connect to server</h3>
+            <p style="color:#6B7280;">Make sure backend is running: <code>npm run dev</code></p>
+          </div>`;
+        }
+      }
+
       function getSelectedStars() {
-        return Array.from(document.querySelectorAll(".star-cb:checked")).map(
-          (c) => parseInt(c.value),
-        );
+        return Array.from(document.querySelectorAll(".star-cb:checked")).map(c => parseInt(c.value));
       }
       function getSelectedAmenities() {
-        return Array.from(document.querySelectorAll(".amen-cb:checked")).map(
-          (c) => c.value,
-        );
+        return Array.from(document.querySelectorAll(".amen-cb:checked")).map(c => c.value);
       }
 
       function filterHotels() {
         const budget = parseInt(slider.value);
-        const city = document.getElementById("city").value;
-        const sort = document.getElementById("sortBy").value;
-        const stars = getSelectedStars();
-        const amens = getSelectedAmenities();
+        const city   = document.getElementById("city").value;
+        const sort   = document.getElementById("sortBy").value;
+        const stars  = getSelectedStars();
+        const amens  = getSelectedAmenities();
 
-        let list = hotels.filter((h) => {
+        let list = allHotels.filter(h => {
           if (h.price > budget) return false;
           if (city !== "all" && h.city.toLowerCase() !== city) return false;
           if (stars.length && !stars.includes(h.stars)) return false;
-          if (amens.length && !amens.every((a) => h.amenities.includes(a)))
-            return false;
+          if (amens.length && !amens.every(a => h.amenities.includes(a))) return false;
           return true;
         });
 
@@ -1580,8 +1582,8 @@
         .getElementById("sortBy")
         .addEventListener("change", filterHotels);
 
-      // initial render
-      filterHotels();
+      // initial load from API
+      loadHotels();
     </script>
 
     <style>
@@ -1630,5 +1632,31 @@
         });
       });
     </script>
-  </body>
+  
+    <script>
+      // Auth UI state update
+      document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('rr_token');
+        const userStr = localStorage.getItem('rr_user');
+        const navActions = document.querySelector('.nav-actions');
+        
+        if (token && userStr && navActions) {
+          try {
+            const user = JSON.parse(userStr);
+            navActions.innerHTML = `
+              <span style="font-weight: 500; font-size: 14px; margin-right: 16px; color: var(--purple);">Hi, ${user.name}</span>
+              <button id="logoutBtn" style="background: none; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">Logout</button>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+              localStorage.removeItem('rr_token');
+              localStorage.removeItem('rr_user');
+              window.location.href = 'index.html';
+            });
+          } catch(e) {
+            console.error('Error parsing user data', e);
+          }
+        }
+      });
+    </script>
+</body>
 </html>

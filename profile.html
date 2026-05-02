@@ -178,11 +178,11 @@
 <!-- HEADER -->
 <section class="profile-header">
   <div class="profile-info">
-    <div class="profile-avatar">TA</div>
+    <div class="profile-avatar" id="profileAvatar">?</div>
     <div class="profile-meta">
-      <h1>Taha Abid</h1>
-      <p>📍 Islamabad, Pakistan · 📧 taha@routeready.pk</p>
-      <p class="joined">Member since January 2026</p>
+      <h1 id="profileName">Loading...</h1>
+      <p id="profileMeta">📧 —</p>
+      <p class="joined" id="profileJoined">Member since —</p>
     </div>
   </div>
 </section>
@@ -191,10 +191,10 @@
 <section class="dashboard">
   <!-- STATS -->
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-icon">🗺️</div><div class="stat-info"><div class="num">7</div><div class="label">Saved Trips</div></div></div>
-    <div class="stat-card"><div class="stat-icon">📍</div><div class="stat-info"><div class="num">23</div><div class="label">Places Visited</div></div></div>
-    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-info"><div class="num">14</div><div class="label">Reviews Posted</div></div></div>
-    <div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-info"><div class="num">3</div><div class="label">Cities Explored</div></div></div>
+    <div class="stat-card"><div class="stat-icon">🗺️</div><div class="stat-info"><div class="num" id="statTrips">—</div><div class="label">Saved Trips</div></div></div>
+    <div class="stat-card"><div class="stat-icon">📍</div><div class="stat-info"><div class="num" id="statPlaces">—</div><div class="label">Saved Places</div></div></div>
+    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-info"><div class="num" id="statReviews">—</div><div class="label">Reviews Posted</div></div></div>
+    <div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-info"><div class="num" id="statCities">—</div><div class="label">Cities Explored</div></div></div>
   </div>
 
   <!-- TABS -->
@@ -207,65 +207,15 @@
 
   <!-- TRIPS TAB -->
   <div class="tab-content active" id="trips">
-    <div class="trips-grid">
-      <div class="trip-card">
-        <img class="trip-img" src="https://images.unsplash.com/photo-1542338347-4fff3276af78?w=600&q=80" alt="trip"/>
-        <div class="trip-body">
-          <span class="trip-tag">Upcoming</span>
-          <h3>Islamabad Weekend Escape</h3>
-          <p class="dates">Apr 25 – Apr 27, 2026 · 2 days</p>
-          <div class="trip-actions">
-            <button class="trip-btn">Edit</button>
-            <button class="trip-btn primary">View</button>
-          </div>
-        </div>
-      </div>
-      <div class="trip-card">
-        <img class="trip-img" src="https://images.unsplash.com/photo-1605649461784-edc01e09a7e6?w=600&q=80" alt="trip"/>
-        <div class="trip-body">
-          <span class="trip-tag" style="background: #FEF3C7; color: #92400E;">Planning</span>
-          <h3>Hunza Valley Expedition</h3>
-          <p class="dates">May 10 – May 17, 2026 · 7 days</p>
-          <div class="trip-actions">
-            <button class="trip-btn">Edit</button>
-            <button class="trip-btn primary">View</button>
-          </div>
-        </div>
-      </div>
-      <div class="trip-card">
-        <img class="trip-img" src="https://images.unsplash.com/photo-1591019479261-1a103585c559?w=600&q=80" alt="trip"/>
-        <div class="trip-body">
-          <span class="trip-tag" style="background: #D1FAE5; color: #065F46;">Completed</span>
-          <h3>Lahore Heritage Tour</h3>
-          <p class="dates">Mar 15 – Mar 17, 2026 · 3 days</p>
-          <div class="trip-actions">
-            <button class="trip-btn">Review</button>
-            <button class="trip-btn primary">Memories</button>
-          </div>
-        </div>
-      </div>
+    <div class="trips-grid" id="tripsGrid">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:#6B7280;">⏳ Loading your trips...</div>
     </div>
   </div>
 
   <!-- SAVED PLACES TAB -->
   <div class="tab-content" id="saved">
-    <div class="saved-grid">
-      <div class="saved-card">
-        <img class="saved-img" src="https://images.unsplash.com/photo-1542338347-4fff3276af78?w=400&q=80" alt=""/>
-        <div class="saved-body"><h4>Faisal Mosque</h4><p>Islamabad · ★ 4.9</p></div>
-      </div>
-      <div class="saved-card">
-        <img class="saved-img" src="https://images.unsplash.com/photo-1539768942893-daf53e448371?w=400&q=80" alt=""/>
-        <div class="saved-body"><h4>Daman-e-Koh</h4><p>Islamabad · ★ 4.8</p></div>
-      </div>
-      <div class="saved-card">
-        <img class="saved-img" src="https://images.unsplash.com/photo-1605649461784-edc01e09a7e6?w=400&q=80" alt=""/>
-        <div class="saved-body"><h4>Hunza Valley</h4><p>Gilgit-Baltistan · ★ 5.0</p></div>
-      </div>
-      <div class="saved-card">
-        <img class="saved-img" src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=400&q=80" alt=""/>
-        <div class="saved-body"><h4>Badshahi Mosque</h4><p>Lahore · ★ 4.9</p></div>
-      </div>
+    <div class="saved-grid" id="savedGrid">
+      <div style="text-align:center;padding:40px;color:#6B7280;">⏳ Loading saved places...</div>
     </div>
   </div>
 
@@ -275,18 +225,18 @@
       <h3>Personal Information</h3>
       <p class="sub">Update your details to keep your profile current.</p>
       <div class="form-row">
-        <div class="field"><label>First Name</label><input type="text" value="Taha"/></div>
-        <div class="field"><label>Last Name</label><input type="text" value="Abid"/></div>
+        <div class="field"><label>First Name</label><input type="text" id="fieldFirstName"/></div>
+        <div class="field"><label>Last Name</label><input type="text" id="fieldLastName"/></div>
       </div>
       <div class="form-row">
-        <div class="field"><label>Email</label><input type="email" value="taha@routeready.pk"/></div>
-        <div class="field"><label>Phone</label><input type="tel" value="+92 300 1234567"/></div>
+        <div class="field"><label>Email</label><input type="email" id="fieldEmail"/></div>
+        <div class="field"><label>Phone</label><input type="tel" id="fieldPhone"/></div>
       </div>
       <div class="form-row">
-        <div class="field"><label>City</label><input type="text" value="Islamabad"/></div>
-        <div class="field"><label>Country</label><input type="text" value="Pakistan"/></div>
+        <div class="field"><label>City</label><input type="text" id="fieldCity"/></div>
+        <div class="field"><label>Country</label><input type="text" id="fieldCountry" value="Pakistan"/></div>
       </div>
-      <button class="save-btn">Save Changes</button>
+      <button class="save-btn" onclick="saveProfile()">Save Changes</button>
     </div>
 
     <div class="settings-card">
@@ -302,7 +252,7 @@
     <div class="settings-card danger-zone">
       <h3>Danger Zone</h3>
       <p class="sub">Permanently delete your account and all associated data.</p>
-      <button class="danger-btn" onclick="confirm('Are you sure? This cannot be undone.')">Delete Account</button>
+      <button class="danger-btn" onclick="deleteAccount()">Delete Account</button>
     </div>
   </div>
 
@@ -346,6 +296,8 @@
 </section>
 
 <script>
+  const API = 'http://localhost:5000';
+
   function switchTab(btn, id) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -355,6 +307,137 @@
   document.querySelectorAll('.pref-chip').forEach(c => {
     c.addEventListener('click', () => c.classList.toggle('selected'));
   });
+
+  // ── BOOT: require login ──────────────────────────────────────────────
+  const token = localStorage.getItem('rr_token');
+  if (!token) { window.location.href = 'signin.html'; }
+
+  // ── LOAD PROFILE ─────────────────────────────────────────────────────
+  async function loadProfile() {
+    try {
+      const res  = await fetch(`${API}/api/users/profile`, { headers: { 'Authorization': `Bearer ${token}` } });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      const u = data.data;
+      const initials = (u.name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+      document.getElementById('profileAvatar').textContent = initials;
+      document.getElementById('profileName').textContent   = u.name || '—';
+      document.getElementById('profileMeta').textContent   = `📧 ${u.email}`;
+      document.getElementById('profileJoined').textContent = `Member since ${new Date(u.createdAt).toLocaleDateString('en-US',{year:'numeric',month:'long'})}`;
+      // fill form fields
+      const parts = (u.name || '').split(' ');
+      document.getElementById('fieldFirstName').value = parts[0] || '';
+      document.getElementById('fieldLastName').value  = parts.slice(1).join(' ') || '';
+      document.getElementById('fieldEmail').value     = u.email || '';
+    } catch(e) { console.error('Profile load failed:', e); }
+  }
+
+  // ── LOAD STATS ────────────────────────────────────────────────────────
+  async function loadStats() {
+    try {
+      const res  = await fetch(`${API}/api/users/profile/stats`, { headers: { 'Authorization': `Bearer ${token}` } });
+      const data = await res.json();
+      if (!data.success) return;
+      const s = data.data;
+      document.getElementById('statTrips').textContent   = s.totalItineraries ?? '0';
+      document.getElementById('statPlaces').textContent  = s.savedDestinations ?? '0';
+      document.getElementById('statReviews').textContent = s.totalReviews ?? '0';
+      document.getElementById('statCities').textContent  = s.citiesExplored ?? '0';
+    } catch(e) { console.error('Stats load failed:', e); }
+  }
+
+  // ── LOAD TRIPS ────────────────────────────────────────────────────────
+  async function loadTrips() {
+    try {
+      const res  = await fetch(`${API}/api/itineraries`, { headers: { 'Authorization': `Bearer ${token}` } });
+      const data = await res.json();
+      const grid = document.getElementById('tripsGrid');
+      if (!data.success || !data.data.length) {
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#6B7280;">
+          <div style="font-size:48px;margin-bottom:12px;">🗺️</div>
+          <h3>No trips yet</h3><p>Generate your first AI itinerary in the <a href="planner.html" style="color:#6C3CE1">AI Planner</a>!</p>
+        </div>`;
+        return;
+      }
+      const statusStyle = { saved:'background:#EDE9FE;color:#4C1D95', planning:'background:#FEF3C7;color:#92400E', completed:'background:#D1FAE5;color:#065F46' };
+      grid.innerHTML = data.data.map(t => `
+        <div class="trip-card">
+          <img class="trip-img" src="https://images.unsplash.com/photo-1542338347-4fff3276af78?w=600&q=80" alt="trip"/>
+          <div class="trip-body">
+            <span class="trip-tag" style="${statusStyle[t.status]||statusStyle.saved}">${t.status||'saved'}</span>
+            <h3>${t.title || 'Untitled Trip'}</h3>
+            <p class="dates">${t.city} · ${t.numDays} day${t.numDays>1?'s':''}</p>
+            <div class="trip-actions">
+              <button class="trip-btn" onclick="deleteTrip('${t.id}')">Delete</button>
+              <button class="trip-btn primary" onclick="window.location.href='planner.html'">View</button>
+            </div>
+          </div>
+        </div>`).join('');
+    } catch(e) { console.error('Trips load failed:', e); }
+  }
+
+  // ── LOAD SAVED PLACES ─────────────────────────────────────────────────
+  async function loadSaved() {
+    try {
+      const res  = await fetch(`${API}/api/destinations/user/saved`, { headers: { 'Authorization': `Bearer ${token}` } });
+      const data = await res.json();
+      const grid = document.getElementById('savedGrid');
+      if (!data.success || !data.data.length) {
+        grid.innerHTML = `<div style="text-align:center;padding:60px;color:#6B7280;">
+          <div style="font-size:48px;margin-bottom:12px;">❤️</div>
+          <h3>No saved places yet</h3><p>Browse <a href="destinations.html" style="color:#6C3CE1">destinations</a> and tap the heart!</p>
+        </div>`;
+        return;
+      }
+      grid.innerHTML = data.data.map(d => `
+        <div class="saved-card">
+          <img class="saved-img" src="${d.image||d.imageUrl||'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80'}" alt="${d.name}"
+            onerror="this.src='https://via.placeholder.com/400x200/6C3CE1/fff?text=${encodeURIComponent(d.name)}'"/>
+          <div class="saved-body"><h4>${d.name}</h4><p>${d.city} · ★ ${Number(d.averageRating||4.5).toFixed(1)}</p></div>
+        </div>`).join('');
+    } catch(e) { console.error('Saved load failed:', e); }
+  }
+
+  // ── SAVE PROFILE ──────────────────────────────────────────────────────
+  async function saveProfile() {
+    const name = `${document.getElementById('fieldFirstName').value} ${document.getElementById('fieldLastName').value}`.trim();
+    try {
+      const res  = await fetch(`${API}/api/users/profile`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ name })
+      });
+      const data = await res.json();
+      if (data.success) { alert('✅ Profile updated!'); loadProfile(); }
+      else alert('Update failed: ' + data.message);
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+
+  // ── DELETE TRIP ───────────────────────────────────────────────────────
+  async function deleteTrip(id) {
+    if (!confirm('Delete this trip?')) return;
+    try {
+      await fetch(`${API}/api/itineraries/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+      loadTrips(); loadStats();
+    } catch(e) { alert('Delete failed: ' + e.message); }
+  }
+
+  // ── DELETE ACCOUNT ────────────────────────────────────────────────────
+  async function deleteAccount() {
+    if (!confirm('Are you sure? This permanently deletes your account and cannot be undone.')) return;
+    try {
+      await fetch(`${API}/api/users/account`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+      localStorage.removeItem('rr_token');
+      localStorage.removeItem('rr_user');
+      window.location.href = 'index.html';
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+
+  // ── BOOT ──────────────────────────────────────────────────────────────
+  loadProfile();
+  loadStats();
+  loadTrips();
+  loadSaved();
 </script>
 
     <style>
@@ -380,5 +463,31 @@
       });
     </script>
 
-  </body>
+  
+    <script>
+      // Auth UI state update
+      document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('rr_token');
+        const userStr = localStorage.getItem('rr_user');
+        const navActions = document.querySelector('.nav-actions');
+        
+        if (token && userStr && navActions) {
+          try {
+            const user = JSON.parse(userStr);
+            navActions.innerHTML = `
+              <span style="font-weight: 500; font-size: 14px; margin-right: 16px; color: var(--purple);">Hi, ${user.name}</span>
+              <button id="logoutBtn" style="background: none; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">Logout</button>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+              localStorage.removeItem('rr_token');
+              localStorage.removeItem('rr_user');
+              window.location.href = 'index.html';
+            });
+          } catch(e) {
+            console.error('Error parsing user data', e);
+          }
+        }
+      });
+    </script>
+</body>
 </html>

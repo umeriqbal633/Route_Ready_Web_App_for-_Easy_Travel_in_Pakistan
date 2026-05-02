@@ -291,95 +291,172 @@
 </section>
 
 <script>
-  // interest chip toggling
+  const API = 'http://localhost:5000';
+  let lastItineraryId = null;
+
+  // ── INTEREST CHIP TOGGLE ─────────────────────────────────────────────
   document.querySelectorAll('#interests .chip').forEach(c => {
     c.addEventListener('click', () => c.classList.toggle('selected'));
   });
 
-  // sample activity database (would come from backend)
-  const activityDB = {
-    'Islamabad': {
-      morning: [
-        { name: 'Faisal Mosque', desc: 'Start with Pakistan\'s national mosque, an architectural marvel at the foot of Margalla Hills.', dur: '2h', cost: 'Free', tag: 'Religious' },
-        { name: 'Daman-e-Koh', desc: 'Hike up to this hilltop viewpoint for panoramic views of the city.', dur: '2h', cost: 'PKR 50', tag: 'Nature' },
-        { name: 'Pakistan Monument', desc: 'Explore the four-petal flower-shaped monument and the museum inside.', dur: '1.5h', cost: 'PKR 20', tag: 'Heritage' }
-      ],
-      afternoon: [
-        { name: 'Lok Virsa Museum', desc: 'Discover Pakistan\'s rich folk heritage and traditional crafts.', dur: '2h', cost: 'PKR 30', tag: 'Culture' },
-        { name: 'Lunch at Monal Restaurant', desc: 'Enjoy traditional Pakistani cuisine with a view of the city.', dur: '1.5h', cost: 'PKR 2,000', tag: 'Food' },
-        { name: 'Saidpur Village', desc: 'Stroll through this restored traditional village turned cultural hub.', dur: '2h', cost: 'Free', tag: 'Heritage' }
-      ],
-      evening: [
-        { name: 'The Centaurus Mall', desc: 'Shop, dine and unwind at Islamabad\'s premier shopping destination.', dur: '2.5h', cost: 'Free entry', tag: 'Shopping' },
-        { name: 'Rawal Lake', desc: 'Watch the sunset by the water with boating and snacks.', dur: '2h', cost: 'PKR 100', tag: 'Nature' },
-        { name: 'Dinner at Tuscany Courtyard', desc: 'Wrap up your day with authentic Italian fine dining.', dur: '2h', cost: 'PKR 3,500', tag: 'Food' }
-      ]
-    }
-  };
+  // ── COLLECT FORM VALUES ──────────────────────────────────────────────
+  function getFormData() {
+    const city        = document.getElementById('city').value;
+    const days        = parseInt(document.getElementById('days').value) || 2;
+    const travelers   = parseInt(document.getElementById('travelers')?.value) || 1;
+    const budget      = document.getElementById('budget')?.value || 'medium';
+    const startDate   = document.getElementById('startDate')?.value || new Date().toISOString().split('T')[0];
+    const interests   = [...document.querySelectorAll('#interests .chip.selected')].map(c => c.textContent.trim());
+    return { city, numDays: days, travelerCount: travelers, budgetRange: budget, startDate, interests };
+  }
 
-  function getRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  // ── RENDER ITINERARY FROM API RESPONSE ──────────────────────────────
+  function renderItinerary(data) {
+    const days = data.days || [];
+    document.getElementById('tripTitle').textContent = data.title || `Your ${days.length}-Day Adventure`;
+    document.getElementById('tripSub').textContent   = data.summary || 'Personalized itinerary based on your interests';
 
-  function generateItinerary() {
-    const city = document.getElementById('city').value;
-    const days = parseInt(document.getElementById('days').value);
-    document.getElementById('output').classList.remove('active');
-    document.getElementById('loading').classList.add('active');
+    const container = document.getElementById('dayContainer');
+    container.innerHTML = '';
 
-    setTimeout(() => {
-      document.getElementById('loading').classList.remove('active');
-      document.getElementById('output').classList.add('active');
-      document.getElementById('tripTitle').textContent = `Your ${days}-Day ${city} Adventure`;
+    days.forEach((day, idx) => {
+      const activities = day.activities || [];
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'day-card';
 
-      const data = activityDB[city] || activityDB['Islamabad'];
-      const container = document.getElementById('dayContainer');
-      container.innerHTML = '';
+      const slotLabels = { morning: '9:00 AM', afternoon: '1:00 PM', evening: '6:00 PM' };
 
-      for (let d = 1; d <= days; d++) {
-        const dayDiv = document.createElement('div');
-        dayDiv.className = 'day-card';
-        const slots = [
-          { time: '9:00 AM', slot: 'Morning', a: getRandom(data.morning) },
-          { time: '1:00 PM', slot: 'Afternoon', a: getRandom(data.afternoon) },
-          { time: '6:00 PM', slot: 'Evening', a: getRandom(data.evening) }
-        ];
-        let html = `
-          <div class="day-head">
-            <div class="day-num">${d}</div>
-            <div class="day-title">
-              <h3>Day ${d}</h3>
-              <p>${slots.length} activities planned · ~ 6 hours</p>
+      let html = `
+        <div class="day-head">
+          <div class="day-num">${day.dayNumber || idx + 1}</div>
+          <div class="day-title">
+            <h3>${day.title || 'Day ' + (idx + 1)}</h3>
+            <p>${activities.length} activities planned</p>
+          </div>
+        </div>`;
+
+      activities.forEach((act, i) => {
+        const slot  = act.slot || 'morning';
+        const time  = slotLabels[slot] || slotLabels.morning;
+        html += `
+          <div class="activity">
+            <div class="activity-time">
+              <span class="slot" style="text-transform:capitalize">${slot}</span>${time}
+            </div>
+            <div class="activity-info">
+              <h4>${act.name}</h4>
+              <p>${act.description || act.desc || ''}</p>
+              <div class="activity-meta">
+                <span>⏱ ${act.duration || '1-2h'}</span>
+                <span>💰 ${act.estimatedCost || act.cost || 'See locally'}</span>
+                <span>🏷️ ${act.category || act.tag || ''}</span>
+              </div>
+            </div>
+            <div class="activity-actions">
+              <button class="icon-btn" title="Move up" onclick="moveActivity(this,-1)">↑</button>
+              <button class="icon-btn" title="Move down" onclick="moveActivity(this,1)">↓</button>
+              <button class="icon-btn del" title="Remove" onclick="removeActivity(this)">✕</button>
             </div>
           </div>`;
-        slots.forEach((s, i) => {
-          html += `
-            <div class="activity">
-              <div class="activity-time"><span class="slot">${s.slot}</span>${s.time}</div>
-              <div class="activity-info">
-                <h4>${s.a.name}</h4>
-                <p>${s.a.desc}</p>
-                <div class="activity-meta">
-                  <span>⏱ ${s.a.dur}</span>
-                  <span>💰 ${s.a.cost}</span>
-                  <span>🏷️ ${s.a.tag}</span>
-                </div>
-              </div>
-              <div class="activity-actions">
-                <button class="icon-btn" title="Move up">↑</button>
-                <button class="icon-btn" title="Move down">↓</button>
-                <button class="icon-btn del" title="Remove">✕</button>
-              </div>
-            </div>`;
-          if (i < slots.length - 1) {
-            html += `<div class="travel-time">~ 25 min by car</div>`;
-          }
-        });
-        dayDiv.innerHTML = html;
-        container.appendChild(dayDiv);
+        if (i < activities.length - 1) html += `<div class="travel-time">~ 20-30 min travel</div>`;
+      });
+
+      dayDiv.innerHTML = html;
+      container.appendChild(dayDiv);
+    });
+
+    // show tips if present
+    if (data.tips && data.tips.length) {
+      const tipsDiv = document.createElement('div');
+      tipsDiv.style.cssText = 'background:#EDE9FE;border-radius:12px;padding:20px 24px;margin-top:20px;';
+      tipsDiv.innerHTML = `<h4 style="color:#4C1D95;margin-bottom:10px;">💡 Local Tips</h4>
+        <ul style="color:#5B21B6;padding-left:18px;line-height:1.8">
+          ${data.tips.map(t => `<li>${t}</li>`).join('')}
+        </ul>`;
+      container.appendChild(tipsDiv);
+    }
+  }
+
+  // ── MAIN GENERATE (calls real API) ───────────────────────────────────
+  async function generateItinerary() {
+    const token = localStorage.getItem('rr_token');
+    if (!token) {
+      alert('Please sign in first to generate an itinerary.');
+      window.location.href = 'signin.html';
+      return;
+    }
+
+    const payload = getFormData();
+    if (!payload.city) { alert('Please select a destination city.'); return; }
+    if (payload.interests.length === 0) { alert('Please select at least one interest.'); return; }
+
+    // show loading
+    document.getElementById('output').classList.remove('active');
+    document.getElementById('loading').classList.add('active');
+    document.getElementById('loading').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    try {
+      const res = await fetch(`${API}/api/itineraries/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const json = await res.json();
+      document.getElementById('loading').classList.remove('active');
+
+      if (!res.ok || !json.success) {
+        throw new Error(json.message || 'Generation failed');
       }
 
+      lastItineraryId = json.data?.id || null;
+      renderItinerary(json.data);
+
+      document.getElementById('output').classList.add('active');
       document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 1800);
+
+    } catch (err) {
+      document.getElementById('loading').classList.remove('active');
+      alert(`Error: ${err.message}\n\nMake sure the backend is running and GEMINI_API_KEY is set in .env`);
+      console.error(err);
+    }
   }
+
+  // ── SAVE TRIP ────────────────────────────────────────────────────────
+  async function saveTrip() {
+    if (!lastItineraryId) { alert('Generate an itinerary first.'); return; }
+    const token = localStorage.getItem('rr_token');
+    if (!token) { window.location.href = 'signin.html'; return; }
+    try {
+      const res = await fetch(`${API}/api/itineraries/${lastItineraryId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ status: 'saved' })
+      });
+      const json = await res.json();
+      if (json.success) alert('✅ Trip saved! View it in your profile.');
+      else alert('Could not save: ' + json.message);
+    } catch (e) { alert('Save failed: ' + e.message); }
+  }
+
+  // ── ACTIVITY HELPERS ─────────────────────────────────────────────────
+  function removeActivity(btn) {
+    btn.closest('.activity').remove();
+  }
+  function moveActivity(btn, dir) {
+    const act = btn.closest('.activity');
+    const sibling = dir === -1 ? act.previousElementSibling : act.nextElementSibling;
+    if (sibling) act.parentNode.insertBefore(dir === -1 ? act : sibling, dir === -1 ? sibling : act);
+  }
+
+  // Wire Save button
+  document.addEventListener('DOMContentLoaded', () => {
+    const saveBtn = document.querySelector('.action-btn.primary');
+    if (saveBtn) saveBtn.addEventListener('click', saveTrip);
+  });
 </script>
 
     <style>
@@ -405,5 +482,31 @@
       });
     </script>
 
-  </body>
+  
+    <script>
+      // Auth UI state update
+      document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('rr_token');
+        const userStr = localStorage.getItem('rr_user');
+        const navActions = document.querySelector('.nav-actions');
+        
+        if (token && userStr && navActions) {
+          try {
+            const user = JSON.parse(userStr);
+            navActions.innerHTML = `
+              <span style="font-weight: 500; font-size: 14px; margin-right: 16px; color: var(--purple);">Hi, ${user.name}</span>
+              <button id="logoutBtn" style="background: none; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">Logout</button>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+              localStorage.removeItem('rr_token');
+              localStorage.removeItem('rr_user');
+              window.location.href = 'index.html';
+            });
+          } catch(e) {
+            console.error('Error parsing user data', e);
+          }
+        }
+      });
+    </script>
+</body>
 </html>
