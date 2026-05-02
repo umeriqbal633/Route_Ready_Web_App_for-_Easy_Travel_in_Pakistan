@@ -1,0 +1,361 @@
+// Prisma Schema for RouteReady
+// Maps to all 8 classes from Iteration 2 Class Diagram
+// Database: PostgreSQL (Neon)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===========================
+// User Table
+// ===========================
+model User {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  pwHash         String
+  role           Role     @default(REGISTERED)
+  avatar         String   @default("")
+  phone          String   @default("")
+  budgetRange    String   @default("medium")
+  interests      String[] @default([])
+  travelStyle    String   @default("solo")
+  isStudent      Boolean  @default(false)
+  joinDate       DateTime @default(now())
+  lastLogin      DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  savedDestinations UserSavedDestination[]
+  itineraries       Itinerary[]
+  reviews           Review[]
+  trackers          TripTracker[]
+  notifications     Notification[]
+  submittedGems     HiddenGem[]
+
+  @@map("users")
+}
+
+enum Role {
+  GUEST
+  REGISTERED
+  PLANNER
+  ADMIN
+}
+
+// ===========================
+// Destination Table
+// ===========================
+model Destination {
+  id               String   @id @default(cuid())
+  name             String
+  city             String
+  province         String
+  category         String
+  description      String
+  shortDescription String   @default("")
+  price            Float    @default(0)
+  rating           Float    @default(0)
+  reviewCount      Int      @default(0)
+  image            String
+  gallery          String[] @default([])
+  address          String   @default("")
+  lat              Float?
+  lng              Float?
+  hours            String   @default("9:00 AM - 6:00 PM")
+  duration         String   @default("2-3 hours")
+  bestTimeToVisit  String   @default("")
+  badge            String   @default("")
+  highlights       String[] @default([])
+  tips             String[] @default([])
+  saveCount        Int      @default(0)
+  viewCount        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  savedBy  UserSavedDestination[]
+  reviews  Review[]
+
+  @@map("destinations")
+}
+
+// Join table for User saved destinations
+model UserSavedDestination {
+  userId        String
+  destinationId String
+  savedAt       DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destination Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, destinationId])
+  @@map("user_saved_destinations")
+}
+
+// ===========================
+// Itinerary Table
+// ===========================
+model Itinerary {
+  id                  String   @id @default(cuid())
+  userId              String
+  title               String
+  city                String
+  startDate           DateTime
+  endDate             DateTime
+  numDays             Int
+  travelerCount       Int      @default(1)
+  interests           String[] @default([])
+  budgetTotal         Float    @default(0)
+  isStudent           Boolean  @default(false)
+  status              ItineraryStatus @default(DRAFT)
+  generatedByAI       Boolean  @default(true)
+  aiModel             String   @default("")
+  generationTimeMs    Int?
+  estimatedTotalCost  Float    @default(0)
+  notes               String   @default("")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  days       Day[]
+  tracker    TripTracker?
+
+  @@map("itineraries")
+}
+
+enum ItineraryStatus {
+  DRAFT
+  SAVED
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+// ===========================
+// Day Table (part of Itinerary)
+// ===========================
+model Day {
+  id            String   @id @default(cuid())
+  itineraryId   String
+  dayNumber     Int
+  date          DateTime?
+  title         String   @default("")
+  estimatedCost Float    @default(0)
+
+  // Relations
+  itinerary  Itinerary  @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  activities Activity[]
+
+  @@map("days")
+}
+
+// ===========================
+// Activity Table
+// ===========================
+model Activity {
+  id             String  @id @default(cuid())
+  dayId          String
+  slot           String  // morning, afternoon, evening, night
+  name           String
+  description    String  @default("")
+  location       String  @default("")
+  duration       String  @default("2 hours")
+  cost           Float   @default(0)
+  category       String  @default("Other")
+  isCompleted    Boolean @default(false)
+  order          Int     @default(0)
+
+  // Relations
+  day Day @relation(fields: [dayId], references: [id], onDelete: Cascade)
+
+  @@map("activities")
+}
+
+// ===========================
+// Review Table
+// ===========================
+model Review {
+  id            String   @id @default(cuid())
+  userId        String
+  destId        String
+  rating        Int      // 1-5
+  comment       String
+  isFlagged     Boolean  @default(false)
+  flagReason    String   @default("")
+  isPublished   Boolean  @default(true)
+  helpfulCount  Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destination Destination @relation(fields: [destId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, destId])
+  @@map("reviews")
+}
+
+// ===========================
+// Hotel Table
+// ===========================
+model Hotel {
+  id                String   @id @default(cuid())
+  name              String
+  city              String
+  address           String   @default("")
+  description       String   @default("")
+  stars             Int
+  rating            Float    @default(0)
+  reviewCount       Int      @default(0)
+  pricePerNight     Float
+  currency          String   @default("PKR")
+  propertyType      String   @default("Hotel")
+  amenities         String[] @default([])
+  image             String
+  gallery           String[] @default([])
+  lat               Float?
+  lng               Float?
+  phone             String   @default("")
+  email             String   @default("")
+  website           String   @default("")
+  isStudentFriendly Boolean  @default(false)
+  studentDiscount   Float    @default(0)
+  isAvailable       Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("hotels")
+}
+
+// ===========================
+// TripTracker Table
+// ===========================
+model TripTracker {
+  id           String        @id @default(cuid())
+  itineraryId  String        @unique
+  userId       String
+  progress     Float         @default(0)
+  budgetTotal  Float
+  budgetSpent  Float         @default(0)
+  currency     String        @default("PKR")
+  status       TrackerStatus @default(NOT_STARTED)
+  startedAt    DateTime?
+  completedAt  DateTime?
+  currentLat   Float?
+  currentLng   Float?
+  placeName    String        @default("")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  itinerary    Itinerary    @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checkpoints  Checkpoint[]
+
+  @@map("trip_trackers")
+}
+
+enum TrackerStatus {
+  NOT_STARTED
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+
+// ===========================
+// Checkpoint Table
+// ===========================
+model Checkpoint {
+  id          String           @id @default(cuid())
+  trackerId   String
+  activityId  String
+  dayNumber   Int
+  status      CheckpointStatus @default(UPCOMING)
+  completedAt DateTime?
+  actualCost  Float            @default(0)
+  notes       String           @default("")
+
+  // Relations
+  tracker TripTracker @relation(fields: [trackerId], references: [id], onDelete: Cascade)
+
+  @@map("checkpoints")
+}
+
+enum CheckpointStatus {
+  UPCOMING
+  CURRENT
+  DONE
+  SKIPPED
+}
+
+// ===========================
+// HiddenGem Table
+// ===========================
+model HiddenGem {
+  id                 String             @id @default(cuid())
+  name               String
+  city               String
+  description        String
+  rarity             Rarity             @default(RARE)
+  localsPercent      Float
+  category           String             @default("Other")
+  image              String
+  gallery            String[]           @default([])
+  address            String             @default("")
+  lat                Float?
+  lng                Float?
+  insiderTips        String[]           @default([])
+  bestTimeToVisit    String             @default("")
+  estimatedCost      Float              @default(0)
+  submittedById      String?
+  verificationStatus VerificationStatus @default(VERIFIED)
+  upvotes            Int                @default(0)
+  viewCount          Int                @default(0)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relations
+  submittedBy User? @relation(fields: [submittedById], references: [id])
+
+  @@map("hidden_gems")
+}
+
+enum Rarity {
+  RARE
+  ULTRA_RARE
+  LEGENDARY
+}
+
+enum VerificationStatus {
+  VERIFIED
+  PENDING
+  REJECTED
+}
+
+// ===========================
+// Notification Table
+// ===========================
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  message   String
+  type      String   @default("system")
+  link      String   @default("")
+  read      Boolean  @default(false)
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
