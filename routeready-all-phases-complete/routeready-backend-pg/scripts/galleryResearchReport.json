@@ -1,0 +1,269 @@
+{
+  "dryRun": false,
+  "skipWikimediaGallery": true,
+  "offset": 100,
+  "limit": 25,
+  "maxQueries": 4,
+  "queryDelay": 2000,
+  "names": [],
+  "totalInDatabase": 115,
+  "processed": 15,
+  "updated": [
+    {
+      "name": "Shigar Fort",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Serena%2C_Shigar_Fort.jpg/1000px-Serena%2C_Shigar_Fort.jpg",
+          "title": "File:Serena, Shigar Fort.jpg",
+          "query": "Shigar Fort Skardu Pakistan",
+          "score": 22
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Serena_Central_Court%2C_Shigar_Fort.jpg/1000px-Serena_Central_Court%2C_Shigar_Fort.jpg",
+          "title": "File:Serena Central Court, Shigar Fort.jpg",
+          "query": "Shigar Fort Skardu Pakistan",
+          "score": 22
+        }
+      ]
+    },
+    {
+      "name": "Shogran",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Siri_-_Shogran_-_Naran_Valley%2C_Pakistan.jpg/1000px-Siri_-_Shogran_-_Naran_Valley%2C_Pakistan.jpg",
+          "title": "File:Siri - Shogran - Naran Valley, Pakistan.jpg",
+          "query": "Shogran Naran Pakistan",
+          "score": 24
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/The_lush_green_grass_and_white_horses_at_Shogran.jpg/1000px-The_lush_green_grass_and_white_horses_at_Shogran.jpg",
+          "title": "File:The lush green grass and white horses at Shogran.jpg",
+          "query": "Shogran Naran Pakistan",
+          "score": 24
+        }
+      ]
+    },
+    {
+      "name": "Simli Dam",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Simli_Dam%2C_Rawalpindi%2C_Pakistan.jpg/1000px-Simli_Dam%2C_Rawalpindi%2C_Pakistan.jpg",
+          "title": "File:Simli Dam, Rawalpindi, Pakistan.jpg",
+          "query": "Simli Dam Islamabad Pakistan",
+          "score": 29
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Simli_dam_2.jpg/1000px-Simli_dam_2.jpg",
+          "title": "File:Simli dam 2.jpg",
+          "query": "Simli Dam Islamabad Pakistan",
+          "score": 26
+        }
+      ]
+    },
+    {
+      "name": "Skardu Valley",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Valleys_and_sighst_-_Skardu_-_Pakistan_2.jpg/1000px-Valleys_and_sighst_-_Skardu_-_Pakistan_2.jpg",
+          "title": "File:Valleys and sighst - Skardu - Pakistan 2.jpg",
+          "query": "Skardu Valley Skardu Pakistan",
+          "score": 12
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Valleys_and_sighst_-_Skardu_-_Pakistan_1.jpg/1000px-Valleys_and_sighst_-_Skardu_-_Pakistan_1.jpg",
+          "title": "File:Valleys and sighst - Skardu - Pakistan 1.jpg",
+          "query": "Skardu Valley Skardu Pakistan",
+          "score": 12
+        }
+      ]
+    },
+    {
+      "name": "Soon Valley",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/View_of_Soon_Valley%2C_Khushab%2C_Punjab_Pakistan.jpg/1000px-View_of_Soon_Valley%2C_Khushab%2C_Punjab_Pakistan.jpg",
+          "title": "File:View of Soon Valley, Khushab, Punjab Pakistan.jpg",
+          "query": "Soon Valley Khushab Pakistan",
+          "score": 26
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Khabeki_Lake%2C_Soon_Valley%2C_Khushab%2C_Punjab%2C_Pakistan.jpg/1000px-Khabeki_Lake%2C_Soon_Valley%2C_Khushab%2C_Punjab%2C_Pakistan.jpg",
+          "title": "File:Khabeki Lake, Soon Valley, Khushab, Punjab, Pakistan.jpg",
+          "query": "Soon Valley Khushab Pakistan",
+          "score": 26
+        }
+      ]
+    },
+    {
+      "name": "Swat River Rafting",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/A_horrible_river-horse_with_giant_teeth_from_India%2C_Cosmographia_%281544%29_by_Sebastian_M%C3%BCnster.jpg/1000px-A_horrible_river-horse_with_giant_teeth_from_India%2C_Cosmographia_%281544%29_by_Sebastian_M%C3%BCnster.jpg",
+          "title": "File:A horrible river-horse with giant teeth from India, Cosmographia (1544) by Sebastian Münster.jpg",
+          "query": "Swat River Rafting Swat Pakistan",
+          "score": 26
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Hotels_in_Kalam_along_the_Swat_River_in_Khyber_Pakhtunkhwa%2C_Pakistan_08.jpg/1000px-Hotels_in_Kalam_along_the_Swat_River_in_Khyber_Pakhtunkhwa%2C_Pakistan_08.jpg",
+          "title": "File:Hotels in Kalam along the Swat River in Khyber Pakhtunkhwa, Pakistan 08.jpg",
+          "query": "Swat River Swat Pakistan",
+          "score": 54
+        }
+      ]
+    },
+    {
+      "name": "Swat Valley",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Gandhara_Lute%2C_Pakistan%2C_Swat_Valley%2C_Gandhara_region%2C_4th-5th_century.jpg/1000px-Gandhara_Lute%2C_Pakistan%2C_Swat_Valley%2C_Gandhara_region%2C_4th-5th_century.jpg",
+          "title": "File:Gandhara Lute, Pakistan, Swat Valley, Gandhara region, 4th-5th century.jpg",
+          "query": "Swat Valley Swat Pakistan",
+          "score": 24
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Swat_valley_pakistan.jpg/1000px-Swat_valley_pakistan.jpg",
+          "title": "File:Swat valley pakistan.jpg",
+          "query": "Swat Valley Swat Pakistan",
+          "score": 24
+        }
+      ]
+    },
+    {
+      "name": "Takht-i-Bahi",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Takht_Bhai.jpg/1000px-Takht_Bhai.jpg",
+          "title": "File:Takht Bhai.jpg",
+          "query": "Takht-i-Bahi Peshawar Pakistan",
+          "score": 32
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Takht-i-bahi_buddhist_ruins.jpg/1000px-Takht-i-bahi_buddhist_ruins.jpg",
+          "title": "File:Takht-i-bahi buddhist ruins.jpg",
+          "query": "Takht-i-Bahi Pakistan",
+          "score": 35
+        }
+      ]
+    },
+    {
+      "name": "Taxila Archaeological Site",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Sirkap_Archaeological_site_Taxila.jpg/1000px-Sirkap_Archaeological_site_Taxila.jpg",
+          "title": "File:Sirkap Archaeological site Taxila.jpg",
+          "query": "Taxila Archaeological Site Pakistan",
+          "score": 41
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Panorama_at_Jaulian_-_Ancient_Buddhist_Monastery_-_Taxila%2C_Pakistan_-_566-31.JPG/1000px-Panorama_at_Jaulian_-_Ancient_Buddhist_Monastery_-_Taxila%2C_Pakistan_-_566-31.JPG",
+          "title": "File:Panorama at Jaulian - Ancient Buddhist Monastery - Taxila, Pakistan - 566-31.JPG",
+          "query": "Taxila Archaeological Site Pakistan",
+          "score": 37
+        }
+      ]
+    },
+    {
+      "name": "Thar Desert",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Thar_desert_folk.jpg/1000px-Thar_desert_folk.jpg",
+          "title": "File:Thar desert folk.jpg",
+          "query": "Thar Desert Pakistan",
+          "score": 26
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Humanitarian_Outreach_Team_Arrives_in_Thar_Desert%2C_Pakistan-India_Border_Rajasthan%2C.jpg/1000px-Humanitarian_Outreach_Team_Arrives_in_Thar_Desert%2C_Pakistan-India_Border_Rajasthan%2C.jpg",
+          "title": "File:Humanitarian Outreach Team Arrives in Thar Desert, Pakistan-India Border Rajasthan,.jpg",
+          "query": "Thar Desert Pakistan",
+          "score": 26
+        }
+      ]
+    },
+    {
+      "name": "Tomb of Jahangir",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/View_from_atop_the_left_minaret_-_Tomb_of_Jahangir_gardens.jpg/1000px-View_from_atop_the_left_minaret_-_Tomb_of_Jahangir_gardens.jpg",
+          "title": "File:View from atop the left minaret - Tomb of Jahangir gardens.jpg",
+          "query": "Tomb of Jahangir Lahore Pakistan",
+          "score": 29
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/White_marble_cupolas_cap_minarets_at_the_Tomb_of_Jahangir.jpg/1000px-White_marble_cupolas_cap_minarets_at_the_Tomb_of_Jahangir.jpg",
+          "title": "File:White marble cupolas cap minarets at the Tomb of Jahangir.jpg",
+          "query": "Tomb of Jahangir Lahore Pakistan",
+          "score": 29
+        }
+      ]
+    },
+    {
+      "name": "Wagah Border Ceremony",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Ceremony_%40_Wagah_Border_%40_Pakistan_%2815546761746%29.jpg/1000px-Ceremony_%40_Wagah_Border_%40_Pakistan_%2815546761746%29.jpg",
+          "title": "File:Ceremony @ Wagah Border @ Pakistan (15546761746).jpg",
+          "query": "Wagah Border Ceremony Lahore Pakistan",
+          "score": 19
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Wagha_border.jpg/1000px-Wagha_border.jpg",
+          "title": "File:Wagha border.jpg",
+          "query": "Wagah Border Ceremony Lahore Pakistan",
+          "score": 14
+        }
+      ]
+    },
+    {
+      "name": "Walled City of Lahore",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Walled_city_lahore_and_its_colors.jpg/1000px-Walled_city_lahore_and_its_colors.jpg",
+          "title": "File:Walled city lahore and its colors.jpg",
+          "query": "Walled City of Lahore Lahore Pakistan",
+          "score": 42
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Walled_City%2C_Lahore_District%2C_Pakistan_-_panoramio.jpg/1000px-Walled_City%2C_Lahore_District%2C_Pakistan_-_panoramio.jpg",
+          "title": "File:Walled City, Lahore District, Pakistan - panoramio.jpg",
+          "query": "Walled City of Lahore Lahore Pakistan",
+          "score": 32
+        }
+      ]
+    },
+    {
+      "name": "Wazir Khan Mosque",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Photograph_of_a_man_overlooking_the_city_of_Lahore_from_the_rooftop_of_the_Wazir_Khan_Mosque%2C_Lahore%2C_Punjab%2C_India%2C_H._C._White_Co.jpg/1000px-Photograph_of_a_man_overlooking_the_city_of_Lahore_from_the_rooftop_of_the_Wazir_Khan_Mosque%2C_Lahore%2C_Punjab%2C_India%2C_H._C._White_Co.jpg",
+          "title": "File:Photograph of a man overlooking the city of Lahore from the rooftop of the Wazir Khan Mosque, Lahore, Punjab, India, H. C. White Co.jpg",
+          "query": "Wazir Khan Mosque Lahore Pakistan",
+          "score": 29
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Shadows_of_pillars_at_the_Wazir_Khan_Mosque_in_Lahore%2C_Pakistan.jpg/1000px-Shadows_of_pillars_at_the_Wazir_Khan_Mosque_in_Lahore%2C_Pakistan.jpg",
+          "title": "File:Shadows of pillars at the Wazir Khan Mosque in Lahore, Pakistan.jpg",
+          "query": "Wazir Khan Mosque Lahore Pakistan",
+          "score": 29
+        }
+      ]
+    },
+    {
+      "name": "Ziarat Valley",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Domaira_in_Ziarat%2C_Balochistan.jpg/1000px-Domaira_in_Ziarat%2C_Balochistan.jpg",
+          "title": "File:Domaira in Ziarat, Balochistan.jpg",
+          "query": "Ziarat Valley Quetta Pakistan",
+          "score": 12
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Dozakh_Tangai%2C_Aka_Hell_Valey%2C_Ziarat_Quetta.jpg/1000px-Dozakh_Tangai%2C_Aka_Hell_Valey%2C_Ziarat_Quetta.jpg",
+          "title": "File:Dozakh Tangai, Aka Hell Valey, Ziarat Quetta.jpg",
+          "query": "Ziarat Valley Quetta Pakistan",
+          "score": 10
+        }
+      ]
+    }
+  ],
+  "unresolved": []
+}

@@ -171,6 +171,38 @@
     }
     .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,60,225,0.45); }
 
+    /* MODAL */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: #fff; border-radius: 20px; max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 28px; cursor: pointer; color: var(--gray); z-index: 10; }
+    .modal-close:hover { color: var(--purple); }
+
+    .modal-header { height: 300px; position: relative; overflow: hidden; }
+    .modal-img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-rarity { position: absolute; top: 20px; left: 20px; background: var(--gold); color: #fff; padding: 8px 16px; border-radius: 50px; font-size: 12px; font-weight: 700; }
+
+    .modal-body { padding: 40px; }
+    .modal-body h2 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .modal-loc { display: flex; align-items: center; gap: 6px; color: var(--gray); margin-bottom: 20px; }
+    .modal-desc { color: #374151; font-size: 15px; line-height: 1.8; margin-bottom: 24px; }
+
+    .modal-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+    .meta-item { background: var(--light-gray); padding: 16px; border-radius: 12px; }
+    .meta-label { font-size: 12px; color: var(--gray); font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+    .meta-value { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+
+    .modal-tips { background: var(--purple-soft); border-left: 4px solid var(--purple); padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+    .modal-tips h4 { color: var(--purple); font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+    .modal-tips p { color: var(--purple); font-size: 13px; line-height: 1.6; }
+
+    .modal-actions { display: flex; gap: 12px; }
+    .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s; }
+    .modal-btn-primary { background: var(--purple); color: #fff; }
+    .modal-btn-primary:hover { background: var(--purple-dark); }
+    .modal-btn-secondary { background: var(--border); color: #1a1a2e; }
+    .modal-btn-secondary:hover { background: var(--gray); color: #fff; }
+
     /* FOOTER */
     footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 60px 48px 28px; }
     .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
@@ -245,19 +277,59 @@
 </section>
 
 <!-- CITY TABS -->
-<div class="city-tabs">
+<div class="city-tabs" id="cityTabs">
   <button class="city-pill active" onclick="filterCity('all', this)">All Cities</button>
-  <button class="city-pill" onclick="filterCity('Islamabad', this)">Islamabad</button>
-  <button class="city-pill" onclick="filterCity('Lahore', this)">Lahore</button>
-  <button class="city-pill" onclick="filterCity('Karachi', this)">Karachi</button>
-  <button class="city-pill" onclick="filterCity('Hunza', this)">Hunza</button>
-  <button class="city-pill" onclick="filterCity('Peshawar', this)">Peshawar</button>
 </div>
 
 <!-- GEMS GRID -->
 <section class="gems-grid" id="gemsGrid">
   <!-- populated by JS -->
 </section>
+
+<!-- GEM MODAL -->
+<div class="modal" id="gemModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeGemModal()">&times;</button>
+    <div class="modal-header">
+      <img class="modal-img" id="modalGemImg" src="" alt=""/>
+      <div class="modal-rarity" id="modalGemRarity"></div>
+    </div>
+    <div class="modal-body">
+      <h2 id="modalGemName"></h2>
+      <div class="modal-loc" id="modalGemLoc"></div>
+      <p class="modal-desc" id="modalGemDesc"></p>
+
+      <div class="modal-meta">
+        <div class="meta-item">
+          <div class="meta-label">⏱ Duration</div>
+          <div class="meta-value" id="modalGemTime"></div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">💰 Cost</div>
+          <div class="meta-value" id="modalGemCost"></div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">👥 Local Vibe</div>
+          <div class="meta-value" id="modalGemLocals"></div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">✨ Rarity</div>
+          <div class="meta-value" id="modalGemRarityValue"></div>
+        </div>
+      </div>
+
+      <div class="modal-tips" id="modalGemTips">
+        <h4>💡 Insider Tip</h4>
+        <p id="modalGemTipsText"></p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-primary" onclick="addGemToPlan()">Add to Plan</button>
+        <button class="modal-btn modal-btn-secondary" onclick="closeGemModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- INSIDER TIPS -->
 <section class="insider-section">
@@ -319,18 +391,20 @@
       const data = await res.json();
       if (!data.success) throw new Error('Bad response');
       allGems = data.data.map(g => ({
-        id:      g.id,
+        id:      g.id || g._id,
         name:    g.name,
-        city:    (g.city || '').toLowerCase(),
+        city:    (g.city || '').split(' ').map(w=>w?w[0].toUpperCase()+w.slice(1).toLowerCase():'').join(' '),
         area:    g.area || g.city,
-        img:     g.imageUrl || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80',
+        img:     g.image || g.imageUrl || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80',
         rarity:  g.rarity || 'RARE',
         desc:    g.description || g.desc || '',
-        tags:    g.tags || [],
-        time:    g.visitDuration || g.time || 'Half day',
-        cost:    g.estimatedCost || g.cost || 'Moderate',
-        locals:  g.localsPercentage ? `${g.localsPercentage}% locals` : (g.locals || '80% locals')
+        tags:    g.tags || (g.category ? [g.category] : ['Experience']),
+        time:    g.duration || g.visitDuration || g.bestTimeToVisit || 'Half day',
+        cost:    (g.estimatedCost === 0 || g.price === 0) ? 'Free' : (g.estimatedCost ? `PKR ${g.estimatedCost}` : g.price ? `PKR ${g.price}` : 'Moderate'),
+        locals:  g.localsPercent != null ? `${g.localsPercent}% locals` : (g.locals || '80% locals'),
+        tips:    (g.insiderTips && g.insiderTips.length) ? g.insiderTips[0] : (g.tips || null)
       }));
+      buildCityPills();
       renderGems();
     } catch(e) {
       grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;">
@@ -341,10 +415,20 @@
     }
   }
 
+  // ── BUILD CITY FILTER PILLS ───────────────────────────────────────────
+  function buildCityPills() {
+    const tabs = document.getElementById('cityTabs');
+    const cities = [...new Set(allGems.map(g => g.city).filter(Boolean))].sort();
+    const extra = cities.map(c =>
+      `<button class="city-pill" onclick="filterCity('${c}', this)">${c}</button>`
+    ).join('');
+    tabs.innerHTML = `<button class="city-pill active" onclick="filterCity('all', this)">All Cities</button>${extra}`;
+  }
+
   // ── RENDER ────────────────────────────────────────────────────────────
   function renderGems() {
     const grid = document.getElementById('gemsGrid');
-    const list = currentCity === 'all' ? allGems : allGems.filter(g => g.city === currentCity);
+    const list = currentCity === 'all' ? allGems : allGems.filter(g => g.city.toLowerCase() === currentCity.toLowerCase());
 
     if (list.length === 0) {
       grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray);">No hidden gems found for this city yet. Check back soon!</div>`;
@@ -376,12 +460,119 @@
                 <span>⏱ ${g.time}</span>
                 <span>💰 ${g.cost}</span>
               </div>
-              <button class="gem-explore" onclick="window.location.href='destinations.html'">Explore →</button>
+              <button class="gem-explore" onclick="openGemModal('${g.id}')">Explore →</button>
             </div>
           </div>
         </div>`;
     }).join('');
   }
+
+  // ── MODAL FUNCTIONS ──────────────────────────────────────────────────────
+  function openGemModal(gemId) {
+    const gem = allGems.find(g => g.id === gemId);
+    if (!gem) return;
+
+    document.getElementById('modalGemImg').src = gem.img;
+    document.getElementById('modalGemImg').onerror = function() {
+      this.src = 'https://via.placeholder.com/600x400/4C1D95/ffffff?text=' + encodeURIComponent(gem.name);
+    };
+
+    const rarityColor = { LEGENDARY: '#F59E0B', ULTRA_RARE: '#6C3CE1', RARE: '#10B981', ULTRA: '#6C3CE1' };
+    const rColor = rarityColor[gem.rarity] || rarityColor.RARE;
+    const rarityLabel = gem.rarity.replace('_', ' ');
+
+    document.getElementById('modalGemRarity').textContent = '✨ ' + rarityLabel;
+    document.getElementById('modalGemRarity').style.backgroundColor = rColor;
+
+    document.getElementById('modalGemName').textContent = gem.name;
+    document.getElementById('modalGemLoc').innerHTML = `📍 ${gem.area}${gem.area !== gem.city ? ', ' + gem.city : ''}`;
+    document.getElementById('modalGemDesc').textContent = gem.desc;
+    document.getElementById('modalGemTime').textContent = gem.time;
+    document.getElementById('modalGemCost').textContent = gem.cost;
+    document.getElementById('modalGemLocals').textContent = gem.locals;
+    document.getElementById('modalGemRarityValue').textContent = rarityLabel;
+    document.getElementById('modalGemTipsText').textContent = gem.tips || 'Local guides recommend visiting early morning to avoid crowds and get the best photography light.';
+    document.getElementById('modalGemTips').style.display = gem.tips ? 'block' : 'none';
+
+    const modal = document.getElementById('gemModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    window.currentGemId = gemId;
+  }
+
+  function closeGemModal() {
+    const modal = document.getElementById('gemModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    window.currentGemId = null;
+  }
+
+  function addGemToPlan() {
+    const gemId = window.currentGemId;
+    if (!gemId) return;
+
+    const gem = allGems.find(g => g.id === gemId);
+    if (!gem) return;
+
+    let plan = getPlan();
+
+    if (plan.gems.find(g => g.id === gemId)) {
+      showToast('Already in your plan!');
+      closeGemModal();
+      return;
+    }
+
+    // Normalize city to Title Case so planner city-detection works regardless of API casing
+    const normCity = (gem.city||'').split(' ').map(w=>w?w[0].toUpperCase()+w.slice(1).toLowerCase():'').join(' ');
+    plan.gems.push({
+      id: gemId,
+      name: gem.name,
+      city: normCity || gem.city,
+      area: gem.area,
+      time: gem.time,
+      cost: gem.cost,
+      img: gem.img,
+      rarity: gem.rarity,
+      addedAt: new Date().toISOString()
+    });
+    savePlan(plan);
+
+    showToast(`✓ "${gem.name}" added to your plan!`, 'planner.html');
+    closeGemModal();
+  }
+
+  function getPlan() {
+    try {
+      const p = JSON.parse(localStorage.getItem('rr_plan') || '{}');
+      if (!p.destinations) p.destinations = [];
+      if (!p.hotels) p.hotels = [];
+      if (!p.gems) p.gems = [];
+      return p;
+    } catch(e) { return { destinations: [], hotels: [], gems: [] }; }
+  }
+  function savePlan(plan) { localStorage.setItem('rr_plan', JSON.stringify(plan)); }
+
+  let toastTimer;
+  function showToast(msg, link = null) {
+    clearTimeout(toastTimer);
+    const t = document.getElementById('rr-toast');
+    document.getElementById('rr-toast-msg').textContent = msg;
+    const lk = document.getElementById('rr-toast-link');
+    if (link) { lk.href = link; lk.style.display = 'inline'; }
+    else lk.style.display = 'none';
+    t.style.transform = 'translateY(0)';
+    t.style.opacity = '1';
+    toastTimer = setTimeout(() => { t.style.transform = 'translateY(90px)'; t.style.opacity = '0'; }, 3500);
+  }
+
+  // ── MODAL CLOSE ON BACKGROUND CLICK ───────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('gemModal');
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeGemModal();
+    });
+  });
 
   // ── CITY FILTER ───────────────────────────────────────────────────────
   function filterCity(city, el) {
@@ -444,5 +635,13 @@
         }
       });
     </script>
+<!-- TOAST -->
+<div id="rr-toast" style="position:fixed;bottom:28px;right:28px;z-index:9999;transform:translateY(90px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none;">
+  <div style="background:#1a1a2e;color:#fff;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.25);max-width:360px;">
+    <span style="color:#10B981;">✓</span>
+    <span id="rr-toast-msg"></span>
+    <a id="rr-toast-link" href="#" style="color:#8B5CF6;margin-left:auto;white-space:nowrap;text-decoration:underline;display:none;pointer-events:auto;font-size:13px;">View Plan →</a>
+  </div>
+</div>
 </body>
 </html>

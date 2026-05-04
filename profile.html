@@ -346,34 +346,78 @@
     } catch(e) { console.error('Stats load failed:', e); }
   }
 
-  // ── LOAD TRIPS ────────────────────────────────────────────────────────
+  // ── LOAD TRIPS (reads localStorage + API fallback) ─────────────────────
   async function loadTrips() {
-    try {
-      const res  = await fetch(`${API}/api/itineraries`, { headers: { 'Authorization': `Bearer ${token}` } });
-      const data = await res.json();
-      const grid = document.getElementById('tripsGrid');
-      if (!data.success || !data.data.length) {
-        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#6B7280;">
-          <div style="font-size:48px;margin-bottom:12px;">🗺️</div>
-          <h3>No trips yet</h3><p>Generate your first AI itinerary in the <a href="planner.html" style="color:#6C3CE1">AI Planner</a>!</p>
-        </div>`;
-        return;
-      }
-      const statusStyle = { saved:'background:#EDE9FE;color:#4C1D95', planning:'background:#FEF3C7;color:#92400E', completed:'background:#D1FAE5;color:#065F46' };
-      grid.innerHTML = data.data.map(t => `
-        <div class="trip-card">
-          <img class="trip-img" src="https://images.unsplash.com/photo-1542338347-4fff3276af78?w=600&q=80" alt="trip"/>
-          <div class="trip-body">
-            <span class="trip-tag" style="${statusStyle[t.status]||statusStyle.saved}">${t.status||'saved'}</span>
-            <h3>${t.title || 'Untitled Trip'}</h3>
-            <p class="dates">${t.city} · ${t.numDays} day${t.numDays>1?'s':''}</p>
-            <div class="trip-actions">
-              <button class="trip-btn" onclick="deleteTrip('${t.id}')">Delete</button>
-              <button class="trip-btn primary" onclick="window.location.href='planner.html'">View</button>
-            </div>
+    const grid = document.getElementById('tripsGrid');
+    let trips = [];
+
+    // 1. Always load from localStorage (where saveTrip() stores them)
+    const local = JSON.parse(localStorage.getItem('rr_saved_trips') || '[]');
+    local.forEach(t => trips.push({
+      id:       t.id,
+      title:    t.title || 'Untitled Trip',
+      city:     t.city  || '',
+      numDays:  t.days  || t.numDays || 1,
+      startDate:t.startDate || '',
+      interests:(t.interests||[]).slice(0,3).join(', '),
+      status:   'saved',
+      source:   'local'
+    }));
+
+    // 2. Also try API trips (for future server-saved trips)
+    if (token) {
+      try {
+        const res  = await fetch(`${API}/api/trips`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          data.data.forEach(t => {
+            if (!trips.find(x => x.id === (t._id||t.id))) {
+              trips.push({
+                id:       t._id || t.id,
+                title:    t.title || 'Untitled Trip',
+                city:     t.destination || t.city || '',
+                numDays:  t.duration    || t.numDays || 1,
+                startDate:t.startDate   || '',
+                interests:'',
+                status:   t.status || 'saved',
+                source:   'api'
+              });
+            }
+          });
+        }
+      } catch(e) { /* API unavailable — local trips still shown */ }
+    }
+
+    if (!trips.length) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#6B7280;">
+        <div style="font-size:48px;margin-bottom:12px;">🗺️</div>
+        <h3>No trips yet</h3>
+        <p>Generate your first AI itinerary in the <a href="planner.html" style="color:#6C3CE1">AI Planner</a>!</p>
+      </div>`;
+      return;
+    }
+
+    const statusStyle = {
+      saved:     'background:#EDE9FE;color:#4C1D95',
+      planning:  'background:#FEF3C7;color:#92400E',
+      completed: 'background:#D1FAE5;color:#065F46'
+    };
+
+    grid.innerHTML = trips.map(t => `
+      <div class="trip-card">
+        <img class="trip-img" src="https://images.unsplash.com/photo-1542338347-4fff3276af78?w=600&q=80" alt="trip"
+          onerror="this.src='https://via.placeholder.com/600x300/6C3CE1/fff?text=Trip'"/>
+        <div class="trip-body">
+          <span class="trip-tag" style="${statusStyle[t.status]||statusStyle.saved}">${t.status||'saved'}</span>
+          <h3>${t.title}</h3>
+          <p class="dates">${[t.city, t.numDays+' day'+(t.numDays>1?'s':''), t.startDate].filter(Boolean).join(' · ')}</p>
+          ${t.interests ? `<p style="font-size:12px;color:var(--gray);margin-top:4px;">🏷️ ${t.interests}</p>` : ''}
+          <div class="trip-actions">
+            <button class="trip-btn" onclick="deleteSavedTrip('${t.id}','${t.source}')">Delete</button>
+            <button class="trip-btn primary" onclick="window.location.href='planner.html'">View in Planner</button>
           </div>
-        </div>`).join('');
-    } catch(e) { console.error('Trips load failed:', e); }
+        </div>
+      </div>`).join('');
   }
 
   // ── LOAD SAVED PLACES ─────────────────────────────────────────────────
@@ -414,13 +458,20 @@
   }
 
   // ── DELETE TRIP ───────────────────────────────────────────────────────
-  async function deleteTrip(id) {
+  async function deleteSavedTrip(id, source) {
     if (!confirm('Delete this trip?')) return;
-    try {
-      await fetch(`${API}/api/itineraries/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-      loadTrips(); loadStats();
-    } catch(e) { alert('Delete failed: ' + e.message); }
+    if (source === 'local' || String(id).startsWith('local_')) {
+      const trips = JSON.parse(localStorage.getItem('rr_saved_trips') || '[]');
+      localStorage.setItem('rr_saved_trips', JSON.stringify(trips.filter(t => t.id !== id)));
+    } else {
+      try {
+        await fetch(`${API}/api/trips/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+      } catch(e) { console.warn('API delete failed:', e); }
+    }
+    loadTrips();
   }
+
+  function deleteTrip(id) { deleteSavedTrip(id, 'api'); }
 
   // ── DELETE ACCOUNT ────────────────────────────────────────────────────
   async function deleteAccount() {

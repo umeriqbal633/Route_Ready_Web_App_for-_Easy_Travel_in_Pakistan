@@ -1,36 +1,41 @@
-const Hotel = require("../models/Hotel");
+const { PrismaClient } = require("@prisma/client");
 const asyncHandler = require("../utils/asyncHandler");
+const prisma = new PrismaClient();
 
 // GET /api/hotels — list all with filters
 const getHotels = asyncHandler(async (req, res) => {
-  const { city, stars, maxPrice, amenities, sort } = req.query;
+  const { city, stars, maxPrice, amenities, sort, limit = 200 } = req.query;
 
-  const filter = {};
+  const where = {};
 
   if (city && city !== "all") {
-    filter.city = new RegExp(`^${city}$`, "i");
+    where.city = { mode: "insensitive", contains: city };
   }
 
   if (stars) {
     const starValues = stars.split(",").map(Number);
-    filter.stars = { $in: starValues };
+    where.stars = { in: starValues };
   }
 
   if (maxPrice) {
-    filter.price = { $lte: parseInt(maxPrice) };
+    where.pricePerNight = { lte: parseInt(maxPrice) };
   }
 
   if (amenities) {
     const amenList = amenities.split(",");
-    filter.amenities = { $all: amenList };
+    where.amenities = { hasSome: amenList };
   }
 
-  let sortOption = { rating: -1 }; // default: recommended
-  if (sort === "price-low") sortOption = { price: 1 };
-  else if (sort === "price-high") sortOption = { price: -1 };
-  else if (sort === "rating") sortOption = { rating: -1 };
+  let orderBy = { rating: "desc" }; // default: recommended
+  if (sort === "price-low") orderBy = { pricePerNight: "asc" };
+  else if (sort === "price-high") orderBy = { pricePerNight: "desc" };
+  else if (sort === "rating") orderBy = { rating: "desc" };
 
-  const hotels = await Hotel.find(filter).sort(sortOption);
+  const hotels = await prisma.hotel.findMany({
+    where,
+    orderBy,
+    take: parseInt(limit),
+  });
 
   res.status(200).json({
     success: true,
@@ -41,7 +46,9 @@ const getHotels = asyncHandler(async (req, res) => {
 
 // GET /api/hotels/:id — single hotel
 const getHotel = asyncHandler(async (req, res) => {
-  const hotel = await Hotel.findById(req.params.id);
+  const hotel = await prisma.hotel.findUnique({
+    where: { id: req.params.id },
+  });
 
   if (!hotel) {
     return res.status(404).json({

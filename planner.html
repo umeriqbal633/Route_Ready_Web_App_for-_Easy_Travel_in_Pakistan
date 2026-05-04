@@ -81,6 +81,44 @@
     }
     .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(108,60,225,0.45); }
 
+    /* TWO-OPTION GENERATE SECTION */
+    .gen-options { display: flex; flex-direction: column; gap: 14px; margin-top: 24px; }
+    .gen-option {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      background: var(--light-gray); border-radius: 14px; padding: 18px 22px;
+      border: 1.5px solid var(--border); flex-wrap: wrap; transition: border-color .2s;
+    }
+    .gen-option:hover { border-color: var(--purple-light); }
+    .gen-option-selected { background: var(--purple-soft); border-color: var(--purple-light); }
+    .gen-option-left { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 180px; }
+    .gen-option-icon { font-size: 28px; flex-shrink: 0; }
+    .gen-option-title { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+    .gen-option-desc { font-size: 13px; color: var(--gray); line-height: 1.45; }
+    .gen-btn {
+      white-space: nowrap; border: none; border-radius: 10px; padding: 13px 22px;
+      font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: transform .15s, box-shadow .2s; display: flex; align-items: center; gap: 7px;
+      flex-shrink: 0;
+    }
+    .gen-btn:hover { transform: translateY(-2px); }
+    .gen-btn-selected {
+      background: linear-gradient(135deg, var(--purple), var(--purple-light)); color: #fff;
+      box-shadow: 0 4px 16px rgba(108,60,225,0.35);
+    }
+    .gen-btn-selected:hover { box-shadow: 0 6px 22px rgba(108,60,225,0.5); }
+    .gen-btn-city {
+      background: linear-gradient(135deg, #1a1a2e, #374151); color: #fff;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .gen-btn-city:hover { box-shadow: 0 6px 22px rgba(0,0,0,0.3); }
+    .gen-divider {
+      display: flex; align-items: center; gap: 12px; color: var(--gray); font-size: 12px;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .gen-divider::before, .gen-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
     /* LOADING */
     .loading-state {
       display: none; text-align: center; padding: 60px 20px;
@@ -167,6 +205,88 @@
     .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 6px; }
     .empty-state p { color: var(--gray); font-size: 14px; }
 
+    /* SAVED PLACES PANEL */
+    .saved-panel {
+      background: #fff; border-radius: 18px; padding: 24px 28px; margin-bottom: 24px;
+      box-shadow: 0 2px 12px rgba(108,60,225,0.08); border: 1.5px solid var(--purple-soft);
+    }
+    .saved-panel-head {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;
+    }
+    .saved-panel-head h3 {
+      font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700;
+    }
+    .saved-panel-head .clear-btn {
+      font-size: 12px; color: var(--gray); background: none; border: 1px solid var(--border);
+      border-radius: 6px; padding: 5px 12px; cursor: pointer;
+    }
+    .saved-panel-head .clear-btn:hover { border-color: #DC2626; color: #DC2626; }
+    .saved-group-label {
+      font-size: 11.5px; font-weight: 700; color: var(--purple); text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 10px;
+    }
+    .saved-item-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--light-gray); border-radius: 8px; padding: 8px 12px;
+      font-size: 13px; margin: 0 6px 6px 0;
+    }
+    .saved-item-chip .chip-remove {
+      background: none; border: none; color: #DC2626; cursor: pointer;
+      font-size: 15px; line-height: 1; padding: 0 2px;
+    }
+
+    /* ADD ACTIVITY FORM */
+    .add-act-section { margin-top: 18px; padding-top: 14px; border-top: 1.5px dashed var(--border); }
+    .add-act-btn {
+      display: flex; align-items: center; gap: 6px; background: none;
+      border: 1.5px dashed var(--purple-light); border-radius: 8px;
+      color: var(--purple); padding: 9px 18px; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s;
+    }
+    .add-act-btn:hover { background: var(--purple-soft); }
+    .add-act-form {
+      display: none; margin-top: 14px; background: var(--light-gray);
+      border-radius: 12px; padding: 18px;
+    }
+    .add-act-form .af-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .add-act-form input, .add-act-form select, .add-act-form textarea {
+      padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 13px; font-family: 'DM Sans', sans-serif; background: #fff; outline: none;
+    }
+    .add-act-form input:focus, .add-act-form select:focus, .add-act-form textarea:focus { border-color: var(--purple); }
+    .add-act-form textarea { width: 100%; resize: none; margin-bottom: 10px; }
+    .add-act-form .af-btns { display: flex; gap: 8px; }
+    .af-submit { background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 9px 20px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .af-cancel  { background: #fff; color: var(--gray); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+    /* UNPLACED ITEMS */
+    .unplaced-panel {
+      background: #fff; border-radius: 18px; padding: 24px; margin-top: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1.5px solid var(--gold-soft, #FEF3C7);
+    }
+    .unplaced-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: var(--light-gray); border-radius: 10px; margin-bottom: 8px;
+      flex-wrap: wrap; gap: 8px;
+    }
+    .day-add-btn {
+      padding: 5px 11px; border: 1.5px solid var(--purple); border-radius: 6px;
+      background: #fff; color: var(--purple); font-size: 12px; font-weight: 700;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+    }
+    .day-add-btn:hover { background: var(--purple); color: #fff; }
+
+    /* PRINT / EXPORT */
+    @media print {
+      nav, .planner-header, .planner-form, #loading, .itinerary-actions,
+      .activity-actions, .add-act-section, .saved-panel, #unplacedPanel,
+      footer, .hamburger { display: none !important; }
+      body { background: white !important; }
+      .planner-container { margin: 0 !important; padding: 0 20px !important; }
+      .itinerary-output { display: block !important; }
+      .day-card, .itinerary-header { box-shadow: none !important; border: 1px solid #eee; }
+    }
+
     @media(max-width: 768px) {
       nav { padding: 0 20px; } .nav-links { display: none; }
       .planner-header { padding: 40px 20px; } .planner-header h1 { font-size: 30px; }
@@ -211,17 +331,16 @@
 
 <!-- PLANNER -->
 <section class="planner-container">
+
+  <!-- SAVED PLACES PANEL (populated by JS) -->
+  <div id="savedPlacesPanel" style="display:none;"></div>
+
   <div class="planner-form">
     <div class="form-grid">
       <div class="form-field">
         <label>Destination City</label>
         <select id="city">
-          <option>Islamabad</option>
-          <option>Lahore</option>
-          <option>Karachi</option>
-          <option>Hunza Valley</option>
-          <option>Naran &amp; Kaghan</option>
-          <option>Multan</option>
+          <option value="">Loading cities...</option>
         </select>
       </div>
       <div class="form-field">
@@ -263,7 +382,38 @@
       </div>
     </div>
 
-    <button class="generate-btn" onclick="generateItinerary()">✨ Generate My Itinerary</button>
+    <div class="gen-options">
+      <!-- Option 1: From saved selections (shown only when places are saved) -->
+      <div class="gen-option gen-option-selected" id="genSelectedOption" style="display:none;">
+        <div class="gen-option-left">
+          <span class="gen-option-icon">🗺️</span>
+          <div>
+            <div class="gen-option-title">Plan from My Selected Places</div>
+            <div class="gen-option-desc" id="genSelectedDesc">Build itinerary around your saved places</div>
+          </div>
+        </div>
+        <button class="gen-btn gen-btn-selected" onclick="generateItinerary('selected')">
+          ✨ Generate from Selections
+        </button>
+      </div>
+
+      <!-- Divider shown only when both options visible -->
+      <div class="gen-divider" id="genDivider" style="display:none;">or</div>
+
+      <!-- Option 2: Full city plan (always visible) -->
+      <div class="gen-option" id="genCityOption">
+        <div class="gen-option-left">
+          <span class="gen-option-icon">🏙️</span>
+          <div>
+            <div class="gen-option-title">Full City Discovery Plan</div>
+            <div class="gen-option-desc" id="genCityDesc">AI picks the top highlights across the entire city</div>
+          </div>
+        </div>
+        <button class="gen-btn gen-btn-city" onclick="generateItinerary('city')">
+          🏙️ Explore Full City
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- LOADING -->
@@ -281,18 +431,47 @@
         <p id="tripSub">Personalized itinerary based on your interests</p>
       </div>
       <div class="itinerary-actions">
-        <button class="action-btn" onclick="generateItinerary()">🔄 Regenerate</button>
-        <button class="action-btn">📄 Export PDF</button>
-        <button class="action-btn primary">💾 Save Trip</button>
+        <button class="action-btn" onclick="generateItinerary(lastGenMode)">🔄 Regenerate</button>
+        <button class="action-btn" onclick="exportPDF()">📄 Export PDF</button>
+        <button class="action-btn primary" onclick="saveTrip()">💾 Save Trip</button>
       </div>
     </div>
     <div id="dayContainer"></div>
+
+    <!-- UNPLACED ITEMS from saved plan -->
+    <div id="unplacedPanel" style="display:none;"></div>
   </div>
 </section>
 
 <script>
   const API = 'http://localhost:5000';
   let lastItineraryId = null;
+  let lastGenMode = 'city';
+
+  // ── PLAN HELPERS ─────────────────────────────────────────────────────
+  function getPlan() {
+    try {
+      const p = JSON.parse(localStorage.getItem('rr_plan') || '{}');
+      if (!p.destinations) p.destinations = [];
+      if (!p.hotels) p.hotels = [];
+      if (!p.gems) p.gems = [];
+      return p;
+    } catch(e) { return { destinations: [], hotels: [], gems: [] }; }
+  }
+  function savePlan(plan) { localStorage.setItem('rr_plan', JSON.stringify(plan)); }
+
+  let toastTimer;
+  function showToast(msg, link = null) {
+    clearTimeout(toastTimer);
+    const t = document.getElementById('rr-toast');
+    document.getElementById('rr-toast-msg').textContent = msg;
+    const lk = document.getElementById('rr-toast-link');
+    if (link) { lk.href = link; lk.style.display = 'inline'; }
+    else lk.style.display = 'none';
+    t.style.transform = 'translateY(0)';
+    t.style.opacity = '1';
+    toastTimer = setTimeout(() => { t.style.transform = 'translateY(90px)'; t.style.opacity = '0'; }, 3500);
+  }
 
   // ── INTEREST CHIP TOGGLE ─────────────────────────────────────────────
   document.querySelectorAll('#interests .chip').forEach(c => {
@@ -301,13 +480,155 @@
 
   // ── COLLECT FORM VALUES ──────────────────────────────────────────────
   function getFormData() {
-    const city        = document.getElementById('city').value;
-    const days        = parseInt(document.getElementById('days').value) || 2;
-    const travelers   = parseInt(document.getElementById('travelers')?.value) || 1;
-    const budget      = document.getElementById('budget')?.value || 'medium';
-    const startDate   = document.getElementById('startDate')?.value || new Date().toISOString().split('T')[0];
-    const interests   = [...document.querySelectorAll('#interests .chip.selected')].map(c => c.textContent.trim());
-    return { city, numDays: days, travelerCount: travelers, budgetRange: budget, startDate, interests };
+    const city      = document.getElementById('city').value;
+    const days      = parseInt(document.getElementById('days').value) || 2;
+    const travelers = parseInt(document.getElementById('travelers')?.value) || 1;
+    const budget    = document.getElementById('budget')?.value || 'medium';
+    const startDate = document.getElementById('startDate')?.value || new Date().toISOString().split('T')[0];
+    const interests = [...document.querySelectorAll('#interests .chip.selected')].map(c => c.textContent.trim());
+
+    // Include saved place names so AI can incorporate them
+    const plan = getPlan();
+    const savedPlaces = [
+      ...(plan.destinations || []).map(d => d.name),
+      ...(plan.gems || []).map(g => g.name)
+    ];
+
+    return { city, numDays: days, travelerCount: travelers, budgetRange: budget, startDate, interests, savedPlaces };
+  }
+
+  // ── LOAD CITIES FROM API ─────────────────────────────────────────────
+  async function loadCities() {
+    const sel = document.getElementById('city');
+    try {
+      const res  = await fetch(`${API}/api/destinations?limit=300`);
+      const json = await res.json();
+      if (!json.success || !json.data) throw new Error('bad response');
+      const cities = [...new Set(json.data.map(d => d.city).filter(Boolean))].sort();
+      sel.innerHTML = cities.map(c => `<option value="${c}">${c}</option>`).join('');
+      // Default to Islamabad if present
+      const isl = cities.find(c => c.toLowerCase() === 'islamabad');
+      if (isl) sel.value = isl;
+    } catch(e) {
+      // Fallback hardcoded list
+      sel.innerHTML = ['Islamabad','Lahore','Karachi','Hunza','Kaghan','Multan','Swat','Skardu','Gilgit','Peshawar','Rawalpindi','Chitral','Neelum Valley','Gwadar','Bahawalpur','Multan']
+        .map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+  }
+
+  // ── LOAD SAVED PLACES PANEL ──────────────────────────────────────────
+  function loadSavedPlaces() {
+    const plan = getPlan();
+    const dests  = plan.destinations || [];
+    const hotels = plan.hotels || [];
+    const gems   = plan.gems || [];
+    const total  = dests.length + hotels.length + gems.length;
+    const panel  = document.getElementById('savedPlacesPanel');
+
+    if (total === 0) { panel.style.display = 'none'; return; }
+    panel.style.display = 'block';
+
+    let html = `<div class="saved-panel">
+      <div class="saved-panel-head">
+        <h3>📋 Your Saved Places <span style="font-size:14px;color:var(--purple);font-family:'DM Sans',sans-serif;">(${total} items)</span></h3>
+        <button class="clear-btn" onclick="clearAllPlan()">Clear All</button>
+      </div>`;
+
+    if (dests.length) {
+      html += `<div style="margin-bottom:14px;"><div class="saved-group-label">🗺️ Destinations (${dests.length})</div><div>`;
+      dests.forEach(d => {
+        html += `<span class="saved-item-chip">📍 <strong>${d.name}</strong> <span style="color:var(--gray);font-size:12px;">${d.city||''}</span>
+          <button class="chip-remove" onclick="removeFromPlan('destinations','${d.id}')">×</button></span>`;
+      });
+      html += `</div></div>`;
+    }
+    if (hotels.length) {
+      html += `<div style="margin-bottom:14px;"><div class="saved-group-label">🏨 Hotels (${hotels.length})</div><div>`;
+      hotels.forEach(h => {
+        html += `<span class="saved-item-chip">🏨 <strong>${h.name}</strong> <span style="color:var(--gray);font-size:12px;">${h.city||''} · PKR ${Number(h.price||0).toLocaleString()}/night</span>
+          <button class="chip-remove" onclick="removeFromPlan('hotels','${h.id}')">×</button></span>`;
+      });
+      html += `</div></div>`;
+    }
+    if (gems.length) {
+      html += `<div style="margin-bottom:4px;"><div class="saved-group-label">✨ Hidden Gems (${gems.length})</div><div>`;
+      gems.forEach(g => {
+        html += `<span class="saved-item-chip">✨ <strong>${g.name}</strong> <span style="color:var(--gray);font-size:12px;">${g.city||''}</span>
+          <button class="chip-remove" onclick="removeFromPlan('gems','${g.id}')">×</button></span>`;
+      });
+      html += `</div></div>`;
+    }
+    html += `</div>`;
+    panel.innerHTML = html;
+
+    // Auto-detect city from saved places — normalize to proper case from dropdown option
+    let topCity = '';
+    const allCities = [...dests.map(d=>d.city||''), ...hotels.map(h=>h.city||''), ...gems.map(g=>g.city||'')]
+                        .map(c => c.trim()).filter(Boolean);
+    if (allCities.length) {
+      const cityCount = {};
+      allCities.forEach(c => { const k = c.toLowerCase(); cityCount[k] = (cityCount[k]||0)+1; });
+      const topKey = Object.entries(cityCount).sort((a,b)=>b[1]-a[1])[0]?.[0];
+      const sel = document.getElementById('city');
+      const opt = Array.from(sel.options).find(o => o.value.toLowerCase() === topKey);
+      if (opt) {
+        sel.value = opt.value;
+        topCity = opt.value; // use the proper-cased option value
+      } else {
+        // Option not in dropdown yet (cities still loading?) — store raw and try again shortly
+        topCity = allCities[0];
+        setTimeout(() => {
+          const opt2 = Array.from(sel.options).find(o => o.value.toLowerCase() === (topCity||'').toLowerCase());
+          if (opt2) { sel.value = opt2.value; topCity = opt2.value; }
+          updateGenOptions(dests, hotels, gems, topCity);
+        }, 600);
+      }
+    }
+    if (!topCity) topCity = document.getElementById('city').value || '';
+
+    // Show city-detected notice inside the panel
+    if (topCity) {
+      panel.innerHTML += `<div style="margin-top:14px;background:#D1FAE5;color:#065F46;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;">
+        ✅ City auto-detected: <strong>${topCity}</strong> &nbsp;— &nbsp;adjust the dropdown above if needed</div>`;
+    }
+    updateGenOptions(dests, hotels, gems, topCity);
+  }
+
+  // ── UPDATE GENERATE OPTIONS UI ───────────────────────────────────────
+  function updateGenOptions(dests, hotels, gems, topCity) {
+    const total = dests.length + hotels.length + gems.length;
+    const cityName = topCity || document.getElementById('city').value || 'the city';
+    const selOpt    = document.getElementById('genSelectedOption');
+    const divider   = document.getElementById('genDivider');
+    const selDesc   = document.getElementById('genSelectedDesc');
+    const cityDesc  = document.getElementById('genCityDesc');
+
+    if (total > 0) {
+      selOpt.style.display   = 'flex';
+      divider.style.display  = 'flex';
+      const parts = [];
+      if (dests.length)  parts.push(`${dests.length} destination${dests.length>1?'s':''}`);
+      if (hotels.length) parts.push(`${hotels.length} hotel${hotels.length>1?'s':''}`);
+      if (gems.length)   parts.push(`${gems.length} hidden gem${gems.length>1?'s':''}`);
+      selDesc.textContent = `${parts.join(', ')} from ${cityName} — build your custom itinerary`;
+    } else {
+      selOpt.style.display  = 'none';
+      divider.style.display = 'none';
+    }
+    if (cityDesc) cityDesc.textContent = `AI selects the top highlights across all of ${cityName}`;
+  }
+
+  function removeFromPlan(type, id) {
+    const plan = getPlan();
+    if (plan[type]) plan[type] = plan[type].filter(item => item.id !== id);
+    savePlan(plan);
+    loadSavedPlaces();
+  }
+
+  function clearAllPlan() {
+    if (!confirm('Remove all saved places from your plan?')) return;
+    savePlan({ destinations: [], hotels: [], gems: [] });
+    loadSavedPlaces();
   }
 
   // ── RENDER ITINERARY FROM API RESPONSE ──────────────────────────────
@@ -319,78 +640,237 @@
     const container = document.getElementById('dayContainer');
     container.innerHTML = '';
 
+    const slotLabels = { morning: '9:00 AM', afternoon: '1:00 PM', evening: '6:00 PM' };
+
     days.forEach((day, idx) => {
       const activities = day.activities || [];
       const dayDiv = document.createElement('div');
       dayDiv.className = 'day-card';
-
-      const slotLabels = { morning: '9:00 AM', afternoon: '1:00 PM', evening: '6:00 PM' };
+      dayDiv.dataset.dayNum = day.dayNumber || idx + 1;
 
       let html = `
         <div class="day-head">
           <div class="day-num">${day.dayNumber || idx + 1}</div>
           <div class="day-title">
             <h3>${day.title || 'Day ' + (idx + 1)}</h3>
-            <p>${activities.length} activities planned</p>
+            <p class="act-count">${activities.length} activities planned</p>
           </div>
         </div>`;
 
       activities.forEach((act, i) => {
-        const slot  = act.slot || 'morning';
-        const time  = slotLabels[slot] || slotLabels.morning;
-        html += `
-          <div class="activity">
-            <div class="activity-time">
-              <span class="slot" style="text-transform:capitalize">${slot}</span>${time}
-            </div>
-            <div class="activity-info">
-              <h4>${act.name}</h4>
-              <p>${act.description || act.desc || ''}</p>
-              <div class="activity-meta">
-                <span>⏱ ${act.duration || '1-2h'}</span>
-                <span>💰 ${act.estimatedCost || act.cost || 'See locally'}</span>
-                <span>🏷️ ${act.category || act.tag || ''}</span>
-              </div>
-            </div>
-            <div class="activity-actions">
-              <button class="icon-btn" title="Move up" onclick="moveActivity(this,-1)">↑</button>
-              <button class="icon-btn" title="Move down" onclick="moveActivity(this,1)">↓</button>
-              <button class="icon-btn del" title="Remove" onclick="removeActivity(this)">✕</button>
-            </div>
-          </div>`;
+        const slot = act.slot || 'morning';
+        const time = slotLabels[slot] || slotLabels.morning;
+        html += buildActivityHTML(act.name, act.description || act.desc || '', slot, act.duration || '1-2h', act.estimatedCost || act.cost || 'See locally', act.category || act.tag || '');
         if (i < activities.length - 1) html += `<div class="travel-time">~ 20-30 min travel</div>`;
       });
+
+      // Add activity section
+      html += `<div class="add-act-section">
+        <button class="add-act-btn" onclick="toggleAddForm(this)">＋ Add Activity</button>
+        <div class="add-act-form">
+          <input type="text" class="act-name-inp" placeholder="Activity name (required)..." style="width:100%;margin-bottom:10px;"/>
+          <div class="af-row">
+            <select class="act-slot-inp">
+              <option value="morning">Morning</option>
+              <option value="afternoon">Afternoon</option>
+              <option value="evening">Evening</option>
+            </select>
+            <input type="text" class="act-duration-inp" placeholder="Duration (e.g. 1-2h)"/>
+            <input type="text" class="act-cost-inp" placeholder="Cost (e.g. Free, PKR 500)"/>
+          </div>
+          <textarea class="act-desc-inp" rows="2" placeholder="Description (optional)..."></textarea>
+          <div class="af-btns">
+            <button class="af-submit" onclick="submitActivity(this)">Add Activity</button>
+            <button class="af-cancel" onclick="cancelActivity(this)">Cancel</button>
+          </div>
+        </div>
+      </div>`;
 
       dayDiv.innerHTML = html;
       container.appendChild(dayDiv);
     });
 
-    // show tips if present
+    // Show tips
     if (data.tips && data.tips.length) {
       const tipsDiv = document.createElement('div');
       tipsDiv.style.cssText = 'background:#EDE9FE;border-radius:12px;padding:20px 24px;margin-top:20px;';
       tipsDiv.innerHTML = `<h4 style="color:#4C1D95;margin-bottom:10px;">💡 Local Tips</h4>
-        <ul style="color:#5B21B6;padding-left:18px;line-height:1.8">
-          ${data.tips.map(t => `<li>${t}</li>`).join('')}
-        </ul>`;
+        <ul style="color:#5B21B6;padding-left:18px;line-height:1.8">${data.tips.map(t=>`<li>${t}</li>`).join('')}</ul>`;
       container.appendChild(tipsDiv);
+    }
+
+    // Show any saved places not already in the AI itinerary
+    showUnplacedItems();
+  }
+
+  function buildActivityHTML(name, desc, slot, duration, cost, category) {
+    const slotLabels = { morning: '9:00 AM', afternoon: '1:00 PM', evening: '6:00 PM' };
+    return `
+      <div class="activity">
+        <div class="activity-time">
+          <span class="slot" style="text-transform:capitalize">${slot}</span>${slotLabels[slot]||'9:00 AM'}
+        </div>
+        <div class="activity-info">
+          <h4>${name}</h4>
+          <p>${desc}</p>
+          <div class="activity-meta">
+            <span>⏱ ${duration}</span>
+            <span>💰 ${cost}</span>
+            ${category ? `<span>🏷️ ${category}</span>` : ''}
+          </div>
+        </div>
+        <div class="activity-actions">
+          <button class="icon-btn" title="Move up" onclick="moveActivity(this,-1)">↑</button>
+          <button class="icon-btn" title="Move down" onclick="moveActivity(this,1)">↓</button>
+          <button class="icon-btn del" title="Remove" onclick="removeActivity(this)">✕</button>
+        </div>
+      </div>`;
+  }
+
+  // ── SHOW UNPLACED SAVED ITEMS AFTER AI GENERATION ────────────────────
+  function showUnplacedItems() {
+    const plan   = getPlan();
+    const dests  = plan.destinations || [];
+    const hotels = plan.hotels || [];
+    const gems   = plan.gems || [];
+    const allItems = [
+      ...dests.map(d => ({...d, icon:'📍', type:'destination'})),
+      ...hotels.map(h => ({...h, icon:'🏨', type:'hotel'})),
+      ...gems.map(g  => ({...g, icon:'✨', type:'gem'}))
+    ];
+    const panel = document.getElementById('unplacedPanel');
+    if (!allItems.length) { panel.style.display = 'none'; return; }
+    panel.style.display = 'block';
+
+    const numDays = parseInt(document.getElementById('days').value) || 2;
+    const dayBtns = Array.from({length: numDays}, (_, i) =>
+      `<button class="day-add-btn" onclick="addSavedToDay(this, ${i+1})">Day ${i+1}</button>`
+    ).join('');
+
+    panel.innerHTML = `<div class="unplaced-panel">
+      <h3 style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px;">📌 Add Your Saved Places to a Day</h3>
+      <p style="font-size:14px;color:var(--gray);margin-bottom:18px;">These places from your saved list aren't in the AI plan yet. Click a day to add them.</p>
+      <div id="unplacedList">
+        ${allItems.map(item => `
+          <div class="unplaced-row" data-name="${item.name}" data-type="${item.type}">
+            <span style="font-size:14px;font-weight:600;">${item.icon} ${item.name} <span style="color:var(--gray);font-weight:400;font-size:12px;">${item.city||''}</span></span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">${dayBtns}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  function addSavedToDay(btn, dayNum) {
+    const row  = btn.closest('[data-name]');
+    const name = row.dataset.name;
+    const type = row.dataset.type;
+    const icon = type==='hotel'?'🏨': type==='gem'?'✨':'📍';
+    const category = type==='hotel'?'Accommodation': type==='gem'?'Hidden Gem':'Destination';
+
+    const dayCards = document.querySelectorAll('.day-card');
+    if (!dayCards[dayNum - 1]) return;
+    const dayCard = dayCards[dayNum - 1];
+
+    const actHTML = buildActivityHTML(`${icon} ${name}`, 'Added from your saved places.', 'morning', '1-2h', 'See locally', category);
+    const addSection = dayCard.querySelector('.add-act-section');
+    addSection.insertAdjacentHTML('beforebegin', actHTML);
+
+    // Update count
+    updateActCount(dayCard);
+    row.remove();
+    showToast(`"${name}" added to Day ${dayNum}`);
+
+    // Hide panel if empty
+    if (!document.getElementById('unplacedList')?.children.length) {
+      document.getElementById('unplacedPanel').style.display = 'none';
     }
   }
 
+  // ── ADD ACTIVITY MANUALLY ────────────────────────────────────────────
+  function toggleAddForm(btn) {
+    const form = btn.nextElementSibling;
+    const isHidden = form.style.display === 'none' || form.style.display === '';
+    form.style.display = isHidden ? 'block' : 'none';
+    btn.textContent = isHidden ? '× Cancel' : '＋ Add Activity';
+  }
+
+  function submitActivity(btn) {
+    const form = btn.closest('.add-act-form');
+    const dayCard = form.closest('.day-card');
+    const name = form.querySelector('.act-name-inp').value.trim();
+    if (!name) { showToast('Please enter an activity name.'); return; }
+
+    const slot     = form.querySelector('.act-slot-inp').value;
+    const duration = form.querySelector('.act-duration-inp').value.trim() || '1-2h';
+    const cost     = form.querySelector('.act-cost-inp').value.trim()     || 'See locally';
+    const desc     = form.querySelector('.act-desc-inp').value.trim()     || '';
+
+    const addSection = dayCard.querySelector('.add-act-section');
+    addSection.insertAdjacentHTML('beforebegin', buildActivityHTML(name, desc, slot, duration, cost, 'Custom'));
+
+    // Reset form
+    form.querySelectorAll('input, textarea').forEach(i => i.value = '');
+    form.style.display = 'none';
+    form.previousElementSibling.textContent = '＋ Add Activity';
+    updateActCount(dayCard);
+    showToast(`"${name}" added to Day ${dayCard.dataset.dayNum || ''}`);
+  }
+
+  function cancelActivity(btn) {
+    const form = btn.closest('.add-act-form');
+    form.style.display = 'none';
+    form.previousElementSibling.textContent = '＋ Add Activity';
+  }
+
+  function updateActCount(dayCard) {
+    const count = dayCard.querySelectorAll('.activity').length;
+    const el = dayCard.querySelector('.act-count');
+    if (el) el.textContent = count + ' activities planned';
+  }
+
   // ── MAIN GENERATE (calls real API) ───────────────────────────────────
-  async function generateItinerary() {
+  async function generateItinerary(mode = 'city') {
     const token = localStorage.getItem('rr_token');
     if (!token) {
-      alert('Please sign in first to generate an itinerary.');
-      window.location.href = 'signin.html';
+      showToast('Please sign in first to generate an itinerary.');
+      setTimeout(() => { window.location.href = 'signin.html'; }, 1500);
       return;
     }
 
     const payload = getFormData();
-    if (!payload.city) { alert('Please select a destination city.'); return; }
-    if (payload.interests.length === 0) { alert('Please select at least one interest.'); return; }
 
-    // show loading
+    lastGenMode = mode;
+
+    if (mode === 'selected') {
+      // Build itinerary around the user's saved places
+      const plan = getPlan();
+      const selDests = plan.destinations || [];
+      const selGems  = plan.gems || [];
+      const allSel   = [...selDests, ...selGems];
+      if (!allSel.length) {
+        showToast('No saved places found. Add destinations first, or use "Full City" mode.');
+        return;
+      }
+      payload.savedPlaces = allSel.map(d => d.name);
+      // Force city to the predominant city of saved selections
+      const allCities = allSel.map(d => d.city).filter(Boolean);
+      if (allCities.length) {
+        const count = {};
+        allCities.forEach(c => { count[c] = (count[c]||0)+1; });
+        payload.city = Object.entries(count).sort((a,b)=>b[1]-a[1])[0][0];
+        // Sync dropdown
+        const sel = document.getElementById('city');
+        const opt = Array.from(sel.options).find(o => o.value.toLowerCase() === payload.city.toLowerCase());
+        if (opt) sel.value = opt.value;
+      }
+    } else {
+      // Full city mode — ignore saved places
+      payload.savedPlaces = [];
+    }
+
+    if (!payload.city) { showToast('Please select a destination city.'); return; }
+    if (payload.interests.length === 0) { showToast('Please select at least one interest.'); return; }
+
     document.getElementById('output').classList.remove('active');
     document.getElementById('loading').classList.add('active');
     document.getElementById('loading').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -398,19 +878,14 @@
     try {
       const res = await fetch(`${API}/api/itineraries/generate`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(payload)
       });
 
       const json = await res.json();
       document.getElementById('loading').classList.remove('active');
 
-      if (!res.ok || !json.success) {
-        throw new Error(json.message || 'Generation failed');
-      }
+      if (!res.ok || !json.success) throw new Error(json.message || 'Generation failed');
 
       lastItineraryId = json.data?.id || null;
       renderItinerary(json.data);
@@ -420,42 +895,88 @@
 
     } catch (err) {
       document.getElementById('loading').classList.remove('active');
-      alert(`Error: ${err.message}\n\nMake sure the backend is running and GEMINI_API_KEY is set in .env`);
+      showToast('Error: ' + err.message);
       console.error(err);
     }
   }
 
   // ── SAVE TRIP ────────────────────────────────────────────────────────
   async function saveTrip() {
-    if (!lastItineraryId) { alert('Generate an itinerary first.'); return; }
+    const titleEl = document.getElementById('tripTitle');
+    if (!titleEl || !titleEl.textContent || titleEl.textContent === 'Your 2-Day Islamabad Adventure') {
+      showToast('Generate an itinerary first, then save.');
+      return;
+    }
     const token = localStorage.getItem('rr_token');
-    if (!token) { window.location.href = 'signin.html'; return; }
-    try {
-      const res = await fetch(`${API}/api/itineraries/${lastItineraryId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ status: 'saved' })
-      });
-      const json = await res.json();
-      if (json.success) alert('✅ Trip saved! View it in your profile.');
-      else alert('Could not save: ' + json.message);
-    } catch (e) { alert('Save failed: ' + e.message); }
+    const formData = getFormData();
+
+    // Always save a local copy
+    const localTrip = {
+      id: 'local_' + Date.now(),
+      title: titleEl.textContent,
+      city: formData.city,
+      startDate: formData.startDate,
+      days: formData.numDays,
+      interests: formData.interests,
+      savedAt: new Date().toISOString()
+    };
+    const localTrips = JSON.parse(localStorage.getItem('rr_saved_trips') || '[]');
+    localTrips.unshift(localTrip);
+    localStorage.setItem('rr_saved_trips', JSON.stringify(localTrips.slice(0, 20)));
+
+    // Also save to API if possible
+    if (lastItineraryId && token) {
+      try {
+        const res  = await fetch(`${API}/api/itineraries/${lastItineraryId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ status: 'saved' })
+        });
+        const json = await res.json();
+        if (json.success) { showToast('Trip saved to your profile!', 'profile.html'); return; }
+      } catch(e) { console.error('API save failed:', e); }
+    }
+
+    showToast('Trip saved locally!');
+  }
+
+  // ── EXPORT PDF ───────────────────────────────────────────────────────
+  function exportPDF() {
+    const output = document.getElementById('output');
+    if (!output.classList.contains('active')) { showToast('Generate an itinerary first.'); return; }
+    window.print();
   }
 
   // ── ACTIVITY HELPERS ─────────────────────────────────────────────────
   function removeActivity(btn) {
+    const dayCard = btn.closest('.day-card');
     btn.closest('.activity').remove();
+    if (dayCard) updateActCount(dayCard);
   }
   function moveActivity(btn, dir) {
     const act = btn.closest('.activity');
     const sibling = dir === -1 ? act.previousElementSibling : act.nextElementSibling;
-    if (sibling) act.parentNode.insertBefore(dir === -1 ? act : sibling, dir === -1 ? sibling : act);
+    if (sibling && sibling.classList?.contains('activity'))
+      act.parentNode.insertBefore(dir === -1 ? act : sibling, dir === -1 ? sibling : act);
   }
 
-  // Wire Save button
-  document.addEventListener('DOMContentLoaded', () => {
-    const saveBtn = document.querySelector('.action-btn.primary');
-    if (saveBtn) saveBtn.addEventListener('click', saveTrip);
+  // ── BOOT ─────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', async () => {
+    await loadCities();
+    loadSavedPlaces();
+    // Apply city from URL param
+    const urlParams = new URLSearchParams(window.location.search);
+    const cityParam = urlParams.get('city');
+    if (cityParam) {
+      const sel = document.getElementById('city');
+      const match = Array.from(sel.options).find(o => o.value.toLowerCase() === cityParam.toLowerCase());
+      if (match) sel.value = match.value;
+    }
+    // When city dropdown changes, update the "full city" description
+    document.getElementById('city').addEventListener('change', function() {
+      const plan = getPlan();
+      updateGenOptions(plan.destinations||[], plan.hotels||[], plan.gems||[], this.value);
+    });
   });
 </script>
 
@@ -472,41 +993,40 @@
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-        const navLinks = document.querySelectorAll('.nav-links a');
-        navLinks.forEach(link => {
-          if (link.getAttribute('href') === currentPage) {
-            link.style.color = '#6C3CE1';
-            link.style.fontWeight = '600';
-          }
+        document.querySelectorAll('.nav-links a').forEach(link => {
+          if (link.getAttribute('href') === currentPage) { link.style.color = '#6C3CE1'; link.style.fontWeight = '600'; }
         });
       });
     </script>
 
-  
     <script>
-      // Auth UI state update
       document.addEventListener('DOMContentLoaded', () => {
         const token = localStorage.getItem('rr_token');
         const userStr = localStorage.getItem('rr_user');
         const navActions = document.querySelector('.nav-actions');
-        
         if (token && userStr && navActions) {
           try {
             const user = JSON.parse(userStr);
             navActions.innerHTML = `
-              <span style="font-weight: 500; font-size: 14px; margin-right: 16px; color: var(--purple);">Hi, ${user.name}</span>
-              <button id="logoutBtn" style="background: none; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">Logout</button>
-            `;
+              <span style="font-weight:500;font-size:14px;margin-right:16px;color:var(--purple);">Hi, ${user.name}</span>
+              <a href="profile.html" style="text-decoration:none;margin-right:8px;font-size:14px;color:var(--gray);font-weight:500;">My Trips</a>
+              <button id="logoutBtn" style="background:none;border:1.5px solid var(--purple);color:var(--purple);border-radius:8px;padding:8px 16px;font-weight:600;cursor:pointer;">Logout</button>`;
             document.getElementById('logoutBtn').addEventListener('click', () => {
-              localStorage.removeItem('rr_token');
-              localStorage.removeItem('rr_user');
+              localStorage.removeItem('rr_token'); localStorage.removeItem('rr_user');
               window.location.href = 'index.html';
             });
-          } catch(e) {
-            console.error('Error parsing user data', e);
-          }
+          } catch(e) { console.error(e); }
         }
       });
     </script>
+
+<!-- TOAST -->
+<div id="rr-toast" style="position:fixed;bottom:28px;right:28px;z-index:9999;transform:translateY(90px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none;">
+  <div style="background:#1a1a2e;color:#fff;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.25);max-width:360px;">
+    <span style="color:#10B981;">✓</span>
+    <span id="rr-toast-msg"></span>
+    <a id="rr-toast-link" href="#" style="color:#8B5CF6;margin-left:auto;white-space:nowrap;text-decoration:underline;display:none;pointer-events:auto;font-size:13px;">View →</a>
+  </div>
+</div>
 </body>
 </html>

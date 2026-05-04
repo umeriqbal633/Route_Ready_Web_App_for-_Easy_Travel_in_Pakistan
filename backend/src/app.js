@@ -11,6 +11,7 @@ const hotelRoutes = require("./routes/hotel.routes");
 const reviewRoutes = require("./routes/review.routes");
 const tripRoutes = require("./routes/trip.routes");
 const userRoutes = require("./routes/user.routes");
+const itineraryRoutes = require("./routes/itinerary.routes");
 const { errorHandler } = require("./middleware/error.middleware");
 
 const app = express();
@@ -40,6 +41,7 @@ app.use("/api/hotels", hotelRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/trips", tripRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/itineraries", itineraryRoutes);
 
 app.use((req, res) => {
   res.status(404).json({

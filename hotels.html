@@ -1143,6 +1143,56 @@
     </footer>
 
     <script>
+      // ── PLAN HELPERS ──────────────────────────────────────────────────
+      function getPlan() {
+        try {
+          const p = JSON.parse(localStorage.getItem('rr_plan') || '{}');
+          if (!p.destinations) p.destinations = [];
+          if (!p.hotels) p.hotels = [];
+          if (!p.gems) p.gems = [];
+          return p;
+        } catch(e) { return { destinations: [], hotels: [], gems: [] }; }
+      }
+      function savePlan(plan) { localStorage.setItem('rr_plan', JSON.stringify(plan)); }
+
+      let toastTimer;
+      function showToast(msg, link = null) {
+        clearTimeout(toastTimer);
+        const t = document.getElementById('rr-toast');
+        document.getElementById('rr-toast-msg').textContent = msg;
+        const lk = document.getElementById('rr-toast-link');
+        if (link) { lk.href = link; lk.style.display = 'inline'; }
+        else lk.style.display = 'none';
+        t.style.transform = 'translateY(0)';
+        t.style.opacity = '1';
+        toastTimer = setTimeout(() => { t.style.transform = 'translateY(90px)'; t.style.opacity = '0'; }, 3500);
+      }
+
+      let currentHotelList = [];
+
+      function addHotelToPlan(idx) {
+        const h = currentHotelList[idx];
+        if (!h) return;
+        const plan = getPlan();
+        const key = h.id || h.name;
+        if (plan.hotels.find(x => (x.id || x.name) === key)) {
+          showToast('Hotel already in your plan!', 'planner.html');
+          return;
+        }
+        plan.hotels.push({
+          id: h.id || h.name.toLowerCase().replace(/\s+/g,'_'),
+          name: h.name, city: h.city, area: h.area,
+          img: h.img, stars: h.stars, rating: h.rating,
+          price: h.price, amenities: h.amenities,
+          addedAt: new Date().toISOString()
+        });
+        savePlan(plan);
+        // Update button
+        const btns = document.querySelectorAll('[data-hotel-idx="'+idx+'"]');
+        btns.forEach(b => { b.textContent = '✓ In Plan'; b.style.background = '#059669'; b.disabled = true; });
+        showToast(`"${h.name}" added to your plan!`, 'planner.html');
+      }
+
       const hotels = [
         // ISLAMABAD
         {
@@ -1413,14 +1463,14 @@
             id:          h.id,
             name:        h.name,
             city:        h.city,
-            area:        h.area || h.city,
-            img:         h.imageUrl || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
-            stars:       h.stars || h.starRating || 3,
-            rating:      parseFloat(h.rating || h.averageRating || 8.0),
+            area:        h.address || h.city,
+            img:         h.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
+            stars:       h.stars || 3,
+            rating:      parseFloat(h.rating || 8.0),
             reviewCount: h.reviewCount || 0,
-            price:       h.pricePerNight || h.price || 5000,
-            original:    h.originalPrice || 0,
-            badge:       h.badge || (h.isStudentFriendly ? 'Student Friendly' : (h.stars >= 5 ? 'Luxury' : 'Value')),
+            price:       h.pricePerNight || 5000,
+            original:    0,
+            badge:       h.isStudentFriendly ? 'Student Friendly' : (h.stars >= 5 ? 'Luxury' : 'Value'),
             badgeClass:  h.stars >= 5 ? 'luxury' : (h.pricePerNight < 5000 ? 'budget' : ''),
             amenities:   h.amenities || [],
             studentFriendly: h.isStudentFriendly || false
@@ -1471,6 +1521,7 @@
       }
 
       function renderHotels(list) {
+        currentHotelList = list;
         const wrap = document.getElementById("hotelList");
         document.getElementById("resultCount").textContent = list.length;
 
@@ -1485,19 +1536,16 @@
         }
 
         const ratingLabel = (r) =>
-          r >= 9
-            ? "Exceptional"
-            : r >= 8.5
-              ? "Excellent"
-              : r >= 8
-                ? "Very Good"
-                : r >= 7.5
-                  ? "Good"
-                  : "Pleasant";
+          r >= 9 ? "Exceptional" : r >= 8.5 ? "Excellent" : r >= 8 ? "Very Good" : r >= 7.5 ? "Good" : "Pleasant";
+
+        const plan = getPlan();
+        const plannedHotelKeys = plan.hotels.map(h => h.id || h.name);
 
         wrap.innerHTML = list
-          .map(
-            (h) => `
+          .map((h, idx) => {
+            const hKey = h.id || h.name;
+            const inPlan = plannedHotelKeys.includes(hKey);
+            return `
       <div class="hotel-card" data-city="${h.city.toLowerCase()}" data-stars="${h.stars}" data-price="${h.price}">
         <div class="hotel-img-wrap">
           <img class="hotel-img" src="${h.img}" alt="${h.name}" onerror="this.src='https://via.placeholder.com/600x400/6C3CE1/ffffff?text=${encodeURIComponent(h.name)}'"/>
@@ -1524,14 +1572,16 @@
             <div class="price">PKR ${h.price.toLocaleString()} <span>/ night</span></div>
             ${h.original ? `<div class="deal">Save PKR ${(h.original - h.price).toLocaleString()}</div>` : ""}
           </div>
-          <div style="display: flex; flex-direction: column; gap: 6px; align-items: stretch; min-width: 130px;">
-            <button class="book-btn">Book Now</button>
-            <button class="view-btn">View Details</button>
+          <div style="display: flex; flex-direction: column; gap: 6px; align-items: stretch; min-width: 140px;">
+            <button class="book-btn" data-hotel-idx="${idx}" onclick="addHotelToPlan(${idx})"
+              style="${inPlan ? 'background:#059669;' : ''}" ${inPlan ? 'disabled' : ''}>
+              ${inPlan ? '✓ In Plan' : '+ Add to Plan'}
+            </button>
+            <button class="view-btn" onclick="showHotelDetails(${idx})">View Details</button>
           </div>
         </div>
-      </div>
-    `,
-          )
+      </div>`;
+          })
           .join("");
       }
 
@@ -1560,6 +1610,89 @@
       function toggleFav(btn) {
         btn.classList.toggle("saved");
         btn.textContent = btn.classList.contains("saved") ? "♥" : "♡";
+      }
+
+      function showHotelDetails(idx) {
+        const h = currentHotelList[idx];
+        if (!h) return;
+
+        const ratingLabel = (r) =>
+          r >= 9 ? "Exceptional" : r >= 8.5 ? "Excellent" : r >= 8 ? "Very Good" : r >= 7.5 ? "Good" : "Pleasant";
+
+        const plan = getPlan();
+        const hKey = h.id || h.name;
+        const inPlan = plan.hotels.find(x => (x.id || x.name) === hKey);
+
+        const modal = document.createElement('div');
+        modal.id = 'hotelDetailModal';
+        modal.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.6);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        `;
+
+        const content = document.createElement('div');
+        content.style.cssText = `
+          background: white;
+          border-radius: 20px;
+          max-width: 600px;
+          width: 90%;
+          max-height: 90vh;
+          overflow-y: auto;
+          padding: 0;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        `;
+
+        content.innerHTML = `
+          <div style="position: relative;">
+            <button onclick="document.getElementById('hotelDetailModal').remove()" style="position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; cursor: pointer; font-size: 24px; z-index: 10;">×</button>
+            <img src="${h.img}" alt="${h.name}" style="width: 100%; height: 300px; object-fit: cover; display: block;"/>
+            <div style="padding: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                <h2 style="font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; margin: 0; color: #1a1a2e;">${h.name}</h2>
+                <span style="color: #f59e0b; font-size: 16px;">${"★".repeat(h.stars)}</span>
+              </div>
+
+              <div style="color: #6b7280; margin-bottom: 12px; display: flex; align-items: center; gap: 4px;">📍 ${h.area}, ${h.city}</div>
+
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                <span style="background: #6c3ce1; color: white; padding: 6px 12px; border-radius: 7px; font-weight: 700; font-size: 14px;">${h.rating}</span>
+                <span style="color: #6b7280; font-size: 14px;"><strong>${ratingLabel(h.rating)}</strong> · ${h.reviewCount.toLocaleString()} reviews</span>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-weight: 600; margin: 0 0 8px; color: #1a1a2e;">Amenities</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                  ${h.amenities.map((a) => `<span style="font-size: 12px; color: #6b7280; background: #f3f4f6; padding: 6px 10px; border-radius: 50px; display: flex; align-items: center; gap: 4px;">${amenityIcon(a)} ${a}</span>`).join("")}
+                </div>
+              </div>
+
+              <div style="background: #f9fafb; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">From</div>
+                <div style="font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; color: #6c3ce1; margin-bottom: 4px;">PKR ${h.price.toLocaleString()} <span style="font-size: 14px; color: #6b7280; font-weight: 400; font-family: 'DM Sans', sans-serif;">/ night</span></div>
+                ${h.original ? `<div style="color: #10b981; font-weight: 700; font-size: 12px;">Save PKR ${(h.original - h.price).toLocaleString()}</div>` : ""}
+              </div>
+
+              <div style="display: flex; gap: 10px;">
+                <button onclick="addHotelToPlan(${idx}); document.getElementById('hotelDetailModal').remove();" style="flex: 1; background: #6c3ce1; color: white; border: none; border-radius: 10px; padding: 12px; font-weight: 700; cursor: pointer; font-size: 14px; ${inPlan ? 'opacity: 0.6; cursor: not-allowed;' : ''};" ${inPlan ? 'disabled' : ''}>${inPlan ? '✓ Already in Plan' : '+ Add to Plan'}</button>
+                <button onclick="window.location.href='planner.html';" style="flex: 1; background: transparent; color: #6c3ce1; border: 2px solid #6c3ce1; border-radius: 10px; padding: 12px; font-weight: 700; cursor: pointer; font-size: 14px;">View Planner →</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.remove();
+        });
       }
 
       function clearFilters() {
@@ -1639,7 +1772,7 @@
         const token = localStorage.getItem('rr_token');
         const userStr = localStorage.getItem('rr_user');
         const navActions = document.querySelector('.nav-actions');
-        
+
         if (token && userStr && navActions) {
           try {
             const user = JSON.parse(userStr);
@@ -1658,5 +1791,14 @@
         }
       });
     </script>
+
+<!-- TOAST -->
+<div id="rr-toast" style="position:fixed;bottom:28px;right:28px;z-index:9999;transform:translateY(90px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none;">
+  <div style="background:#1a1a2e;color:#fff;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.25);max-width:360px;">
+    <span style="color:#10B981;">✓</span>
+    <span id="rr-toast-msg"></span>
+    <a id="rr-toast-link" href="#" style="color:#8B5CF6;margin-left:auto;white-space:nowrap;text-decoration:underline;display:none;pointer-events:auto;font-size:13px;">View Plan →</a>
+  </div>
+</div>
 </body>
 </html>

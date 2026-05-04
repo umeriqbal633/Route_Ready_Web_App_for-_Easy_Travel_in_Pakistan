@@ -86,10 +86,25 @@
     .pill:hover { border-color: var(--purple); color: var(--purple); }
     .pill.active { background: var(--purple); color: #fff; border-color: var(--purple); }
 
+    /* CITY SECTION */
+    .city-section { margin-bottom: 52px; }
+    .city-section-header {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 22px;
+      padding-bottom: 14px; border-bottom: 2px solid var(--purple-soft);
+    }
+    .city-section-header h2 {
+      font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #1a1a2e;
+    }
+    .city-section-header .city-count {
+      background: var(--purple-soft); color: var(--purple); font-size: 12px; font-weight: 700;
+      padding: 4px 11px; border-radius: 50px;
+    }
+    .city-section-header .city-pin { font-size: 18px; }
+
     /* GRID */
     .destinations-grid {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
-      margin-bottom: 60px;
+      margin-bottom: 0;
     }
     .dest-card {
       background: #fff; border-radius: 16px; overflow: hidden;
@@ -122,6 +137,14 @@
     .dest-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); }
     .dest-rating { font-size: 13px; color: #F59E0B; font-weight: 700; }
     .dest-price { font-size: 13px; color: var(--purple); font-weight: 700; }
+    .dest-plan-btn {
+      width: 100%; margin-top: 10px; background: var(--purple-soft);
+      color: var(--purple); border: 1.5px solid transparent;
+      border-radius: 8px; padding: 9px; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s;
+    }
+    .dest-plan-btn:hover { background: var(--purple); color: #fff; }
+    .dest-plan-btn.added { background: #D1FAE5; color: #059669; cursor: default; }
 
     /* NO RESULTS */
     .no-results {
@@ -261,7 +284,7 @@
       </div>
   </div>
 
-  <div class="destinations-grid" id="destGrid">
+  <div id="destGrid">
     <!-- populated by JS -->
   </div>
 </section>
@@ -333,24 +356,13 @@
   }
 
   // ── RENDER ──────────────────────────────────────────────────────────
-  function renderDestinations(list) {
-    const grid = document.getElementById('destGrid');
-    document.getElementById('resultCount').textContent = list.length;
-    if (list.length === 0) {
-      grid.innerHTML = `
-        <div class="no-results">
-          <div class="emoji">🗺️</div>
-          <h3>No destinations found</h3>
-          <p>Try adjusting your search or filters.</p>
-        </div>`;
-      return;
-    }
-    grid.innerHTML = list.map(d => `
+  function cardHTML(d, savedIds, plannedIds) {
+    return `
       <div class="dest-card" data-city="${d.city.toLowerCase()}" data-category="${d.category}" onclick="window.location.href='destination-detail.html?id=${d.id}&name=${encodeURIComponent(d.name)}'">
         <div class="dest-img-wrap">
           <img class="dest-img" src="${d.img}" alt="${d.name}" onerror="this.src='https://via.placeholder.com/600x400/6C3CE1/ffffff?text=${encodeURIComponent(d.name)}'"/>
           <span class="dest-badge">${d.badge}</span>
-          <button class="dest-fav" onclick="event.stopPropagation(); toggleFav(this, '${d.id}')">♡</button>
+          <button class="dest-fav ${savedIds.includes(d.id)?'saved':''}" onclick="event.stopPropagation(); toggleFav(this, '${d.id}')">${savedIds.includes(d.id)?'♥':'♡'}</button>
         </div>
         <div class="dest-info">
           <h3>${d.name}</h3>
@@ -360,16 +372,102 @@
             <span class="dest-rating">★ ${Number(d.rating).toFixed(1)}</span>
             <span class="dest-price">${d.price === 0 ? 'Free Entry' : 'PKR ' + d.price}</span>
           </div>
+          <button class="dest-plan-btn ${plannedIds.includes(d.id)?'added':''}" onclick="event.stopPropagation(); addDestToPlan('${d.id}', this)">
+            ${plannedIds.includes(d.id) ? '✓ In Your Plan' : '+ Add to Plan'}
+          </button>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+  }
 
-    // Mark already-saved destinations
-    const saved = JSON.parse(localStorage.getItem('rr_saved') || '[]');
-    document.querySelectorAll('.dest-fav').forEach(btn => {
-      const id = btn.getAttribute('onclick').match(/'([^']+)'\)/)?.[1];
-      if (saved.includes(id)) { btn.classList.add('saved'); btn.textContent = '♥'; }
+  function renderDestinations(list) {
+    const grid = document.getElementById('destGrid');
+    document.getElementById('resultCount').textContent = list.length;
+    if (list.length === 0) {
+      grid.innerHTML = `
+        <div class="no-results" style="grid-column:1/-1">
+          <div class="emoji">🗺️</div>
+          <h3>No destinations found</h3>
+          <p>Try adjusting your search or filters.</p>
+        </div>`;
+      return;
+    }
+    const savedIds  = JSON.parse(localStorage.getItem('rr_saved') || '[]');
+    const plan      = getPlan();
+    const plannedIds = plan.destinations.map(d => d.id);
+
+    // Group by city — preserve order of first appearance
+    const cityOrder = [];
+    const byCity = {};
+    list.forEach(d => {
+      if (!byCity[d.city]) { byCity[d.city] = []; cityOrder.push(d.city); }
+      byCity[d.city].push(d);
     });
+
+    // If filtering results in a single city (or user searched) just render flat grid
+    if (cityOrder.length === 1) {
+      grid.innerHTML = `<div class="destinations-grid" style="margin-bottom:60px">${list.map(d => cardHTML(d, savedIds, plannedIds)).join('')}</div>`;
+      return;
+    }
+
+    // Multi-city: render city sections
+    grid.innerHTML = cityOrder.map(city => {
+      const dests = byCity[city];
+      return `
+        <div class="city-section">
+          <div class="city-section-header">
+            <span class="city-pin">📍</span>
+            <h2>${city}</h2>
+            <span class="city-count">${dests.length} place${dests.length>1?'s':''}</span>
+          </div>
+          <div class="destinations-grid">
+            ${dests.map(d => cardHTML(d, savedIds, plannedIds)).join('')}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── PLAN HELPERS ─────────────────────────────────────────────────────
+  function getPlan() {
+    try {
+      const p = JSON.parse(localStorage.getItem('rr_plan') || '{}');
+      if (!p.destinations) p.destinations = [];
+      if (!p.hotels) p.hotels = [];
+      if (!p.gems) p.gems = [];
+      return p;
+    } catch(e) { return { destinations: [], hotels: [], gems: [] }; }
+  }
+  function savePlan(plan) { localStorage.setItem('rr_plan', JSON.stringify(plan)); }
+
+  let toastTimer;
+  function showToast(msg, link = null) {
+    clearTimeout(toastTimer);
+    const t = document.getElementById('rr-toast');
+    document.getElementById('rr-toast-msg').textContent = msg;
+    const lk = document.getElementById('rr-toast-link');
+    if (link) { lk.href = link; lk.style.display = 'inline'; }
+    else lk.style.display = 'none';
+    t.style.transform = 'translateY(0)';
+    t.style.opacity = '1';
+    toastTimer = setTimeout(() => { t.style.transform = 'translateY(90px)'; t.style.opacity = '0'; }, 3500);
+  }
+
+  function addDestToPlan(destId, btn) {
+    const dest = allDestinations.find(d => d.id === destId);
+    if (!dest) return;
+    const plan = getPlan();
+    if (plan.destinations.find(d => d.id === destId)) {
+      showToast('Already in your plan!', 'planner.html');
+      return;
+    }
+    plan.destinations.push({
+      id: dest.id, name: dest.name, city: dest.city,
+      img: dest.img, category: dest.category,
+      rating: dest.rating, price: dest.price,
+      addedAt: new Date().toISOString()
+    });
+    savePlan(plan);
+    if (btn) { btn.textContent = '✓ In Your Plan'; btn.classList.add('added'); btn.onclick = null; }
+    showToast(`"${dest.name}" added to your plan!`, 'planner.html');
   }
 
   // ── FAV / SAVE ───────────────────────────────────────────────────────
@@ -469,7 +567,7 @@
         const token = localStorage.getItem('rr_token');
         const userStr = localStorage.getItem('rr_user');
         const navActions = document.querySelector('.nav-actions');
-        
+
         if (token && userStr && navActions) {
           try {
             const user = JSON.parse(userStr);
@@ -488,5 +586,14 @@
         }
       });
     </script>
+
+<!-- TOAST -->
+<div id="rr-toast" style="position:fixed;bottom:28px;right:28px;z-index:9999;transform:translateY(90px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none;">
+  <div style="background:#1a1a2e;color:#fff;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.25);max-width:360px;">
+    <span style="color:#10B981;">✓</span>
+    <span id="rr-toast-msg"></span>
+    <a id="rr-toast-link" href="#" style="color:#8B5CF6;margin-left:auto;white-space:nowrap;text-decoration:underline;display:none;pointer-events:auto;font-size:13px;">View Plan →</a>
+  </div>
+</div>
 </body>
 </html>
